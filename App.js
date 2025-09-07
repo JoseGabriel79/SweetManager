@@ -100,24 +100,31 @@ export default function App() {
   const [status, setStatus] = useState("Carregando...");
 
   useEffect(() => {
-    fetch("https://nodejs-production-43c7.up.railway.app/produtos") // substitua pela URL do Railway
-      .then(async (res) => {
-        const text = await res.text();
-        console.log("Resposta bruta:", text);
+    const fetchProdutos = async () => {
+      try {
+        const response = await fetch(
+          "https://nodejs-production-43c7.up.railway.app/produtos"
+        );
 
-        try {
-          const data = JSON.parse(text);
-          if (data.success) {
-            setProdutos(data.produtos);
-            setStatus("Conectado com sucesso!");
-          } else {
-            setStatus("Erro no backend: " + JSON.stringify(data));
-          }
-        } catch {
-          setStatus("Não é JSON: " + text);
+        // Verifica se a resposta foi ok
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      })
-      .catch((err) => setStatus("Erro: " + err.message));
+
+        const data = await response.json(); // converte diretamente para JSON
+
+        if (data.success) {
+          setProdutos(data.produtos);
+          setStatus("Conectado com sucesso!");
+        } else {
+          setStatus("Erro no backend: " + JSON.stringify(data));
+        }
+      } catch (err) {
+        setStatus("Erro: " + err.message);
+      }
+    };
+
+    fetchProdutos();
   }, []);
 
   return (
@@ -127,7 +134,9 @@ export default function App() {
         data={produtos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Text style={styles.item}>{item.nome} - R${item.preco}</Text>
+          <Text style={styles.item}>
+            {item.nome} - R${item.preco.toFixed(2)}
+          </Text>
         )}
       />
     </View>
