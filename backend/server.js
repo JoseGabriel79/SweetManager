@@ -4,7 +4,14 @@ const pool = require("./db");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+
+// Configurando CORS
+// Permite apenas o frontend específico (mais seguro)
+app.use(cors({ origin: "https://duzeapp-production.up.railway.app" }));
+
+// Caso queira permitir qualquer origem (teste rápido), use:
+// app.use(cors());
+
 app.use(express.json());
 
 // Rota de teste
