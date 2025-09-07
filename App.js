@@ -94,54 +94,61 @@
 
 
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Button, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button } from "react-native";
 import axios from "axios";
 
 export default function HomeScreen() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const BASE_URL = "https://duzeapp-production.up.railway.app";
 
-  // Função para popular usuários de teste
-  const popularUsuarios = async () => {
-    try {
-      setLoading(true);
-      await axios.post(`${BASE_URL}/usuarios/popular`);
-      fetchUsuarios(); // busca os usuários depois de popular
-    } catch (err) {
-      console.log("Erro ao popular usuários:", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Função para buscar todos os usuários
+  // Função para buscar usuários
   const fetchUsuarios = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
       const res = await axios.get(`${BASE_URL}/usuarios`);
       setUsuarios(res.data);
     } catch (err) {
       console.log("Erro ao buscar usuários:", err.message);
+      setError("Não foi possível carregar os usuários.");
+      setUsuarios([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Buscar usuários ao carregar a tela
+  // Função para popular usuários apenas na primeira vez
+  const popularUsuariosSeNecessario = async () => {
+    try {
+      await axios.post(`${BASE_URL}/usuarios/popular`);
+      fetchUsuarios();
+    } catch (err) {
+      console.log("Erro ao popular usuários:", err.message);
+      setError("Não foi possível popular os usuários.");
+    }
+  };
+
+  // useEffect para rodar apenas na montagem da tela
   useEffect(() => {
-    fetchUsuarios();
+    popularUsuariosSeNecessario();
   }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Usuários</Text>
-      <Button
-        title={loading ? "Carregando..." : "Popular Usuários de Teste"}
-        onPress={popularUsuarios}
-        disabled={loading}
-      />
+
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+
+      {error && (
+        <View style={{ marginVertical: 10 }}>
+          <Text style={{ color: "red", marginBottom: 10 }}>{error}</Text>
+          <Button title="Tentar novamente" onPress={fetchUsuarios} />
+        </View>
+      )}
+
       <FlatList
         data={usuarios}
         keyExtractor={(item) => item.id.toString()}
@@ -159,3 +166,4 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
   item: { fontSize: 16, marginBottom: 5 },
 });
+
