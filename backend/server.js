@@ -18,6 +18,36 @@ const pool = new Pool({
 });
 
 
+app.get("/criar-tabelas", async (req, res) => {
+  try {
+    // Cria a tabela de usuários
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        email VARCHAR(150) UNIQUE NOT NULL,
+        senha VARCHAR(255) NOT NULL
+      );
+    `);
+
+    // Cria a tabela de pedidos
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pedidos (
+        id SERIAL PRIMARY KEY,
+        usuario_id INT REFERENCES usuarios(id),
+        produto VARCHAR(100),
+        quantidade INT,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    res.send("Tabelas 'usuarios' e 'pedidos' criadas com sucesso!");
+  } catch (err) {
+    console.error("Erro ao criar tabelas:", err.message);
+    res.status(500).send("Erro ao criar tabelas");
+  }
+});
+
 // rota de teste
 app.get("/usuarios", async (req, res) => {
   const result = await pool.query("SELECT * FROM usuarios");
