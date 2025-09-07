@@ -96,25 +96,23 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 export default function App() {
-
   const [status, setStatus] = useState("Carregando...");
 
   useEffect(() => {
-  fetch("https://duzeapp-production.up.railway.app/ping")
-    .then(async (res) => {
-      const text = await res.text(); // pega o que veio de verdade
-      console.log("Resposta bruta:", text);
+    fetch("https://duzeapp-production.up.railway.app/ping") // substitua pela URL pública do Railway
+      .then(async (res) => {
+        const text = await res.text(); // pega resposta bruta
+        console.log("Resposta bruta:", text);
 
-      try {
-        const data = JSON.parse(text);
-        setStatus("Conectado: " + JSON.stringify(data));
-      } catch {
-        setStatus("Não é JSON: " + text);
-      }
-    })
-    .catch((err) => setStatus("Erro: " + err.message));
-}, []);
-
+        try {
+          const data = JSON.parse(text);
+          setStatus("Conectado: " + JSON.stringify(data));
+        } catch {
+          setStatus("Não é JSON: " + text);
+        }
+      })
+      .catch((err) => setStatus("Erro: " + err.message));
+  }, []);
 
   return (
     <View style={styles.container}>
