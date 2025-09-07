@@ -13,6 +13,7 @@
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/native": "*",
     "axios": "^1.11.0",
+    "cors": "^2.8.5",
     "expo": "~53.0.22",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
