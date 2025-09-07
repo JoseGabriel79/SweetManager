@@ -93,72 +93,29 @@
 // }
 
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button } from "react-native";
-import axios from "axios";
+import { View, Text, StyleSheet } from "react-native";
 
-export default function HomeScreen() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(true); // começa carregando
-  const [error, setError] = useState(null);
-
-  const BASE_URL = "https://duzeapp-production.up.railway.app";
-
-  // Função para inicializar o app
-  const initUsuarios = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Popula usuários de teste (uma vez)
-      await axios.post(`${BASE_URL}/usuarios/popular`);
-
-      // Busca todos os usuários
-      const res = await axios.get(`${BASE_URL}/usuarios`);
-      setUsuarios(res.data);
-    } catch (err) {
-      console.log("Erro ao inicializar usuários:", err.message);
-      setError("Não foi possível carregar os usuários.");
-      setUsuarios([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function App() {
+  const [status, setStatus] = useState("Carregando...");
 
   useEffect(() => {
-    initUsuarios();
+    fetch("http://192.168.100.72:3000/ping") // troque pelo IP da sua máquina
+      .then((res) => res.json())
+      .then((data) => setStatus("Conectado: " + JSON.stringify(data)))
+      .catch((err) => setStatus("Erro: " + err.message));
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Usuários</Text>
-
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
-      {error && (
-        <View style={{ marginVertical: 10 }}>
-          <Text style={{ color: "red", marginBottom: 10 }}>{error}</Text>
-          <Button title="Tentar novamente" onPress={initUsuarios} />
-        </View>
-      )}
-
-      {!loading && usuarios.length === 0 && !error && (
-        <Text>Nenhum usuário encontrado.</Text>
-      )}
-
-      <FlatList
-        data={usuarios}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Text style={styles.item}>{item.nome} - {item.email}</Text>
-        )}
-        style={{ marginTop: 20 }}
-      />
+      <Text>{status}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-  item: { fontSize: 16, marginBottom: 5 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
