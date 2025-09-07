@@ -92,27 +92,31 @@
 //   );
 // }
 
-
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button } from "react-native";
 import axios from "axios";
 
 export default function HomeScreen() {
   const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // começa carregando
   const [error, setError] = useState(null);
 
   const BASE_URL = "https://duzeapp-production.up.railway.app";
 
-  // Buscar usuários
-  const fetchUsuarios = async () => {
+  // Função para inicializar o app
+  const initUsuarios = async () => {
     setLoading(true);
     setError(null);
+
     try {
+      // Popula usuários de teste (uma vez)
+      await axios.post(`${BASE_URL}/usuarios/popular`);
+
+      // Busca todos os usuários
       const res = await axios.get(`${BASE_URL}/usuarios`);
       setUsuarios(res.data);
     } catch (err) {
-      console.log("Erro ao buscar usuários:", err.message);
+      console.log("Erro ao inicializar usuários:", err.message);
       setError("Não foi possível carregar os usuários.");
       setUsuarios([]);
     } finally {
@@ -120,19 +124,8 @@ export default function HomeScreen() {
     }
   };
 
-  // Popular usuários de teste na primeira vez
-  const popularUsuariosSeNecessario = async () => {
-    try {
-      await axios.post(`${BASE_URL}/usuarios/popular`);
-      await fetchUsuarios();
-    } catch (err) {
-      console.log("Erro ao popular usuários:", err.message);
-      setError("Não foi possível popular os usuários.");
-    }
-  };
-
   useEffect(() => {
-    popularUsuariosSeNecessario();
+    initUsuarios();
   }, []);
 
   return (
@@ -144,8 +137,12 @@ export default function HomeScreen() {
       {error && (
         <View style={{ marginVertical: 10 }}>
           <Text style={{ color: "red", marginBottom: 10 }}>{error}</Text>
-          <Button title="Tentar novamente" onPress={fetchUsuarios} />
+          <Button title="Tentar novamente" onPress={initUsuarios} />
         </View>
+      )}
+
+      {!loading && usuarios.length === 0 && !error && (
+        <Text>Nenhum usuário encontrado.</Text>
       )}
 
       <FlatList
@@ -165,4 +162,3 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
   item: { fontSize: 16, marginBottom: 5 },
 });
-
