@@ -100,7 +100,7 @@ export default function App() {
   const [status, setStatus] = useState("Carregando...");
 
   useEffect(() => {
-    fetch("https://duzeapp-production.up.railway.app/produtos") // substitua pela URL do Railway
+    fetch("https://nodejs-production-43c7.up.railway.app/produtos") // substitua pela URL do Railway
       .then(async (res) => {
         const text = await res.text();
         console.log("Resposta bruta:", text);
