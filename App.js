@@ -99,7 +99,7 @@ export default function App() {
   const [status, setStatus] = useState("Carregando...");
 
   useEffect(() => {
-    fetch("http://192.168.100.72:3000/ping") // troque pelo IP da sua máquina
+    fetch("http://localhost:3000/ping") // troque pelo IP da sua máquina
       .then((res) => res.json())
       .then((data) => setStatus("Conectado: " + JSON.stringify(data)))
       .catch((err) => setStatus("Erro: " + err.message));
