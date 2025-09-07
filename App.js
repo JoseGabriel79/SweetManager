@@ -104,7 +104,7 @@ export default function HomeScreen() {
 
   const BASE_URL = "https://duzeapp-production.up.railway.app";
 
-  // Função para buscar usuários
+  // Buscar usuários
   const fetchUsuarios = async () => {
     setLoading(true);
     setError(null);
@@ -120,18 +120,17 @@ export default function HomeScreen() {
     }
   };
 
-  // Função para popular usuários apenas na primeira vez
+  // Popular usuários de teste na primeira vez
   const popularUsuariosSeNecessario = async () => {
     try {
       await axios.post(`${BASE_URL}/usuarios/popular`);
-      fetchUsuarios();
+      await fetchUsuarios();
     } catch (err) {
       console.log("Erro ao popular usuários:", err.message);
       setError("Não foi possível popular os usuários.");
     }
   };
 
-  // useEffect para rodar apenas na montagem da tela
   useEffect(() => {
     popularUsuariosSeNecessario();
   }, []);

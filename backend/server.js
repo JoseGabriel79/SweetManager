@@ -5,22 +5,21 @@ const cors = require("cors");
 const { Pool } = require("pg");
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
+// Configuração do pool PostgreSQL
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
+  database: process.env.DB_NAME.replace(/\s/g, "_"), // remove espaços se houver
   password: process.env.DB_PASS,
-  port: process.env.DB_PORT,
+  port: parseInt(process.env.DB_PORT, 10),
 });
 
-
+// Rota para criar tabelas (rodar apenas uma vez)
 app.get("/criar-tabelas", async (req, res) => {
   try {
-    // Cria a tabela de usuários
     await pool.query(`
       CREATE TABLE IF NOT EXISTS usuarios (
         id SERIAL PRIMARY KEY,
@@ -30,7 +29,6 @@ app.get("/criar-tabelas", async (req, res) => {
       );
     `);
 
-    // Cria a tabela de pedidos
     await pool.query(`
       CREATE TABLE IF NOT EXISTS pedidos (
         id SERIAL PRIMARY KEY,
@@ -48,30 +46,33 @@ app.get("/criar-tabelas", async (req, res) => {
   }
 });
 
-// rota de teste
+// Rota para listar todos os usuários
 app.get("/usuarios", async (req, res) => {
-  const result = await pool.query("SELECT * FROM usuarios");
-  res.json(result.rows);
+  try {
+    const result = await pool.query("SELECT * FROM usuarios ORDER BY id ASC");
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Erro ao buscar usuários:", err.message);
+    res.status(500).send("Erro ao buscar usuários");
+  }
 });
 
-
-// criar usuário
+// Criar um usuário
 app.post("/usuarios", async (req, res) => {
   const { nome, email, senha } = req.body;
-  const result = await pool.query(
-    "INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING *",
-    [nome, email, senha]
-  );
-  res.json(result.rows[0]);
+  try {
+    const result = await pool.query(
+      "INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING *",
+      [nome, email, senha]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Erro ao criar usuário:", err.message);
+    res.status(500).send("Erro ao criar usuário");
+  }
 });
 
-app.listen(3000, () => {
-  console.log("API rodando em http://localhost:3000");
-});
-
-
-
-// Rota para popular o banco com usuários de teste
+// Popular usuários de teste
 app.post("/usuarios/popular", async (req, res) => {
   try {
     const usuarios = [
@@ -82,7 +83,7 @@ app.post("/usuarios/popular", async (req, res) => {
       { nome: "Pedro Santos", email: "pedro.santos@email.com", senha: "teste2025" }
     ];
 
-    const promises = usuarios.map(u => 
+    const promises = usuarios.map(u =>
       pool.query(
         "INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING RETURNING *",
         [u.nome, u.email, u.senha]
@@ -98,7 +99,11 @@ app.post("/usuarios/popular", async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("Erro ao popular usuários:", err.message);
     res.status(500).send("Erro ao popular usuários");
   }
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`API rodando em http://localhost:${process.env.PORT || 3000}`);
 });
