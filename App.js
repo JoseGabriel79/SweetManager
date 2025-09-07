@@ -94,28 +94,68 @@
 
 
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, FlatList } from "react-native";
+import { View, Text, FlatList, Button, StyleSheet } from "react-native";
 import axios from "axios";
 
 export default function HomeScreen() {
   const [usuarios, setUsuarios] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  const BASE_URL = "https://duzeapp-production.up.railway.app";
+
+  // Função para popular usuários de teste
+  const popularUsuarios = async () => {
+    try {
+      setLoading(true);
+      await axios.post(`${BASE_URL}/usuarios/popular`);
+      fetchUsuarios(); // busca os usuários depois de popular
+    } catch (err) {
+      console.log("Erro ao popular usuários:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para buscar todos os usuários
+  const fetchUsuarios = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${BASE_URL}/usuarios`);
+      setUsuarios(res.data);
+    } catch (err) {
+      console.log("Erro ao buscar usuários:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Buscar usuários ao carregar a tela
   useEffect(() => {
-    axios.get("http://localhost:3000/usuarios") // 10.0.2.2 se usar emulador Android
-      .then(res => setUsuarios(res.data))
-      .catch(err => console.log(err));
+    fetchUsuarios();
   }, []);
 
   return (
-    <View>
-      <Text>Usuários:</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Usuários</Text>
+      <Button
+        title={loading ? "Carregando..." : "Popular Usuários de Teste"}
+        onPress={popularUsuarios}
+        disabled={loading}
+      />
       <FlatList
         data={usuarios}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Text>{item.nome} - {item.email}</Text>
+          <Text style={styles.item}>{item.nome} - {item.email}</Text>
         )}
+        style={{ marginTop: 20 }}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
+  item: { fontSize: 16, marginBottom: 5 },
+});

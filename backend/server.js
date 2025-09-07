@@ -5,6 +5,7 @@ const cors = require("cors");
 const { Pool } = require("pg");
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
@@ -36,4 +37,38 @@ app.post("/usuarios", async (req, res) => {
 
 app.listen(3000, () => {
   console.log("API rodando em http://localhost:3000");
+});
+
+
+
+// Rota para popular o banco com usuários de teste
+app.post("/usuarios/popular", async (req, res) => {
+  try {
+    const usuarios = [
+      { nome: "João Silva", email: "joao.silva@email.com", senha: "123456" },
+      { nome: "Maria Oliveira", email: "maria.oliveira@email.com", senha: "abcdef" },
+      { nome: "Carlos Souza", email: "carlos.souza@email.com", senha: "senha123" },
+      { nome: "Ana Lima", email: "ana.lima@email.com", senha: "minhasenha" },
+      { nome: "Pedro Santos", email: "pedro.santos@email.com", senha: "teste2025" }
+    ];
+
+    const promises = usuarios.map(u => 
+      pool.query(
+        "INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING RETURNING *",
+        [u.nome, u.email, u.senha]
+      )
+    );
+
+    const results = await Promise.all(promises);
+    const usuariosInseridos = results.map(r => r.rows[0]).filter(r => r !== undefined);
+
+    res.json({
+      message: "Usuários padrão inseridos",
+      usuariosInseridos
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao popular usuários");
+  }
 });
