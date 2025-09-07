@@ -17,7 +17,17 @@ app.get("/ping", async (req, res) => {
   }
 });
 
-// Porta dinâmica (Railway usa process.env.PORT)
+// Rota produtos
+app.get("/produtos", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT id, nome, preco FROM produtos ORDER BY id");
+    res.json({ success: true, produtos: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Porta dinâmica
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);

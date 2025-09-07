@@ -93,20 +93,26 @@
 // }
 
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 
 export default function App() {
+  const [produtos, setProdutos] = useState([]);
   const [status, setStatus] = useState("Carregando...");
 
   useEffect(() => {
-    fetch("https://duzeapp-production.up.railway.app/ping") // substitua pela URL pública do Railway
+    fetch("https://meu-backend.up.railway.app/produtos") // substitua pela URL do Railway
       .then(async (res) => {
-        const text = await res.text(); // pega resposta bruta
+        const text = await res.text();
         console.log("Resposta bruta:", text);
 
         try {
           const data = JSON.parse(text);
-          setStatus("Conectado: " + JSON.stringify(data));
+          if (data.success) {
+            setProdutos(data.produtos);
+            setStatus("Conectado com sucesso!");
+          } else {
+            setStatus("Erro no backend: " + JSON.stringify(data));
+          }
         } catch {
           setStatus("Não é JSON: " + text);
         }
@@ -116,15 +122,20 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>{status}</Text>
+      <Text style={styles.status}>{status}</Text>
+      <FlatList
+        data={produtos}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <Text style={styles.item}>{item.nome} - R${item.preco}</Text>
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  container: { flex: 1, padding: 20 },
+  status: { fontSize: 16, marginBottom: 10 },
+  item: { fontSize: 18, marginVertical: 5 },
 });
