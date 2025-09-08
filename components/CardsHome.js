@@ -2,8 +2,12 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
 } from "react-native";
+
+const { width } = Dimensions.get("window")
+const isSmallScreen = width < 520;
 
 export default function ({ titulo }) {
     return (
@@ -22,7 +26,7 @@ const styles = StyleSheet.create({
         width: "45%", // 2 cards por linha
         alignItems: "center",
         justifyContent: "center",
-        height: "25%",
+        height:isSmallScreen?"20%":"25%",
     },
     title: {
         fontSize: 18,

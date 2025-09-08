@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     alignContent: "center",   // centraliza o conteúdo no eixo vertical
     gap: 15,
     paddingVertical: 20,
-    width: "100%",
+    
   },
   title: {
     fontSize: 24,
