@@ -146,5 +146,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   status: { fontSize: 16, marginBottom: 10 },
-  item: { fontSize: 18, marginVertical: 5 },
+  item: { fontSize: 18, marginVertical: 5, color: 'blue' },
 });
