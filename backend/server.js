@@ -34,6 +34,19 @@ app.get("/produtos", async (req, res) => {
   }
 });
 
+app.post("/produto", async (req, res) => {
+  const { nome, preco, estoque, imagem } = req.body;
+  try {
+    const result = await pool.query(
+      "INSERT INTO produtos (nome, preco, estoque, imagem) VALUES ($1, $2, $3, $4) RETURNING id",
+      [nome, preco, estoque, imagem]
+    );
+    res.status(201).json({ success: true, id: result.rows[0].id });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Porta dinâmica
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import usuarios from "../dataBase/usuarios.js";
 
 // --- COMPONENTE DE LOGIN SEPARADO ---
 export default function LoginScreen({ username, setUsername, password, setPassword, handleLogin }) {

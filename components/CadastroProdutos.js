@@ -1,7 +1,6 @@
 import React, {useState}from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 
-import {produtos} from '../dataBase/produtos'
 
 export default function CadastroProdutos() {
     const [productName, setProductName] = useState('');
