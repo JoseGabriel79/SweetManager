@@ -1,21 +1,30 @@
+import React from "react";
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
-    Dimensions, 
-    Alert
+    Dimensions
 } from "react-native";
+
+import { useNavigation } from "@react-navigation/native";
+import VitrineScreen from "./VitrineScreen"
+import CadastrarProdutosScreen from "./CadastrarProdutosScreen"
+import ClientesScreen from "./ClientesScreen"
+import EstoqueScreen from "./EstoqueScreen"
 
 const { width } = Dimensions.get("window")
 const isSmallScreen = width < 520;
 
-export default function ({ titulo }) {
+export default function CardsHome({ titulo, routeName }) {
+    const navigation = useNavigation();
+
     return (
         <TouchableOpacity style={styles.card}
             activeOpacity={0.6}
-            onPress={() => Alert.alert("Clicado!")}
-            onLongPress={() => Alert.alert("Pressionado por mais tempo!")}
+            onPress={() =>
+                navigation.navigate(routeName)
+            }
         >
             <Text style={styles.title}>{titulo}</Text>
 

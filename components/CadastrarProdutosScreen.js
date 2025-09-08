@@ -2,7 +2,7 @@ import React, {useState}from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 
 
-export default function CadastroProdutos() {
+export default function CadastroProdutosScreen() {
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');

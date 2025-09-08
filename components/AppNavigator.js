@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from '@expo/vector-icons';
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import HomeScreen from "./HomeScreen";
-import { useWindowDimensions } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -29,6 +28,7 @@ const isSmallScreen = width < 620;
 
 export default function AppNavigator() {
     return (
+        
         <NavigationContainer>
             <Tab.Navigator
                 screenOptions={{
@@ -40,9 +40,7 @@ export default function AppNavigator() {
                     tabBarActiveTintColor: "#196496",    // cor do ícone/texto ativo
                     tabBarInactiveTintColor: "#042136",   // cor do ícone/texto inativo
                     tabBarLabelStyle: {
-                        fontSize: 14,
                         fontWeight: "bold",
-                        fontSize: isSmallScreen ? 14 : 18, // fonte menor em telas pequenas
                     },
                     tabBarIconStyle: {
                         marginTop: isSmallScreen ? 2 : 0, // ajusta posição do ícone
@@ -53,7 +51,7 @@ export default function AppNavigator() {
                     name="Início"
                     children={() => <HomeScreen username={"José"} />}
                     options={{
-                        tabBarIcon: () => <Feather fontWeight size={isSmallScreen ? 20 : 30} name="home" color={'#042136'} />,
+                        tabBarIcon: () => <Feather size={isSmallScreen ? 20 : 30} name="home" color={'#042136'} />,
 
                     }}
                 />

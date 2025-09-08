@@ -8,6 +8,10 @@ import {
   FlatList
 } from "react-native";
 
+import VitrineScreen from "./VitrineScreen"
+import CadastrarProdutosScreen from "./CadastrarProdutosScreen"
+import ClientesScreen from "./ClientesScreen"
+import EstoqueScreen from "./EstoqueScreen"
 import CardsHome from "./CardsHome"
 
 import React, { useEffect, useState } from "react";
@@ -68,13 +72,12 @@ export default function HomeScreen({ username }) {
       </View>
 
       <View style={styles.cards}>
-
-        <CardsHome titulo="Vitrine" />
-        <CardsHome titulo="Cadastrar Produtos" />
-        <CardsHome titulo="Clientes" />
-        <CardsHome titulo="Estoque" />
-
+        <CardsHome titulo="Vitrine" routeName="VitrineScreen" />
+        <CardsHome titulo="Cadastrar Produtos" routeName="CadastrarProdutosScreen" />
+        <CardsHome titulo="Clientes" routeName="ClientesScreen" />
+        <CardsHome titulo="Estoque" routeName="EstoqueScreen" />
       </View>
+
 
     </View>
   );
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     alignContent: "center",   // centraliza o conteúdo no eixo vertical
     gap: 15,
     paddingVertical: 20,
-    
+
   },
   title: {
     fontSize: 24,
