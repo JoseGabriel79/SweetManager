@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
         height:isSmallScreen?"20%":"25%",
     },
     title: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: "bold",
         color: "white",
         textAlign: "center",
