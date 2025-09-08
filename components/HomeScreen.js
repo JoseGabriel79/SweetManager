@@ -1,4 +1,3 @@
-import React from "react";
 import {
   View,
   Text,
@@ -63,17 +62,19 @@ export default function HomeScreen({ username }) {
         </View>
       </View>
 
-      <Text style={styles.status}>{status}</Text>
-      <FlatList
-        data={produtos}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Text style={styles.item}>
-            {item.nome} - R${item.preco}
-          </Text>
-        )}
-      />
-
+      {status === "Carregando..." ? (
+        <Text style={styles.status}>{status}</Text>
+      ) : (
+        <FlatList
+          data={produtos}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Text style={styles.item}>
+              {item.nome} - R${item.preco}
+            </Text>
+          )}
+        />
+      )}
 
     </View>
   );
