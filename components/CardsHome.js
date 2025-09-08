@@ -3,7 +3,8 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    Dimensions
+    Dimensions, 
+    Alert
 } from "react-native";
 
 const { width } = Dimensions.get("window")
@@ -11,7 +12,11 @@ const isSmallScreen = width < 520;
 
 export default function ({ titulo }) {
     return (
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity style={styles.card}
+            activeOpacity={0.6}
+            onPress={() => Alert.alert("Clicado!")}
+            onLongPress={() => Alert.alert("Pressionado por mais tempo!")}
+        >
             <Text style={styles.title}>{titulo}</Text>
 
         </TouchableOpacity>
@@ -26,7 +31,7 @@ const styles = StyleSheet.create({
         width: "45%", // 2 cards por linha
         alignItems: "center",
         justifyContent: "center",
-        height:isSmallScreen?"20%":"25%",
+        height: isSmallScreen ? "20%" : "25%",
     },
     title: {
         fontSize: 20,
