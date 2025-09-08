@@ -135,7 +135,7 @@ export default function App() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Text style={styles.item}>
-            {item.nome} - R${item.preco.toFixed(2)}
+            {item.nome} - R${item.preco}
           </Text>
         )}
       />
