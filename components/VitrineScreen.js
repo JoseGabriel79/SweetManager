@@ -6,6 +6,7 @@ const imagensBolos = {
   bolo2: require('../imagens/ImagensBolos/bolo2.png'),
   boloPadrao: require('../imagens/ImagensBolos/boloPadrao.png'),
 };
+
 export default function VitrineScreen() {
   const [produtos, setProdutos] = useState([]);
   const [status, setStatus] = useState("Carregando...");
