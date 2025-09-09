@@ -83,4 +83,10 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 10
     },
+    image: {
+        width: '100%',
+        height: 150,
+        backgroundColor: '#2689cbd6',
+        
+    },
 })
