@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 
+const imagensBolos = {
+  bolo1: require('../imagens/ImagensBolos/bolo1.png'),
+  bolo2: require('../imagens/ImagensBolos/bolo2.png'),
+  boloPadrao: require('../imagens/ImagensBolos/boloPadrao.png'),
+};
 export default function VitrineScreen() {
   const [produtos, setProdutos] = useState([]);
   const [status, setStatus] = useState("Carregando...");
@@ -42,7 +47,7 @@ export default function VitrineScreen() {
         renderItem={({ item }) => (
           <View style={styles.cardVitrine}>
             <Image
-              source={require('../imagens/ImagensBolos/'+item.imagem)}
+              source={imagensBolos[item.imagem] || imagensBolos.boloPadrao}
               style={styles.image}
               resizeMode="cover"
             />
