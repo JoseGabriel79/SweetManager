@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image,Dimensions } from "react-native";
 
 const imagensBolos = {
     boloPadrao: require('../imagens/ImagensBolos/boloPadrao.png'),
 };
+
+const { width } = Dimensions.get("window")
+const isSmallScreen = width < 620;
 
 export default function VitrineScreen() {
     const [produtos, setProdutos] = useState([]);
@@ -80,7 +83,6 @@ const styles = StyleSheet.create({
     },
     cardVitrine: {
         backgroundColor: "#2689cbd6",
-        borderRadius: 8,
         padding: 10,
         margin: 8,
         width: "45%", // 2 cards por linha
