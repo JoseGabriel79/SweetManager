@@ -1,57 +1,17 @@
+
+
+
+import React from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Image,
-  FlatList
 } from "react-native";
+import CardsHome from "./CardsHome";
 
-import VitrineScreen from "./VitrineScreen"
-import CadastrarProdutosScreen from "./CadastrarProdutosScreen"
-import ClientesScreen from "./ClientesScreen"
-import EstoqueScreen from "./EstoqueScreen"
-import CardsHome from "./CardsHome"
-
-import React, { useEffect, useState } from "react";
-
-
-export default function HomeScreen({ username }) {
-  // const [produtos, setProdutos] = useState([]);
-  // const [status, setStatus] = useState("Carregando...");
-
-  // useEffect(() => {
-  //   const fetchProdutos = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "https://nodejs-production-43c7.up.railway.app/produtos"
-  //       );
-
-  //       // Verifica se a resposta foi ok
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-
-  //       const data = await response.json(); // converte diretamente para JSON
-
-  //       if (data.success) {
-  //         setProdutos(data.produtos);
-  //         setStatus("Conectado com sucesso!");
-  //       } else {
-  //         setStatus("Erro no backend: " + JSON.stringify(data));
-  //       }
-  //     } catch (err) {
-  //       setStatus("Erro: " + err.message);
-  //     }
-  //   };
-
-  //   fetchProdutos();
-  // }, []);
-
-
-
-
+export default function HomeScreen({ route }) {
+  const { username } = route.params || { username: "Visitante" };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -72,28 +32,15 @@ export default function HomeScreen({ username }) {
       </View>
 
       <View style={styles.cards}>
-        <CardsHome titulo="Vitrine" routeName="VitrineScreen" />
-        <CardsHome titulo="Cadastrar Produtos" routeName="CadastrarProdutosScreen" />
-        <CardsHome titulo="Clientes" routeName="ClientesScreen" />
-        <CardsHome titulo="Estoque" routeName="EstoqueScreen" />
+        <CardsHome titulo="Vitrine" routeName="Vitrine" />
+        <CardsHome titulo="Cadastrar Produtos" routeName="CadastrarProdutos" />
+        <CardsHome titulo="Clientes" routeName="Clientes" />
+        <CardsHome titulo="Estoque" routeName="Estoque" />
       </View>
-
 
     </View>
   );
-  {/* {status === "Carregando..."  ?(
-        <Text style={styles.status}>{status}</Text>
-      ) : (
-        <FlatList
-          data={produtos}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Text style={styles.item}>
-              {item.nome} - R${item.preco}
-            </Text>
-          )}
-        />
-      )} */}
+
 }
 
 const styles = StyleSheet.create({
@@ -130,24 +77,3 @@ const styles = StyleSheet.create({
   status: { fontSize: 16, marginBottom: 10 },
   item: { fontSize: 18, marginVertical: 5, color: 'blue' },
 });
-
-
-
-
-
-// export default function App() {
-
-
-
-
-
-//   return (
-//     <View style={styles.container}>
-//
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, padding: 20 },
-// });

@@ -73,7 +73,7 @@ import EstoqueScreen from "./components/EstoqueScreen";
 
 
 export default function App() {
-    return (<View>
+    return (<View style={style.container}>
         <AppNavigator />
     </View>
     )
@@ -82,9 +82,6 @@ export default function App() {
 const style = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
     },
 });
 

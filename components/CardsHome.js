@@ -1,51 +1,72 @@
-import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Dimensions
-} from "react-native";
+// import React from "react";
+// import {
+//     View,
+//     Text,
+//     StyleSheet,
+//     TouchableOpacity,
+//     Dimensions
+// } from "react-native";
 
+// import { useNavigation } from "@react-navigation/native";
+// import VitrineScreen from "./VitrineScreen"
+// import CadastrarProdutosScreen from "./CadastrarProdutosScreen"
+// import ClientesScreen from "./ClientesScreen"
+// import EstoqueScreen from "./EstoqueScreen"
+
+
+// export default function CardsHome({ titulo, onPress }) {
+//     const navigation = useNavigation();
+
+//     return (
+//         <TouchableOpacity
+//             style={styles.card}
+//             activeOpacity={0.6}
+//             onPress={onPress}
+//         >
+//             <Text style={styles.title}>{titulo}</Text>
+
+//         </TouchableOpacity>
+//     )
+// }
+
+
+
+
+import React from "react";
+import { TouchableOpacity, Text, StyleSheet, Dimensions} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import VitrineScreen from "./VitrineScreen"
-import CadastrarProdutosScreen from "./CadastrarProdutosScreen"
-import ClientesScreen from "./ClientesScreen"
-import EstoqueScreen from "./EstoqueScreen"
 
 const { width } = Dimensions.get("window")
 const isSmallScreen = width < 520;
 
 export default function CardsHome({ titulo, routeName }) {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
-    return (
-        <TouchableOpacity style={styles.card}
-            activeOpacity={0.6}
-            onPress={() =>
-                navigation.navigate(routeName)
-            }
-        >
-            <Text style={styles.title}>{titulo}</Text>
-
-        </TouchableOpacity>
-    )
+  return (
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.6}
+      onPress={() => navigation.navigate(routeName)}
+    >
+      <Text style={styles.title}>{titulo}</Text>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
-    card: {
-        backgroundColor: "#51AFF9",
-        borderRadius: 12,
-        margin: 8,
-        width: "45%", // 2 cards por linha
-        alignItems: "center",
-        justifyContent: "center",
-        height: isSmallScreen ? "20%" : "25%",
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "white",
-        textAlign: "center",
-    },
+  card: {
+    backgroundColor: "#51AFF9",
+    borderRadius: 12,
+    margin: 8,
+    width: "45%", // 2 cards por linha
+    alignItems: "center",
+    justifyContent: "center",
+    height: isSmallScreen ? "20%" : "25%",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+  },
 });

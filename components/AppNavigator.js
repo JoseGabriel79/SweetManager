@@ -1,90 +1,99 @@
-import React from 'react';
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import HomeScreen from "./HomeScreen";
+import HomeStack from "./HomeStack";
 
 const Tab = createBottomTabNavigator();
 
 function ReportsScreen() {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Tela de Relatórios</Text>
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Tela de Relatórios</Text>
+    </View>
+  );
 }
 
 function ConfigScreen() {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Tela de Configurações</Text>
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Tela de Configurações</Text>
+    </View>
+  );
 }
 
-const { width } = Dimensions.get("window")
+const { width } = Dimensions.get("window");
 const isSmallScreen = width < 620;
 
 export default function AppNavigator() {
-    return (
-        
-        <NavigationContainer>
-            <Tab.Navigator
-                screenOptions={{
-                    headerShown: false,
-                    tabBarStyle: {
-                        backgroundColor: "#4fa5de84",
-                        height: isSmallScreen ? 60 : 70, // muda a altura
-                    },
-                    tabBarActiveTintColor: "#196496",    // cor do ícone/texto ativo
-                    tabBarInactiveTintColor: "#042136",   // cor do ícone/texto inativo
-                    tabBarLabelStyle: {
-                        fontWeight: "bold",
-                    },
-                    tabBarIconStyle: {
-                        marginTop: isSmallScreen ? 2 : 0, // ajusta posição do ícone
-                    },
-                }}
-            >
-                <Tab.Screen
-                    name="Início"
-                    children={() => <HomeScreen username={"José"} />}
-                    options={{
-                        tabBarIcon: () => <Feather size={isSmallScreen ? 20 : 30} name="home" color={'#042136'} />,
-
-                    }}
-                />
-                <Tab.Screen
-                    name="Relatórios"
-                    component={ReportsScreen}
-                    options={{
-                        tabBarIcon: () => <Feather size={isSmallScreen ? 20 : 30} name="activity" color={'#042136'} />,
-                    }}
-                />
-                <Tab.Screen
-                    name="Configurações"
-                    component={ConfigScreen}
-                    options={{
-                        tabBarIcon: () => <Feather size={isSmallScreen ? 20 : 30} name="settings" color={'#042136'} />,
-                    }}
-                />
-            </Tab.Navigator>
-        </NavigationContainer>
-    );
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: {
+            backgroundColor: "#4fa5de84",
+            height: isSmallScreen ? 60 : 70,
+          },
+          tabBarActiveTintColor: "#196496",
+          tabBarInactiveTintColor: "#042136",
+          tabBarLabelStyle: { fontWeight: "bold" },
+        }}
+      >
+        <Tab.Screen
+          name="Início"
+          component={HomeStack} // <- Stack da Home
+          options={{
+            tabBarIcon: () => (
+              <Feather
+                size={isSmallScreen ? 20 : 30}
+                name="home"
+                color={"#042136"}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Relatórios"
+          component={ReportsScreen}
+          options={{
+            tabBarIcon: () => (
+              <Feather
+                size={isSmallScreen ? 20 : 30}
+                name="activity"
+                color={"#042136"}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Configurações"
+          component={ConfigScreen}
+          options={{
+            tabBarIcon: () => (
+              <Feather
+                size={isSmallScreen ? 20 : 30}
+                name="settings"
+                color={"#042136"}
+              />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#E9F1FE",
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: "bold",
-        color: "#333",
-    },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+  },
 });
-
