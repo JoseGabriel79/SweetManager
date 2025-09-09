@@ -24,7 +24,7 @@ export default function HomeScreen({ route }) {
           }}>
           <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{username}</Text>
           <Image
-            source={require('../ImagensPerfil/pinguim.png')}
+            source={require('../imagens/ImagensPerfil/pinguim.png')}
             style={styles.image}
           />
         </View>

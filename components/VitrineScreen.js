@@ -40,9 +40,16 @@ export default function VitrineScreen() {
         data={produtos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Text style={styles.item}>
-            {item.nome} - R${item.preco}
-          </Text>
+          <View style={styles.cardVitrine}>
+            <Image
+              source={require('../imagens/ImagensBolos/boloPadrao.png')}
+              style={styles.image}
+              resizeMode="cover"
+            />
+            <Text style={styles.item}>
+              {item.nome} - R${item.preco}
+            </Text>
+          </View>
         )}
       />
     </View>
