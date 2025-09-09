@@ -81,12 +81,17 @@ const styles = StyleSheet.create({
     cardVitrine: {
         backgroundColor: "#2689cbd6",
         borderRadius: 8,
-        padding: 10
+        padding: 10,
+        margin: 8,
+        width: "45%", // 2 cards por linha
+        alignItems: "center",
+        justifyContent: "center",
+        height: isSmallScreen ? "20%" : "25%",
     },
     image: {
         width: '100%',
         height: 150,
         backgroundColor: '#2689cbd6',
-        
+
     },
 })
