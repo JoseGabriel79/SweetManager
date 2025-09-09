@@ -1,37 +1,3 @@
-// import React from "react";
-// import {
-//     View,
-//     Text,
-//     StyleSheet,
-//     TouchableOpacity,
-//     Dimensions
-// } from "react-native";
-
-// import { useNavigation } from "@react-navigation/native";
-// import VitrineScreen from "./VitrineScreen"
-// import CadastrarProdutosScreen from "./CadastrarProdutosScreen"
-// import ClientesScreen from "./ClientesScreen"
-// import EstoqueScreen from "./EstoqueScreen"
-
-
-// export default function CardsHome({ titulo, onPress }) {
-//     const navigation = useNavigation();
-
-//     return (
-//         <TouchableOpacity
-//             style={styles.card}
-//             activeOpacity={0.6}
-//             onPress={onPress}
-//         >
-//             <Text style={styles.title}>{titulo}</Text>
-
-//         </TouchableOpacity>
-//     )
-// }
-
-
-
-
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet, Dimensions} from "react-native";
 import { useNavigation } from "@react-navigation/native";
