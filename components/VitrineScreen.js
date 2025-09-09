@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 
 export default function VitrineScreen() {
   const [produtos, setProdutos] = useState([]);
@@ -42,7 +42,7 @@ export default function VitrineScreen() {
         renderItem={({ item }) => (
           <View style={styles.cardVitrine}>
             <Image
-              source={require('../imagens/ImagensBolos/boloPadrao.png')}
+              source={require('../imagens/ImagensBolos/'+item.imagem)}
               style={styles.image}
               resizeMode="cover"
             />
