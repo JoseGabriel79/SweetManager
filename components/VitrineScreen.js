@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, Dimensions, ScrollView, TouchableOpacity, Modal } from "react-native";
 
 const imagensBolos = {
@@ -90,7 +90,7 @@ export default function VitrineScreen() {
                             resizeMode="contain"
                         />
                         <Text style={styles.itemPrecoModal}>
-                            R${item.preco.toFixed(2)}
+                            R${Number(item.preco).toFixed(2)}
                         </Text>
                         <Text style={styles.itemDescricaoModal}>
                             {item.descricao}
@@ -125,7 +125,7 @@ export default function VitrineScreen() {
                             resizeMode="contain"
                         />
                         <Text style={styles.itemPrecoModal}>
-                            R${item.preco.toFixed(2)}
+                            R${Number(item.preco).toFixed(2)}
                         </Text>
                         <Text style={styles.itemDescricaoModal}>
                             {item.descricao}
@@ -158,8 +158,9 @@ export default function VitrineScreen() {
                             resizeMode="contain"
                         />
                         <Text style={styles.itemPrecoModal}>
-                            R${item.preco.toFixed(2)}
+                            R${Number(item.preco).toFixed(2)}
                         </Text>
+
                         <Text style={styles.itemDescricaoModal}>
                             {item.descricao}
                         </Text>
@@ -175,39 +176,6 @@ export default function VitrineScreen() {
         )
     }
 
-    function ModalUpdateProduto({ item, onClose }) {
-        return (
-            <Modal
-                transparent={true}
-                animationType="slide"
-                visible={true}
-                onRequestClose={onClose}
-            >
-                <View style={styles.modalFundo}>
-                    <View style={styles.modalBox}>
-                        <Text style={styles.tituloModal}>Editar {item.nome}</Text>
-                        <Image
-                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
-                            style={styles.image}
-                            resizeMode="contain"
-                        />
-                        <Text style={styles.itemPrecoModal}>
-                            R${item.preco.toFixed(2)}
-                        </Text>
-                        <Text style={styles.itemDescricaoModal}>
-                            {item.descricao}
-                        </Text>
-                        <Text style={styles.itemEstoqueModal}>
-                            Estoque: {item.estoque}
-                        </Text>
-                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
-                            <Text style={styles.textoFechar}>Fechar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-        )
-    }
 
     useEffect(() => {
         const fetchProdutos = async () => {
@@ -237,7 +205,7 @@ export default function VitrineScreen() {
     }, []);
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
 
             <Text style={styles.status}>{status}</Text>
 
@@ -270,14 +238,16 @@ export default function VitrineScreen() {
                                 activeOpacity={0.3}
                                 onPress={() => setSelectedItemUpdate(item)}
                             >
-                                Editar
+                                <Text style={styles.textButton}>Editar</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.buttonDelete}
                                 activeOpacity={0.3}
                                 onPress={() => setSelectedItemDelete(item)}
-                            >Excluir</TouchableOpacity>
+                            >
+                                <Text style={styles.textButton}>Excluir</Text>
+                            </TouchableOpacity>
                         </View>
                     </TouchableOpacity>
 
@@ -302,7 +272,7 @@ export default function VitrineScreen() {
                     onClose={() => setSelectedItemDelete(null)} // fecha modal
                 />)}
 
-        </ScrollView >
+        </View>
 
 
 
@@ -435,6 +405,10 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     textoFechar: {
+        color: "#fff",
+        fontWeight: "bold",
+        textAlign: "center",
+    }, textButton: {
         color: "#fff",
         fontWeight: "bold",
         textAlign: "center",
