@@ -47,7 +47,7 @@ export default function CadastroProdutoScreen() {
     try {
       // Enviando apenas a URL da imagem (simples)
       // Se precisar enviar a imagem como arquivo binário, terá que usar FormData
-      const response = await fetch("http://SEU_IP:3000/produto", {
+      const response = await fetch("nodejs-production-43c7.up.railway.app/produto", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome, preco, estoque, descricao, imagem }),
