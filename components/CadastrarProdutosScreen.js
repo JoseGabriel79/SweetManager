@@ -1,42 +1,19 @@
 import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Alert, 
-  ScrollView, 
-  Image 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 
 export default function CadastroProdutoScreen() {
   const [nome, setNome] = useState("");
   const [preco, setPreco] = useState("");
   const [estoque, setEstoque] = useState("");
   const [descricao, setDescricao] = useState("");
-  const [imagem, setImagem] = useState(null);
-
-  // Função para escolher imagem da galeria
-  const escolherImagem = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permissão negada", "É necessário permitir acesso à galeria!");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setImagem(result.assets[0].uri);
-    }
-  };
 
   const handleCadastro = async () => {
     if (!nome || !preco || !estoque) {
@@ -45,12 +22,16 @@ export default function CadastroProdutoScreen() {
     }
 
     try {
-      // Enviando apenas a URL da imagem (simples)
-      // Se precisar enviar a imagem como arquivo binário, terá que usar FormData
-      const response = await fetch("nodejs-production-43c7.up.railway.app/produto", {
+      const response = await fetch("https://duzeapp-production.up.railway.app/produto", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, preco, estoque, descricao, imagem }),
+        body: JSON.stringify({
+          nome,
+          preco,
+          estoque,
+          descricao,
+          imagem: "boloPadrao.png", // envia sempre a imagem padrão
+        }),
       });
 
       const data = await response.json();
@@ -61,7 +42,6 @@ export default function CadastroProdutoScreen() {
         setPreco("");
         setEstoque("");
         setDescricao("");
-        setImagem(null);
       } else {
         Alert.alert("Erro", data.error || "Falha ao cadastrar produto");
       }
@@ -105,15 +85,10 @@ export default function CadastroProdutoScreen() {
         onChangeText={setDescricao}
       />
 
-      <TouchableOpacity style={styles.imageButton} onPress={escolherImagem}>
-        <Text style={styles.imageButtonText}>
-          {imagem ? "Trocar Imagem" : "Escolher Imagem"}
-        </Text>
+      {/* Botão inativado indicando imagem padrão */}
+      <TouchableOpacity style={styles.disabledButton} disabled={true}>
+        <Text style={styles.disabledButtonText}>Imagem padrão: boloPadrao.png</Text>
       </TouchableOpacity>
-
-      {imagem && (
-        <Image source={{ uri: imagem }} style={styles.previewImage} />
-      )}
 
       <TouchableOpacity style={styles.button} onPress={handleCadastro}>
         <Text style={styles.buttonText}>Cadastrar</Text>
@@ -144,22 +119,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: "#fff",
   },
-  imageButton: {
-    backgroundColor: "#FFA500",
+  disabledButton: {
+    backgroundColor: "#ccc",
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 15,
   },
-  imageButtonText: {
-    color: "#fff",
+  disabledButtonText: {
+    color: "#666",
     fontWeight: "bold",
-  },
-  previewImage: {
-    width: "100%",
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 15,
   },
   button: {
     backgroundColor: "#51AFF9",
