@@ -35,17 +35,21 @@ app.get("/produtos", async (req, res) => {
 });
 
 app.post("/produto", async (req, res) => {
-  const { nome, preco, estoque,descricao, imagem } = req.body;
+  const { nome, preco, estoque, descricao, imagem } = req.body;
+  const img = imagem || "boloPadrao.png"; // usa padrão se imagem não for enviada
+
   try {
     const result = await pool.query(
-      "INSERT INTO produtos (nome, preco, estoque, descricao, imagem) VALUES ($1, $2, $3, $4) RETURNING id",
-      [nome, preco, estoque, descricao, imagem]
+      "INSERT INTO produtos (nome, preco, estoque, descricao, imagem) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+      [nome, preco, estoque, descricao, img]
     );
     res.status(201).json({ success: true, id: result.rows[0].id });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
 
 // Porta dinâmica
 const PORT = process.env.PORT || 3000;
