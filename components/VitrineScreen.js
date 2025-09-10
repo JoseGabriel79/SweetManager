@@ -83,24 +83,21 @@ export default function VitrineScreen() {
                     <View style={styles.modalBox}>
                         <Text style={styles.tituloModal}>{item.nome}</Text>
                         <Image
-                            source={imagensBolos[item.imagem] || imagensBolos.boloPadrao}
+                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
                             style={styles.image}
                             resizeMode="contain"
                         />
-                        <Text style={styles.itemName}>
-                            {item.nome}
-                        </Text>
-                        <Text style={styles.itemDescricao}>
-                            {item.descricao}
-                        </Text>
-                        <Text style={styles.itemPreco}>
+                        <Text style={styles.itemPrecoModal}>
                             R${item.preco.toFixed(2)}
                         </Text>
-                        <Text style={styles.itemEstoque}>
+                        <Text style={styles.itemDescricaoModal}>
+                            {item.descricao}
+                        </Text>
+                        <Text style={styles.itemEstoqueModal}>
                             Estoque: {item.estoque}
                         </Text>
 
-                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose}>
+                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
                             <Text style={styles.textoFechar}>Fechar</Text>
                         </TouchableOpacity>
                     </View>
@@ -260,7 +257,7 @@ const styles = StyleSheet.create({
         // 🔹 Bordas arredondadas
         borderRadius: 12,
         // 🔹 Define largura do card (2 por linha)
-        width: "45%",
+        width: "50%",
         height: isSmallScreen ? 200 : 220,
     },
     image: {
@@ -271,25 +268,31 @@ const styles = StyleSheet.create({
     },
     itemName: {
         fontFamily: "Arial",
-        fontSize: 16,
+        fontSize: isSmallScreen ? 14 : 16,
         fontWeight: "900",
         color: "#e9f1fe",
+        textAlign: "center",
+
     },
-    itemPreco: {
+    itemPrecoModal: {
+        fontSize: 20,
+        fontWeight: "600",
+        color: "#1f0505ff",
+        fontWeight: " bold",
+    },
+    itemDescricaoModal: {
         fontSize: 15,
         fontWeight: "600",
-        color: "#e9f1fe",
+        color: "#1f0505ff",
+        textAlign: "center",
+
     },
-    itemDescricao: {
-        fontSize: 12,
-        fontWeight: "600",
-        color: "#e9f1fe",
-    },
-    itemEstoque: {
+    itemEstoqueModal: {
         fontSize: 12,
         fontWeight: "600",
         color: "#1f0505ff",
-    }, modalFundo: {
+    },
+    modalFundo: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
@@ -300,14 +303,17 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 10,
         width: "80%",
-    },
+        justifyContent: "center",
+        alignItems: "center",
+
+        },
     tituloModal: {
-        fontSize: 18,
+        fontSize: 25,
         fontWeight: "bold",
     },
     botaoFechar: {
         marginTop: 15,
-        backgroundColor: "#FF5252",
+        backgroundColor: "#f64545ff",
         padding: 10,
         borderRadius: 8,
     },
