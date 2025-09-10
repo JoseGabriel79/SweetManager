@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     },
     buttonDelete: {
         height: 30,
-        width: 80,
+        width: isSmallScreen ? 60 : 100,
         backgroundColor: "#fa1212c0",
         borderRadius: 6,
         textAlign: "center",
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     },
     buttonUpdate: {
         height: 30,
-        width: 80,
+        width: isSmallScreen ? 60 : 100,
         backgroundColor: "#1db643f3",
         borderRadius: 6,
         textAlign: "center",
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     row: {
         flex: 1,
         flexWrap: "wrap",
-        justifyContent: "space-between",
+        justifyContent: "center",
         paddingTop: 15,
     },
     status: {
@@ -251,15 +251,17 @@ const styles = StyleSheet.create({
         margin: 8,
         alignItems: "center",
         justifyContent: "center",
-        height: 180, // altura fixa (senão pode colapsar)
+        // Estilização de sombra
+        shadowOffset: { width: 0, height: 2 },
         shadowColor: "#000",
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.1, // Opacidade da sombra
         shadowRadius: 6,
-        elevation: 3,
+        elevation: 3, // sombra para Android
+        // 🔹 Bordas arredondadas
         borderRadius: 12,
         // 🔹 Define largura do card (2 por linha)
         width: "45%",
-        height: isSmallScreen ? 180 : 200,
+        height: isSmallScreen ? 200 : 220,
     },
     image: {
         width: 100,
