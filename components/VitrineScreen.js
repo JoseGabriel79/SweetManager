@@ -12,6 +12,8 @@ export default function VitrineScreen() {
     const [produtos, setProdutos] = useState([]);
     const [status, setStatus] = useState("Carregando...");
     const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItemUpdate, setSelectedItemUpdate] = useState(null);
+    const [selectedItemDelete, setSelectedItemDelete] = useState(null);
 
     const produto = [{
         id: 1,
@@ -68,9 +70,9 @@ export default function VitrineScreen() {
     useEffect(() => {
         setProdutos(produto);
         setStatus("Conectado com sucesso!");
-        
+
     }, []);
-    
+
     function ModalProduto({ item, onClose }) {
         return (
             <Modal
@@ -105,6 +107,108 @@ export default function VitrineScreen() {
             </Modal>
         )
     }
+
+    function ModalUpdateProduto({ item, onClose }) {
+        return (
+            <Modal
+                transparent={true}
+                animationType="slide"
+                visible={true}
+                onRequestClose={onClose}
+            >
+                <View style={styles.modalFundo}>
+                    <View style={styles.modalBox}>
+                        <Text style={styles.tituloModal}>Editar {item.nome}</Text>
+                        <Image
+                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
+                            style={styles.image}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.itemPrecoModal}>
+                            R${item.preco.toFixed(2)}
+                        </Text>
+                        <Text style={styles.itemDescricaoModal}>
+                            {item.descricao}
+                        </Text>
+                        <Text style={styles.itemEstoqueModal}>
+                            Estoque: {item.estoque}
+                        </Text>
+                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
+                            <Text style={styles.textoFechar}>Fechar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+    function ModalDeleteProduto({ item, onClose }) {
+        return (
+            <Modal
+                transparent={true}
+                animationType="slide"
+                visible={true}
+                onRequestClose={onClose}
+            >
+                <View style={styles.modalFundo}>
+                    <View style={styles.modalBox}>
+                        <Text style={styles.tituloModal}>Excluir {item.nome}?</Text>
+                        <Image
+                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
+                            style={styles.image}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.itemPrecoModal}>
+                            R${item.preco.toFixed(2)}
+                        </Text>
+                        <Text style={styles.itemDescricaoModal}>
+                            {item.descricao}
+                        </Text>
+                        <Text style={styles.itemEstoqueModal}>
+                            Estoque: {item.estoque}
+                        </Text>
+                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
+                            <Text style={styles.textoFechar}>Fechar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+
+    function ModalUpdateProduto({ item, onClose }) {
+        return (
+            <Modal
+                transparent={true}
+                animationType="slide"
+                visible={true}
+                onRequestClose={onClose}
+            >
+                <View style={styles.modalFundo}>
+                    <View style={styles.modalBox}>
+                        <Text style={styles.tituloModal}>Editar {item.nome}</Text>
+                        <Image
+                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
+                            style={styles.image}
+                            resizeMode="contain"
+                        />
+                        <Text style={styles.itemPrecoModal}>
+                            R${item.preco.toFixed(2)}
+                        </Text>
+                        <Text style={styles.itemDescricaoModal}>
+                            {item.descricao}
+                        </Text>
+                        <Text style={styles.itemEstoqueModal}>
+                            Estoque: {item.estoque}
+                        </Text>
+                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
+                            <Text style={styles.textoFechar}>Fechar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+
     // useEffect(() => {
     //     const fetchProdutos = async () => {
     //         try {
@@ -147,7 +251,7 @@ export default function VitrineScreen() {
                     <TouchableOpacity
                         style={styles.cardVitrine}
                         activeOpacity={0.6}
-                        onPress={() => setSelectedItem(item)}>
+                        onLongPress={() => setSelectedItem(item)}>
 
 
                         <Image
@@ -158,18 +262,21 @@ export default function VitrineScreen() {
                         <Text style={styles.itemName}>
                             {item.nome}
                         </Text>
-                        
+
                         <View style={styles.buttons}>
 
                             <TouchableOpacity
                                 style={styles.buttonUpdate}
-                                activeOpacity={0.3}>
+                                activeOpacity={0.3}
+                                onPress={() => setSelectedItemUpdate(item)}
+                            >
                                 Editar
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.buttonDelete}
                                 activeOpacity={0.3}
+                                onPress={() => setSelectedItemDelete(item)}
                             >Excluir</TouchableOpacity>
                         </View>
                     </TouchableOpacity>
@@ -183,6 +290,16 @@ export default function VitrineScreen() {
                 <ModalProduto
                     item={selectedItem}
                     onClose={() => setSelectedItem(null)} // fecha modal
+                />)}
+            {selectedItemUpdate && (
+                <ModalUpdateProduto
+                    item={selectedItemUpdate}
+                    onClose={() => setSelectedItemUpdate(null)} // fecha modal
+                />)}
+            {selectedItemDelete && (
+                <ModalDeleteProduto
+                    item={selectedItemDelete}
+                    onClose={() => setSelectedItemDelete(null)} // fecha modal
                 />)}
 
         </ScrollView >
@@ -306,7 +423,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
 
-        },
+    },
     tituloModal: {
         fontSize: 25,
         fontWeight: "bold",
