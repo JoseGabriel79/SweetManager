@@ -65,6 +65,12 @@ require("dotenv").config();
 
 const app = express();
 
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+
 // Configuração CORS: apenas permite frontend específico
 app.use(cors({ origin: "https://duzeapp-production.up.railway.app" }));
 // Para teste rápido: app.use(cors());
