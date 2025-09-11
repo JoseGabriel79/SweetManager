@@ -22,17 +22,20 @@ export default function CadastroProdutoScreen() {
     }
 
     try {
-      const response = await fetch("https://duzeapp-production.up.railway.app/produto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome,
-          preco,
-          estoque,
-          descricao,
-          imagem: "boloPadrao.png", // envia sempre a imagem padrão
-        }),
-      });
+      const response = await fetch(
+        "https://duzeapp-production.up.railway.app/produto",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome,
+            preco,
+            estoque,
+            descricao,
+            imagem: "boloPadrao.png", // sempre salva imagem padrão
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -85,9 +88,11 @@ export default function CadastroProdutoScreen() {
         onChangeText={setDescricao}
       />
 
-      {/* Botão inativado indicando imagem padrão */}
+      {/* Botão inativo indicando imagem padrão */}
       <TouchableOpacity style={styles.disabledButton} disabled={true}>
-        <Text style={styles.disabledButtonText}>Imagem padrão já enviada</Text>
+        <Text style={styles.disabledButtonText}>
+          Imagem padrão: boloPadrao.png
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={handleCadastro}>
