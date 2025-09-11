@@ -88,7 +88,7 @@ export default function CadastroProdutoScreen() {
       {/* Botão inativado indicando imagem padrão */}
       <TouchableOpacity style={styles.disabledButton} disabled={true}>
         <Text style={styles.disabledButtonText}>
-          Imagem padrão: boloPadrao.png
+          Imagem padrão
         </Text>
       </TouchableOpacity>
 

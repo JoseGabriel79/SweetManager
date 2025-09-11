@@ -120,99 +120,99 @@ export default function VitrineScreen() {
     }
 
     function ModalUpdateProduto({ item, onClose, onUpdateSuccess }) {
-        const [nome, setNome] = useState(item.nome);
-        const [preco, setPreco] = useState(item.preco.toString());
-        const [estoque, setEstoque] = useState(item.estoque.toString());
-        const [descricao, setDescricao] = useState(item.descricao);
+    const [nome, setNome] = useState(item.nome);
+    const [preco, setPreco] = useState(item.preco.toString());
+    const [estoque, setEstoque] = useState(item.estoque.toString());
+    const [descricao, setDescricao] = useState(item.descricao);
 
-        const handleUpdate = async () => {
-            try {
-                const response = await fetch(`https://nodejs-production-43c7.up.railway.app/produto/${item.id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        nome,
-                        preco: Number(preco),
-                        estoque: Number(estoque),
-                        descricao,
-                        imagem: item.imagem, // mantém a imagem
-                    }),
-                });
+    const handleUpdate = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/produto/${item.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nome,
+                    preco: Number(preco),
+                    estoque: Number(estoque),
+                    descricao,
+                    imagem: item.imagem,
+                }),
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (data.success) {
-                    Alert.alert("Sucesso", data.message || "Produto atualizado!");
-                    alert("Sucesso", data.message || "Produto atualizado!");
-                    onUpdateSuccess(data.produto); // Atualiza lista no componente pai
-                    onClose(); // Fecha o modal
-                } else {
-                    Alert.alert("Erro", data.error || "Não foi possível atualizar");
-                }
-            } catch (error) {
-                Alert.alert("Erro", error.message);
+            if (data.success) {
+                Alert.alert("Sucesso", data.message || "Produto atualizado!");
+                onUpdateSuccess(data.produto);
+                onClose();
+            } else {
+                Alert.alert("Erro", data.error || "Não foi possível atualizar");
             }
-        };
+        } catch (error) {
+            Alert.alert("Erro", error.message);
+        }
+    };
 
-        return (
-            <Modal
-                transparent={true}
-                animationType="slide"
-                visible={true}
-                onRequestClose={onClose}
-            >
-                <View style={styles.modalFundo}>
-                    <View style={styles.modalBox}>
-                        <Text style={styles.tituloModal}>Editar {item.nome}</Text>
+    return (
+        <Modal
+            transparent={true}
+            animationType="fade"
+            visible={true}
+            onRequestClose={onClose}
+        >
+            <View style={updateStyles.modalOverlay}>
+                <View style={updateStyles.modalContainer}>
+                    <Text style={updateStyles.modalTitle}>Editar {item.nome}</Text>
 
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Nome"
-                            value={nome}
-                            onChangeText={setNome}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Preço"
-                            keyboardType="numeric"
-                            value={preco}
-                            onChangeText={setPreco}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Estoque"
-                            keyboardType="numeric"
-                            value={estoque}
-                            onChangeText={setEstoque}
-                        />
-                        <TextInput
-                            style={[styles.input, { height: 80 }]}
-                            placeholder="Descrição"
-                            multiline
-                            value={descricao}
-                            onChangeText={setDescricao}
-                        />
+                    <TextInput
+                        style={updateStyles.input}
+                        placeholder="Nome do Produto"
+                        value={nome}
+                        onChangeText={setNome}
+                    />
+                    <TextInput
+                        style={updateStyles.input}
+                        placeholder="Preço"
+                        keyboardType="numeric"
+                        value={preco}
+                        onChangeText={setPreco}
+                    />
+                    <TextInput
+                        style={updateStyles.input}
+                        placeholder="Estoque"
+                        keyboardType="numeric"
+                        value={estoque}
+                        onChangeText={setEstoque}
+                    />
+                    <TextInput
+                        style={[updateStyles.input, { height: 80 }]}
+                        placeholder="Descrição"
+                        multiline
+                        value={descricao}
+                        onChangeText={setDescricao}
+                    />
 
-                        <View style={{ flexDirection: "row", marginTop: 15 }}>
-                            <TouchableOpacity
-                                style={[styles.botaoFechar, { backgroundColor: "#ccc", marginRight: 10 }]}
-                                onPress={onClose}
-                            >
-                                <Text style={styles.textoFechar}>Fechar</Text>
-                            </TouchableOpacity>
+                    <View style={updateStyles.buttonRow}>
+                        <TouchableOpacity
+                            style={[updateStyles.button, updateStyles.cancelButton]}
+                            onPress={onClose}
+                        >
+                            <Text style={updateStyles.buttonText}>Cancelar</Text>
+                        </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={[styles.botaoFechar, { backgroundColor: "#1db643f3" }]}
-                                onPress={handleUpdate}
-                            >
-                                <Text style={styles.textoFechar}>Salvar</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity
+                            style={[updateStyles.button, updateStyles.saveButton]}
+                            onPress={handleUpdate}
+                        >
+                            <Text style={updateStyles.buttonText}>Salvar</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
-        );
-    }
+            </View>
+        </Modal>
+    );
+}
+
 
 
 
@@ -522,5 +522,62 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
         textAlign: "center",
+    },
+});
+const updateStyles = StyleSheet.create({
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalContainer: {
+        width: "85%",
+        backgroundColor: "#ffffff",
+        borderRadius: 15,
+        padding: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 10,
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: "bold",
+        color: "#1f305e",
+        textAlign: "center",
+        marginBottom: 15,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        padding: 12,
+        marginBottom: 12,
+        backgroundColor: "#f9f9f9",
+    },
+    buttonRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 15,
+    },
+    button: {
+        flex: 1,
+        padding: 12,
+        borderRadius: 10,
+        alignItems: "center",
+        marginHorizontal: 5,
+    },
+    cancelButton: {
+        backgroundColor: "#ccc",
+    },
+    saveButton: {
+        backgroundColor: "#1db643",
+    },
+    buttonText: {
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 16,
     },
 });
