@@ -152,6 +152,7 @@ export default function VitrineScreen() {
 
                 if (data.success) {
                     Alert.alert("Sucesso", data.message || "Produto excluído com sucesso!");
+                    alert("Sucesso", data.message || "Produto excluído com sucesso!");
                     onDeleteSuccess(item.id); // Atualiza lista no componente pai
                     onClose(); // Fecha o modal
                 } else {
