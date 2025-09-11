@@ -12,7 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "plugins": ["expo-image-picker"],
+    "plugins": [
+      "expo-image-picker",
+      "expo-font"
+    ],
     "ios": {
       "supportsTablet": true
     },

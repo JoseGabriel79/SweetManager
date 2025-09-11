@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, Dimensions, ScrollView, TouchableOpacity, Modal } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image, Dimensions, ScrollView, TouchableOpacity, Modal, Alert} from "react-native";
 
 const imagensBolos = {
     boloPadrao: require('../imagens/ImagensBolos/boloPadrao.png'),
@@ -141,7 +141,27 @@ export default function VitrineScreen() {
             </Modal>
         )
     }
-    function ModalDeleteProduto({ item, onClose }) {
+    function ModalDeleteProduto({ item, onClose, onDeleteSuccess }) {
+        const handleDelete = async () => {
+            try {
+                const response = await fetch(`https://nodejs-production-43c7.up.railway.app/produto/${item.id}`, {
+                    method: "DELETE",
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Alert.alert("Sucesso", data.message || "Produto excluído com sucesso!");
+                    onDeleteSuccess(item.id); // Atualiza lista no componente pai
+                    onClose(); // Fecha o modal
+                } else {
+                    Alert.alert("Erro", data.error || "Não foi possível deletar");
+                }
+            } catch (error) {
+                Alert.alert("Erro", error.message);
+            }
+        };
+
         return (
             <Modal
                 transparent={true}
@@ -152,29 +172,30 @@ export default function VitrineScreen() {
                 <View style={styles.modalFundo}>
                     <View style={styles.modalBox}>
                         <Text style={styles.tituloModal}>Excluir {item.nome}?</Text>
-                        <Image
-                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
-                            style={styles.image}
-                            resizeMode="contain"
-                        />
-                        <Text style={styles.itemPrecoModal}>
-                            R${Number(item.preco).toFixed(2)}
-                        </Text>
 
-                        <Text style={styles.itemDescricaoModal}>
-                            {item.descricao}
-                        </Text>
-                        <Text style={styles.itemEstoqueModal}>
-                            Estoque: {item.estoque}
-                        </Text>
-                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
-                            <Text style={styles.textoFechar}>Fechar</Text>
-                        </TouchableOpacity>
+                        <View style={{ flexDirection: "row", marginTop: 15 }}>
+                            <TouchableOpacity
+                                style={[styles.botaoFechar ]}
+                                onPress={onClose}
+                                activeOpacity={0.5}
+                            >
+                                <Text style={styles.textoFechar}>Fechar</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[styles.botaoFechar, { backgroundColor: "#f64545ff" }]}
+                                onPress={handleDelete}
+                                activeOpacity={0.5}
+                            >
+                                <Text style={styles.textoFechar}>Excluir</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </Modal>
-        )
+        );
     }
+
 
 
     useEffect(() => {
@@ -207,7 +228,7 @@ export default function VitrineScreen() {
     return (
         <View style={styles.container}>
 
-            <Text style={styles.status}>{status}</Text>
+           
 
 
             <FlatList
@@ -269,8 +290,11 @@ export default function VitrineScreen() {
             {selectedItemDelete && (
                 <ModalDeleteProduto
                     item={selectedItemDelete}
-                    onClose={() => setSelectedItemDelete(null)} // fecha modal
-                />)}
+                    onClose={() => setSelectedItemDelete(null)}
+                    onDeleteSuccess={(id) => setProdutos(produtos.filter((p) => p.id !== id))}
+                />
+            )}
+
 
         </View>
 
@@ -402,9 +426,10 @@ const styles = StyleSheet.create({
     },
     botaoFechar: {
         marginTop: 15,
-        backgroundColor: "#f64545ff",
+        backgroundColor: "#b5b9b7ff",
         padding: 10,
         borderRadius: 8,
+        marginRight: 10
     },
     textoFechar: {
         color: "#fff",

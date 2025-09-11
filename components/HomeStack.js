@@ -36,7 +36,7 @@ export default function HomeStack() {
         component={EstoqueScreen}
       />
       <Stack.Screen
-        options={{ title: "Vitrine" }}
+        options={{ title: "Painel de Controle" }}
         name="Vitrine"
         component={VitrineScreen}
       />

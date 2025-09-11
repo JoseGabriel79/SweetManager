@@ -1,6 +1,3 @@
-
-
-
 import React from "react";
 import {
   View,
@@ -32,7 +29,7 @@ export default function HomeScreen({ route }) {
       </View>
 
       <View style={styles.cards}>
-        <CardsHome titulo="Vitrine" routeName="Vitrine" />
+        <CardsHome titulo="Painel de Controle" routeName="Vitrine" />
         <CardsHome titulo="Cadastrar Produtos" routeName="CadastrarProdutos" />
         <CardsHome titulo="Clientes" routeName="Clientes" />
         <CardsHome titulo="Estoque" routeName="Estoque" />
@@ -53,7 +50,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20, // espaço entre header e cards
+    backgroundColor: '#ffffff',
+    padding: 15,
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 20,
   },
   cards: {
     flex: 1,                  // ocupa o resto da tela

@@ -53,6 +53,23 @@ app.post("/produto", async (req, res) => {
   }
 });
 
+
+// 🔥 Rota produtos - deletar por ID
+app.delete("/produto/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("DELETE FROM produtos WHERE id = $1 RETURNING id", [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: "Produto não encontrado" });
+    }
+
+    res.json({ success: true, message: `Produto ${id} deletado com sucesso` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Porta dinâmica
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

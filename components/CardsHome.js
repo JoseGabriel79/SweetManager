@@ -28,6 +28,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: isSmallScreen ? "20%" : "25%",
+     // sombra iOS
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    // sombra Android
+    elevation: 4,
   },
   title: {
     fontSize: 20,
