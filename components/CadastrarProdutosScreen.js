@@ -22,25 +22,22 @@ export default function CadastroProdutoScreen() {
     }
 
     try {
-      const response = await fetch(
-        "https://duzeapp-production.up.railway.app/produto",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            nome,
-            preco,
-            estoque,
-            descricao,
-            imagem: "boloPadrao.png", // sempre salva imagem padrão
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:3000/produto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome,
+          preco: parseFloat(preco), // converte para número
+          estoque: parseInt(estoque), // converte para inteiro
+          descricao,
+          imagem: "boloPadrao.png", // sempre usa a imagem padrão
+        }),
+      });
 
       const data = await response.json();
 
       if (data.success) {
-        Alert.alert("Sucesso", "Produto cadastrado com ID " + data.id);
+        Alert.alert("Sucesso", `Produto cadastrado com ID ${data.id}`);
         setNome("");
         setPreco("");
         setEstoque("");
@@ -88,7 +85,7 @@ export default function CadastroProdutoScreen() {
         onChangeText={setDescricao}
       />
 
-      {/* Botão inativo indicando imagem padrão */}
+      {/* Botão inativado indicando imagem padrão */}
       <TouchableOpacity style={styles.disabledButton} disabled={true}>
         <Text style={styles.disabledButtonText}>
           Imagem padrão: boloPadrao.png
@@ -103,47 +100,11 @@ export default function CadastroProdutoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#E9F1FE",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-    color: "#333",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-  },
-  disabledButton: {
-    backgroundColor: "#ccc",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  disabledButtonText: {
-    color: "#666",
-    fontWeight: "bold",
-  },
-  button: {
-    backgroundColor: "#51AFF9",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
+  container: { flexGrow: 1, justifyContent: "center", padding: 20, backgroundColor: "#E9F1FE" },
+  title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
+  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 12, marginBottom: 15, backgroundColor: "#fff" },
+  disabledButton: { backgroundColor: "#ccc", padding: 12, borderRadius: 8, alignItems: "center", marginBottom: 15 },
+  disabledButtonText: { color: "#666", fontWeight: "bold" },
+  button: { backgroundColor: "#51AFF9", padding: 15, borderRadius: 10, alignItems: "center" },
+  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
