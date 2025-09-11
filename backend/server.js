@@ -53,6 +53,27 @@ app.post("/produto", async (req, res) => {
   }
 });
 
+// Atualizar produto
+app.put("/produto/:id", async (req, res) => {
+    const { id } = req.params;
+    const { nome, preco, estoque, descricao, imagem } = req.body;
+
+    try {
+        const result = await pool.query(
+            "UPDATE produtos SET nome = $1, preco = $2, estoque = $3, descricao = $4, imagem = $5 WHERE id = $6 RETURNING *",
+            [nome, preco, estoque, descricao, imagem, id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ success: false, error: "Produto não encontrado" });
+        }
+
+        res.json({ success: true, produto: result.rows[0], message: "Produto atualizado com sucesso!" });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 
 // 🔥 Rota produtos - deletar por ID
 app.delete("/produto/:id", async (req, res) => {

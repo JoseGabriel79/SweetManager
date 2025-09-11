@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, Dimensions, ScrollView, TouchableOpacity, Modal, Alert} from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    Image,
+    Dimensions,
+    TouchableOpacity,
+    Modal,
+    Alert,
+    TextInput
+} from "react-native";
 
 const imagensBolos = {
     boloPadrao: require('../imagens/ImagensBolos/boloPadrao.png'),
@@ -108,7 +119,41 @@ export default function VitrineScreen() {
         )
     }
 
-    function ModalUpdateProduto({ item, onClose }) {
+    function ModalUpdateProduto({ item, onClose, onUpdateSuccess }) {
+        const [nome, setNome] = useState(item.nome);
+        const [preco, setPreco] = useState(item.preco.toString());
+        const [estoque, setEstoque] = useState(item.estoque.toString());
+        const [descricao, setDescricao] = useState(item.descricao);
+
+        const handleUpdate = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/produto/${item.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nome,
+                        preco: Number(preco),
+                        estoque: Number(estoque),
+                        descricao,
+                        imagem: item.imagem, // mantém a imagem
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Alert.alert("Sucesso", data.message || "Produto atualizado!");
+                    alert("Sucesso", data.message || "Produto atualizado!");
+                    onUpdateSuccess(data.produto); // Atualiza lista no componente pai
+                    onClose(); // Fecha o modal
+                } else {
+                    Alert.alert("Erro", data.error || "Não foi possível atualizar");
+                }
+            } catch (error) {
+                Alert.alert("Erro", error.message);
+            }
+        };
+
         return (
             <Modal
                 transparent={true}
@@ -119,28 +164,58 @@ export default function VitrineScreen() {
                 <View style={styles.modalFundo}>
                     <View style={styles.modalBox}>
                         <Text style={styles.tituloModal}>Editar {item.nome}</Text>
-                        <Image
-                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
-                            style={styles.image}
-                            resizeMode="contain"
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Nome"
+                            value={nome}
+                            onChangeText={setNome}
                         />
-                        <Text style={styles.itemPrecoModal}>
-                            R${Number(item.preco).toFixed(2)}
-                        </Text>
-                        <Text style={styles.itemDescricaoModal}>
-                            {item.descricao}
-                        </Text>
-                        <Text style={styles.itemEstoqueModal}>
-                            Estoque: {item.estoque}
-                        </Text>
-                        <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
-                            <Text style={styles.textoFechar}>Fechar</Text>
-                        </TouchableOpacity>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Preço"
+                            keyboardType="numeric"
+                            value={preco}
+                            onChangeText={setPreco}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Estoque"
+                            keyboardType="numeric"
+                            value={estoque}
+                            onChangeText={setEstoque}
+                        />
+                        <TextInput
+                            style={[styles.input, { height: 80 }]}
+                            placeholder="Descrição"
+                            multiline
+                            value={descricao}
+                            onChangeText={setDescricao}
+                        />
+
+                        <View style={{ flexDirection: "row", marginTop: 15 }}>
+                            <TouchableOpacity
+                                style={[styles.botaoFechar, { backgroundColor: "#ccc", marginRight: 10 }]}
+                                onPress={onClose}
+                            >
+                                <Text style={styles.textoFechar}>Fechar</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[styles.botaoFechar, { backgroundColor: "#1db643f3" }]}
+                                onPress={handleUpdate}
+                            >
+                                <Text style={styles.textoFechar}>Salvar</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </Modal>
-        )
+        );
     }
+
+
+
     function ModalDeleteProduto({ item, onClose, onDeleteSuccess }) {
         const handleDelete = async () => {
             try {
@@ -176,7 +251,7 @@ export default function VitrineScreen() {
 
                         <View style={{ flexDirection: "row", marginTop: 15 }}>
                             <TouchableOpacity
-                                style={[styles.botaoFechar ]}
+                                style={[styles.botaoFechar]}
                                 onPress={onClose}
                                 activeOpacity={0.5}
                             >
@@ -229,7 +304,7 @@ export default function VitrineScreen() {
     return (
         <View style={styles.container}>
 
-           
+
 
 
             <FlatList
@@ -283,11 +358,18 @@ export default function VitrineScreen() {
                     item={selectedItem}
                     onClose={() => setSelectedItem(null)} // fecha modal
                 />)}
+
             {selectedItemUpdate && (
                 <ModalUpdateProduto
                     item={selectedItemUpdate}
-                    onClose={() => setSelectedItemUpdate(null)} // fecha modal
-                />)}
+                    onClose={() => setSelectedItemUpdate(null)}
+                    onUpdateSuccess={(updatedProduto) =>
+                        setProdutos(produtos.map((p) => (p.id === updatedProduto.id ? updatedProduto : p)))
+                    }
+                />
+            )}
+
+
             {selectedItemDelete && (
                 <ModalDeleteProduto
                     item={selectedItemDelete}
