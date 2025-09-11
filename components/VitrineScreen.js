@@ -127,7 +127,7 @@ export default function VitrineScreen() {
 
         const handleUpdate = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/produto/${item.id}`, {
+                const response = await fetch(`https://nodejs-production-43c7.up.railway.app/produto/${item.id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
