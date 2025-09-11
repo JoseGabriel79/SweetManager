@@ -22,7 +22,7 @@ export default function CadastroProdutoScreen() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/produto", {
+      const response = await fetch("https://nodejs-production-43c7.up.railway.app/produto", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
