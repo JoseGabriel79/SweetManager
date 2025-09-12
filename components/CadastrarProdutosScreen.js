@@ -38,6 +38,7 @@ export default function CadastroProdutoScreen() {
 
       if (data.success) {
         Alert.alert("Sucesso", `Produto cadastrado com ID ${data.id}`);
+        alert("Sucesso", `Produto cadastrado com ID ${data.id}`);
         setNome("");
         setPreco("");
         setEstoque("");
