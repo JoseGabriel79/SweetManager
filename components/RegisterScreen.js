@@ -1,28 +1,30 @@
-// RegisterScreen.js (corrigido)
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 
-export default function RegisterScreen({ navigation, setLogin, setUsername, setUsuario }) {
-  const [username, setUser] = useState("");
+export default function RegisterScreen({ navigation, setLogin }) {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [imagemPerfil, setImagemPerfil] = useState(null);
 
+  // Escolher imagem do perfil
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaType.Images, // atualizado
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
       base64: true,
     });
+
     if (!result.canceled) {
       setImagemPerfil(result.assets[0]);
     }
   };
 
+  // Cadastro no backend
   const handleRegister = async () => {
     if (!username || !email || !senha) {
       Alert.alert("Erro", "Preencha todos os campos!");
@@ -30,22 +32,27 @@ export default function RegisterScreen({ navigation, setLogin, setUsername, setU
     }
 
     try {
+      // Converter imagem para Base64 com MIME correto
       let imagemBase64 = null;
       if (imagemPerfil) {
-        imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
+        const fileType = imagemPerfil.uri.split('.').pop();
+        imagemBase64 = `data:image/${fileType};base64,${imagemPerfil.base64}`;
       }
 
-      const response = await axios.post("https://nodejs-production-43c7.up.railway.app/usuarios", {
-        nome: username,
-        email,
-        senha,
-        imagemPerfil: imagemBase64,
-      });
+      const response = await axios.post(
+        "https://nodejs-production-43c7.up.railway.app/usuarios",
+        {
+          nome: username,
+          email,
+          senha,
+          imagemPerfil: imagemBase64,
+        }
+      );
 
       if (response.data.success) {
-        setUsername(username);
-        setUsuario(response.data.usuario); // 🔥 salva o usuário retornado
+        Alert.alert("Sucesso", "Cadastro realizado!");
         setLogin(true);
+        navigation.navigate("Início", { screen: "Home", params: { username } });
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }
@@ -67,15 +74,36 @@ export default function RegisterScreen({ navigation, setLogin, setUsername, setU
         )}
       </TouchableOpacity>
 
-      <TextInput style={styles.input} placeholder="Usuário" value={username} onChangeText={setUser} />
-      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-      <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={senha} onChangeText={setSenha} />
+      <TextInput
+        style={styles.input}
+        placeholder="Usuário"
+        value={username}
+        onChangeText={setUsername}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Senha"
+        secureTextEntry
+        value={senha}
+        onChangeText={setSenha}
+      />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonOutline} onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        style={styles.buttonOutline}
+        onPress={() => navigation.goBack()}
+      >
         <Text style={styles.buttonOutlineText}>Voltar para Login</Text>
       </TouchableOpacity>
     </View>
