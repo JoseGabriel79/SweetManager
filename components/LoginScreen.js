@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 
 export default function LoginScreen({ navigation, setLogin }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [loading, setLoading] = useState(true); // controla o spinner
-
-  // Simula carregamento inicial (ex: checagem de sessão)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false); // desativa o spinner após 1.5s
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const [loading, setLoading] = useState(false); // estado para loading
 
   const handleLogin = async () => {
-    setLoading(true);
+    if (!email || !senha) {
+      alert("Preencha todos os campos!");
+      return;
+    }
+
     try {
+      setLoading(true); // inicia o loading
       const response = await fetch("https://nodejs-production-43c7.up.railway.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,29 +21,21 @@ export default function LoginScreen({ navigation, setLogin }) {
       });
 
       const data = await response.json();
+      setLoading(false); // para o loading
 
       if (data.success) {
-        navigation.navigate("Home", { usuario: data.usuario });
+        // navega para Home passando usuário
+        navigation.navigate("Início", { screen: "Home", params: { username: data.usuario.nome } });
         setLogin(true);
       } else {
         alert(data.error || "Credenciais inválidas");
       }
     } catch (err) {
+      setLoading(false); // garante que o loading pare mesmo se der erro
       console.log(err);
       alert("Erro ao conectar com o servidor");
     }
-    setLoading(false);
   };
-
-  if (loading) {
-    // Tela de carregamento
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#196496" />
-        <Text style={{ marginTop: 10 }}>Carregando...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -61,7 +49,6 @@ export default function LoginScreen({ navigation, setLogin }) {
         autoCapitalize="none"
         keyboardType="email-address"
       />
-
       <TextInput
         style={styles.input}
         placeholder="Senha"
@@ -70,13 +57,18 @@ export default function LoginScreen({ navigation, setLogin }) {
         onChangeText={setSenha}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Entrar</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.buttonOutline}
         onPress={() => navigation.navigate("Register")}
+        disabled={loading}
       >
         <Text style={styles.buttonOutlineText}>Cadastrar</Text>
       </TouchableOpacity>
@@ -85,7 +77,6 @@ export default function LoginScreen({ navigation, setLogin }) {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#E9F1FE" },
   container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#E9F1FE" },
   title: { fontSize: 28, fontWeight: "bold", marginBottom: 20, color: "#196496" },
   input: { width: "100%", padding: 12, marginBottom: 15, borderRadius: 10, borderWidth: 1, borderColor: "#ccc", backgroundColor: "#fff" },
