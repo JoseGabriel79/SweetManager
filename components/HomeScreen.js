@@ -9,17 +9,7 @@ export default function HomeScreen({ usuario }) {
 
   useEffect(() => {
     if (usuario) {
-      // Ajusta imagemPerfil para sempre ter prefixo MIME correto
-      let imagemCorrigida = null;
-      if (usuario.imagemPerfil) {
-        if (usuario.imagemPerfil.startsWith("data:image/")) {
-          imagemCorrigida = usuario.imagemPerfil;
-        } else {
-          imagemCorrigida = `data:image/jpeg;base64,${usuario.imagemPerfil}`;
-        }
-      }
-
-      setDadosUsuario({ ...usuario, imagemPerfil: imagemCorrigida });
+      setDadosUsuario({ ...usuario, imagemPerfil: usuario.imagemPerfil });
     } else {
       setDadosUsuario({ nome: "Visitante", imagemPerfil: null });
     }
