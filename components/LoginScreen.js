@@ -1,32 +1,53 @@
-// LoginScreen.js (corrigido)
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 
-export default function LoginScreen({ navigation, setLogin, setUsername, setUsuario }) {
+export default function LoginScreen({ navigation, setLogin }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(true); // controla o spinner
+
+  // Simula carregamento inicial (ex: checagem de sessão)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false); // desativa o spinner após 1.5s
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       const response = await fetch("https://nodejs-production-43c7.up.railway.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha }),
       });
+
       const data = await response.json();
 
       if (data.success) {
-        setUsername(data.usuario.nome);
-        setUsuario(data.usuario); // 🔥 salva o objeto inteiro do usuário
+        navigation.navigate("Home", { usuario: data.usuario });
         setLogin(true);
       } else {
-        Alert.alert("Erro", data.error || "Credenciais inválidas");
+        alert(data.error || "Credenciais inválidas");
       }
     } catch (err) {
       console.log(err);
-      Alert.alert("Erro", "Falha ao conectar com o servidor");
+      alert("Erro ao conectar com o servidor");
     }
+    setLoading(false);
   };
+
+  if (loading) {
+    // Tela de carregamento
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#196496" />
+        <Text style={{ marginTop: 10 }}>Carregando...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -64,6 +85,7 @@ export default function LoginScreen({ navigation, setLogin, setUsername, setUsua
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#E9F1FE" },
   container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#E9F1FE" },
   title: { fontSize: 28, fontWeight: "bold", marginBottom: 20, color: "#196496" },
   input: { width: "100%", padding: 12, marginBottom: 15, borderRadius: 10, borderWidth: 1, borderColor: "#ccc", backgroundColor: "#fff" },
