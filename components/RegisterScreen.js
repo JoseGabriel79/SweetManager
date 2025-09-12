@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 
@@ -8,11 +17,12 @@ export default function RegisterScreen({ navigation, setLogin }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [imagemPerfil, setImagemPerfil] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Escolher imagem do perfil
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images, // atualizado
+      mediaTypes: ImagePicker.MediaType.Images, // ✅ corrigido
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
@@ -32,11 +42,12 @@ export default function RegisterScreen({ navigation, setLogin }) {
     }
 
     try {
-      // Converter imagem para Base64 com MIME correto
+      setLoading(true);
+
       let imagemBase64 = null;
       if (imagemPerfil) {
-        const fileType = imagemPerfil.uri.split('.').pop();
-        imagemBase64 = `data:image/${fileType};base64,${imagemPerfil.base64}`;
+        // Adiciona o tipo MIME correto
+        imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
       }
 
       const response = await axios.post(
@@ -49,14 +60,17 @@ export default function RegisterScreen({ navigation, setLogin }) {
         }
       );
 
+      setLoading(false);
+
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setLogin(true);
+        setLogin(true); // loga automaticamente
         navigation.navigate("Início", { screen: "Home", params: { username } });
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }
     } catch (error) {
+      setLoading(false);
       console.log(error.response?.data || error.message);
       Alert.alert("Erro", "Falha ao conectar com o servidor.");
     }
@@ -96,9 +110,13 @@ export default function RegisterScreen({ navigation, setLogin }) {
         onChangeText={setSenha}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#196496" style={{ marginVertical: 15 }} />
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity
         style={styles.buttonOutline}
