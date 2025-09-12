@@ -42,8 +42,8 @@ app.post("/usuarios", async (req, res) => {
     let imagemFinal = imagemPerfil?.startsWith("data:image/") ? imagemPerfil : imagemPerfil ? `data:image/jpeg;base64,${imagemPerfil}` : null;
 
     const result = await pool.query(
-      "INSERT INTO usuarios (nome, email, senha, imagemPerfil) VALUES ($1,$2,$3,$4) RETURNING id, nome, email, imagemPerfil",
-      [nome, email, senhaHash, imagemFinal]
+      "INSERT INTO usuarios (nome, email, senha, imagemPerfil) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, imagemPerfil",
+      [nome, email, senhaHash, imagemBase64]
     );
     res.status(201).json({ success: true, usuario: result.rows[0] });
   } catch (err) {

@@ -5,7 +5,7 @@ import CardsHome from "./CardsHome";
 export default function HomeScreen({ usuario }) {
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  console.log("🔹 imagemPerfil do usuário:", usuario.imagemPerfil);
   useEffect(() => {
     if (usuario) {
       setDadosUsuario(usuario);
