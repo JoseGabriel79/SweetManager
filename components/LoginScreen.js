@@ -12,9 +12,14 @@ export default function LoginScreen({ navigation, setLogin }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha }),
       });
+
       const data = await response.json();
+
       if (data.success) {
-        setLogin(true);
+        // Envia os dados do usuário para a HomeScreen
+        navigation.navigate("Home", { usuario: data.usuario });
+
+        setLogin(true); // atualiza estado de login no AppNavigator
       } else {
         alert(data.error || "Credenciais inválidas");
       }
@@ -36,6 +41,7 @@ export default function LoginScreen({ navigation, setLogin }) {
         autoCapitalize="none"
         keyboardType="email-address"
       />
+
       <TextInput
         style={styles.input}
         placeholder="Senha"
