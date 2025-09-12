@@ -16,7 +16,7 @@ export default function RegisterScreen({ navigation, setLogin }) {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
-      base64: true, // necessário para enviar para o backend
+      base64: true,
     });
 
     if (!result.canceled) {
@@ -32,27 +32,30 @@ export default function RegisterScreen({ navigation, setLogin }) {
     }
 
     try {
-      // Convertendo imagem para Base64 se existir
       let imagemBase64 = null;
       if (imagemPerfil) {
         imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
       }
 
-      const response = await axios.post("https://nodejs-production-43c7.up.railway.app/usuario", {
-        username,
-        email,
-        senha,
-        imagem: imagemBase64,
-      });
+      const response = await axios.post(
+        "https://nodejs-production-43c7.up.railway.app/usuarios",
+        {
+          nome: username,
+          email,
+          senha,
+          imagemPerfil: imagemBase64,
+        }
+      );
 
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setLogin(true); // loga automaticamente
+        setLogin(true); // Loga automaticamente
+        navigation.navigate("Home", { username }); // Passa o nome para HomeScreen
       } else {
-        Alert.alert("Erro", "Não foi possível cadastrar.");
+        Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data || error.message);
       Alert.alert("Erro", "Falha ao conectar com o servidor.");
     }
   };
@@ -80,6 +83,8 @@ export default function RegisterScreen({ navigation, setLogin }) {
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}

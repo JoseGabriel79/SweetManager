@@ -142,7 +142,7 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
 });
 
 // Cadastro de usuário
-app.post("/usuario", async (req, res) => {
+app.post("/usuarios", async (req, res) => {
   const { nome, email, senha, imagemPerfil } = req.body;
 
   try {
