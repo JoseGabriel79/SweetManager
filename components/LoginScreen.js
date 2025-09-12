@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
 
         setUsuario(usuario); // salva o usuário completo
         setLogin(true);
-        navigation.navigate("Inicio", { screen: "Home", params: {usuario} });
+        navigation.navigate("Home", { screen: "Home", params: {usuario} });
       } else {
         Alert.alert("Erro", data.error || "Credenciais inválidas");
       }
