@@ -64,16 +64,6 @@ app.post("/usuarios", async (req, res) => {
   }
 });
 
-    res.status(201).json({
-      success: true,
-      usuario: result.rows[0],
-      message: "Usuário cadastrado com sucesso!"
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 
 app.post("/login", async (req, res) => {
   const { email, senha } = req.body;
