@@ -1,11 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 
 export default function LoginScreen({ navigation, setLogin }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
   const handleLogin = async () => {
+    if (!email || !senha) {
+      Alert.alert("Erro", "Preencha todos os campos!");
+      return;
+    }
+
     try {
       const response = await fetch("https://nodejs-production-43c7.up.railway.app/login", {
         method: "POST",
@@ -16,16 +21,19 @@ export default function LoginScreen({ navigation, setLogin }) {
       const data = await response.json();
 
       if (data.success) {
-        // Envia os dados do usuário para a HomeScreen
-        navigation.navigate("Home", { usuario: data.usuario });
+        // Navega para HomeScreen dentro da aba "Início" (Tab Navigator)
+        navigation.navigate("Início", {
+          screen: "Home",
+          params: { username: data.usuario.nome },
+        });
 
         setLogin(true); // atualiza estado de login no AppNavigator
       } else {
-        alert(data.error || "Credenciais inválidas");
+        Alert.alert("Erro", data.error || "Credenciais inválidas");
       }
     } catch (err) {
       console.log(err);
-      alert("Erro ao conectar com o servidor");
+      Alert.alert("Erro", "Falha ao conectar com o servidor");
     }
   };
 

@@ -11,7 +11,7 @@ const Stack = createStackNavigator();
 
 export default function HomeStack() {
 
- 
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -22,12 +22,11 @@ export default function HomeStack() {
         headerTitleAlign: "center",
       }}
     >
-       
+
       <Stack.Screen
         options={{ headerShown: false }}
         name="Home"
         component={HomeScreen}
-        initialParams={{ username: "Joao" }}
       />
       <Stack.Screen
         options={{ title: "Clientes" }}

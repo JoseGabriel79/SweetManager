@@ -49,8 +49,13 @@ export default function RegisterScreen({ navigation, setLogin }) {
 
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setLogin(true); // Loga automaticamente
-        navigation.navigate("Home", { username }); // Passa o nome para HomeScreen
+        setLogin(true); // ativa login
+
+        // Navega para HomeScreen dentro do HomeStack/Tab
+        navigation.navigate("Início", {
+          screen: "Home",
+          params: { username: response.data.usuario.nome },
+        });
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }
@@ -109,14 +114,55 @@ export default function RegisterScreen({ navigation, setLogin }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 20, backgroundColor: "#E9F1FE" },
-  title: { fontSize: 28, fontWeight: "bold", color: "#196496", marginBottom: 20 },
-  imagePicker: { width: 120, height: 120, borderRadius: 60, backgroundColor: "#ddd", marginBottom: 15, alignItems: "center", justifyContent: "center" },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "#E9F1FE",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#196496",
+    marginBottom: 20,
+  },
+  imagePicker: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "#ddd",
+    marginBottom: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   imageText: { color: "#555", textAlign: "center", fontSize: 12 },
   image: { width: 120, height: 120, borderRadius: 60 },
-  input: { width: "100%", padding: 12, borderRadius: 10, borderWidth: 1, borderColor: "#ccc", backgroundColor: "#fff", marginBottom: 15 },
-  button: { width: "100%", paddingVertical: 14, borderRadius: 12, backgroundColor: "#196496", alignItems: "center", marginBottom: 10 },
+  input: {
+    width: "100%",
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+    marginBottom: 15,
+  },
+  button: {
+    width: "100%",
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: "#196496",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  buttonOutline: { width: "100%", paddingVertical: 14, borderRadius: 12, borderWidth: 2, borderColor: "#196496", alignItems: "center" },
+  buttonOutline: {
+    width: "100%",
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#196496",
+    alignItems: "center",
+  },
   buttonOutlineText: { color: "#196496", fontWeight: "bold", fontSize: 16 },
 });
