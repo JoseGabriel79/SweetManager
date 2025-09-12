@@ -23,7 +23,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType.Images, // ✅ API nova
+        mediaTypes: ImagePicker.MediaType, // ✅ API nova
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.5,
