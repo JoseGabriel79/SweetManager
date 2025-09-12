@@ -10,6 +10,8 @@ import LoginScreen from "./LoginScreen";
 const Stack = createStackNavigator();
 
 export default function HomeStack() {
+
+ 
   return (
     <Stack.Navigator
       screenOptions={{
@@ -20,14 +22,7 @@ export default function HomeStack() {
         headerTitleAlign: "center",
       }}
     >
-
-      {/* {login ? (
-        <Stack.Screen
-          options={{ headerShown: false }}
-          name="Login"
-          component={LoginScreen}
-        />
-      ) : null} */}
+       
       <Stack.Screen
         options={{ headerShown: false }}
         name="Home"

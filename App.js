@@ -63,13 +63,8 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import {AppNavigator} from "./components";
-import { NavigationContainer } from "@react-navigation/native";
-
-import HomeScreen from "./components/HomeScreen";
-import VitrineScreen from "./components/VitrineScreen";
-import CadastrarProdutosScreen from "./components/CadastrarProdutosScreen";
-import ClientesScreen from "./components/ClientesScreen";
-import EstoqueScreen from "./components/EstoqueScreen";
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 
 
 export default function App() {

@@ -1,99 +1,77 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+
+import LoginScreen from "./LoginScreen";
+import RegisterScreen from "./RegisterScreen";
 import HomeStack from "./HomeStack";
 
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function ReportsScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tela de Relatórios</Text>
-    </View>
-  );
+  return <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <Text>Tela de Relatórios</Text>
+  </View>;
 }
 
 function ConfigScreen() {
+  return <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <Text>Tela de Configurações</Text>
+  </View>;
+}
+
+// Bottom Tabs após login
+function AppTabs() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tela de Configurações</Text>
-    </View>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: "#4fa5de84", height: 60 },
+        tabBarActiveTintColor: "#196496",
+        tabBarInactiveTintColor: "#042136",
+        tabBarLabelStyle: { fontWeight: "bold" },
+      }}
+    >
+      <Tab.Screen
+        name="Início"
+        component={HomeStack}
+        options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
+      />
+      <Tab.Screen
+        name="Relatórios"
+        component={ReportsScreen}
+        options={{ tabBarIcon: () => <Feather name="activity" size={25} color="#042136" /> }}
+      />
+      <Tab.Screen
+        name="Configurações"
+        component={ConfigScreen}
+        options={{ tabBarIcon: () => <Feather name="settings" size={25} color="#042136" /> }}
+      />
+    </Tab.Navigator>
   );
 }
 
-const { width } = Dimensions.get("window");
-const isSmallScreen = width < 620;
-
 export default function AppNavigator() {
+  const [login, setLogin] = React.useState(false);
+
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            backgroundColor: "#4fa5de84",
-            height: isSmallScreen ? 60 : 70,
-          },
-          tabBarActiveTintColor: "#196496",
-          tabBarInactiveTintColor: "#042136",
-          tabBarLabelStyle: { fontWeight: "bold" },
-        }}
-      >
-        <Tab.Screen
-          name="Início"
-          component={HomeStack} // <- Stack da Home
-          options={{
-            tabBarIcon: () => (
-              <Feather
-                size={isSmallScreen ? 20 : 30}
-                name="home"
-                color={"#042136"}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Relatórios"
-          component={ReportsScreen}
-          options={{
-            tabBarIcon: () => (
-              <Feather
-                size={isSmallScreen ? 20 : 30}
-                name="activity"
-                color={"#042136"}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Configurações"
-          component={ConfigScreen}
-          options={{
-            tabBarIcon: () => (
-              <Feather
-                size={isSmallScreen ? 20 : 30}
-                name="settings"
-                color={"#042136"}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+      {login ? (
+        <AppTabs />
+      ) : (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login">
+            {(props) => <LoginScreen {...props} setLogin={setLogin} />}
+          </Stack.Screen>
+          <Stack.Screen name="Register">
+            {(props) => <RegisterScreen {...props} setLogin={setLogin} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-  },
-});
+// --- FIM DO COMPONENTE DE NAVEGAÇÃO ---
