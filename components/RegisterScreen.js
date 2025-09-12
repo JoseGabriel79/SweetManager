@@ -21,24 +21,30 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
   // Escolher imagem do perfil
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.5,
-      base64: true,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+        base64: true,
+      });
 
-    if (!result.canceled) {
+      if (!result.canceled) return;
+
       const asset = result.assets[0];
-      const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
 
-      if (!allowedTypes.includes(asset.type)) {
-        Alert.alert("Erro", "Escolha uma imagem JPEG ou PNG.");
+      // Valida extensão
+      const validTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!validTypes.includes(asset.type)) {
+        Alert.alert("Erro", "Selecione uma imagem JPEG, PNG ou GIF.");
         return;
       }
 
       setImagemPerfil(asset);
+    } catch (err) {
+      console.log(err);
+      Alert.alert("Erro", "Não foi possível selecionar a imagem.");
     }
   };
 
@@ -70,9 +76,8 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setLogin(true);
-        setUsuario(response.data.usuario);
-        navigation.navigate("Início", { screen: "Home" });
+        setUsuario(response.data.usuario); // salva usuário
+        setLogin(true); // renderiza Home automaticamente
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }

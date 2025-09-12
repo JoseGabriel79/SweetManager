@@ -6,7 +6,7 @@ const { width } = Dimensions.get("window")
 const isSmallScreen = width < 520;
 
 export default function CardsHome({ titulo, routeName }) {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // pega o navigation do contexto
 
   return (
     <TouchableOpacity
