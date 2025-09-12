@@ -148,18 +148,32 @@ app.post("/usuarios", async (req, res) => {
   try {
     const senhaHash = await bcrypt.hash(senha, 10);
 
+    // Ajuste: garante que a imagemPerfil tenha o prefixo MIME correto
+    let imagemFinal = null;
+    if (imagemPerfil) {
+      if (!imagemPerfil.startsWith("data:image/")) {
+        imagemFinal = `data:image/jpeg;base64,${imagemPerfil}`;
+      } else {
+        imagemFinal = imagemPerfil;
+      }
+    }
+
     const result = await pool.query(
       "INSERT INTO usuarios (nome, email, senha, imagemPerfil) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, imagemPerfil",
-      [nome, email, senhaHash, imagemPerfil]
+      [nome, email, senhaHash, imagemFinal]
     );
 
-    res.status(201).json({ success: true, usuario: result.rows[0], message: "Usuário cadastrado com sucesso!" });
+    res.status(201).json({
+      success: true,
+      usuario: result.rows[0],
+      message: "Usuário cadastrado com sucesso!"
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// Login de usuário (sem JWT, retorna apenas dados)
+// Login de usuário
 app.post("/login", async (req, res) => {
   const { email, senha } = req.body;
 
@@ -178,11 +192,18 @@ app.post("/login", async (req, res) => {
     }
 
     delete usuario.senha; // não expor a senha
+
+    // Garante que imagemPerfil sempre tenha o prefixo MIME correto
+    if (usuario.imagemPerfil && !usuario.imagemPerfil.startsWith("data:image/")) {
+      usuario.imagemPerfil = `data:image/jpeg;base64,${usuario.imagemPerfil}`;
+    }
+
     res.json({ success: true, usuario, message: "Login realizado com sucesso!" });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
 
 /* =========================
    🔹 ROTAS PRODUTOS
