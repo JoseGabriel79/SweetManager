@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 
-export default function LoginScreen({ navigation, setLogin, setUsuario }) {
+export default function LoginScreen({ setLogin, setUsuario, navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,15 +37,8 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
 
       if (data.success) {
         const usuario = data.usuario;
-
-        setUsuario(usuario); // salva o usuário completo
-        setLogin(true);
-
-        // 🔹 vai para a Tab "Inicio" e dentro dela abre "Home"
-        navigation.navigate("Inicio", {
-          screen: "Home",
-          params: { usuario },
-        });
+        setUsuario(usuario); // salva no estado global
+        setLogin(true);      // troca para HomeTabs automaticamente
       } else {
         Alert.alert("Erro", data.error || "Credenciais inválidas");
       }
