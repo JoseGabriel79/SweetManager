@@ -1,4 +1,4 @@
-// HomeScreen.js (corrigido com loading)
+// HomeScreen.js (versão final)
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
 import CardsHome from "./CardsHome";
@@ -8,6 +8,7 @@ export default function HomeScreen({ usuario }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("👤 Usuario recebido na HomeScreen:", usuario); // DEBUG
     if (usuario) {
       setDadosUsuario(usuario);
     } else {
@@ -33,7 +34,11 @@ export default function HomeScreen({ usuario }) {
           <Image
             source={
               dadosUsuario.imagemPerfil
-                ? { uri: dadosUsuario.imagemPerfil }
+                ? {
+                    uri: String(dadosUsuario.imagemPerfil).startsWith("data:")
+                      ? dadosUsuario.imagemPerfil
+                      : `data:image/png;base64,${dadosUsuario.imagemPerfil}`,
+                  }
                 : require("../imagens/ImagensPerfil/pinguim.png")
             }
             style={styles.image}
@@ -77,5 +82,5 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   title: { fontSize: 24, fontWeight: "bold" },
-  image: { width: 50, height: 50, borderRadius: 25 },
+  image: { width: 50, height: 50, borderRadius: 25, backgroundColor: "#ddd" },
 });
