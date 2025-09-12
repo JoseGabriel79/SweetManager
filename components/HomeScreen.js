@@ -9,7 +9,7 @@ export default function HomeScreen({ usuario }) {
 
   useEffect(() => {
     if (usuario) {
-      setDadosUsuario({ ...usuario, imagemPerfil: usuario.imagemPerfil });
+      setDadosUsuario({usuario});
       console.log("usuario antes de passar os dados"+ usuario)
       console.log("usuario depois de passar os dados"+ dadosUsuario)
     } else {
