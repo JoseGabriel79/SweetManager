@@ -10,6 +10,8 @@ export default function HomeScreen({ usuario }) {
   useEffect(() => {
     if (usuario) {
       setDadosUsuario({ ...usuario, imagemPerfil: usuario.imagemPerfil });
+      console.log("usuario antes de passar os dados"+ usuario)
+      console.log("usuario depois de passar os dados"+ dadosUsuario)
     } else {
       setDadosUsuario({ nome: "Visitante", imagemPerfil: null });
     }
@@ -33,9 +35,9 @@ export default function HomeScreen({ usuario }) {
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>{dadosUsuario.nome}</Text>
           <Image
             source={
-              dadosUsuario.imagemPerfil
-                ? { uri: dadosUsuario.imagemPerfil }
-                : require("../imagens/ImagensPerfil/pinguim.png")
+               { uri: dadosUsuario.imagemPerfil }
+              // dadosUsuario.imagemPerfil?
+                // : require("../imagens/ImagensPerfil/pinguim.png")
             }
             style={styles.image}
           />
