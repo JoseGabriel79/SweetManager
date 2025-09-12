@@ -12,7 +12,7 @@ import HomeStack from "./HomeStack";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function AppTabs({ username, usuario }) {
+function AppTabs({ usuario }) {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -48,34 +48,19 @@ function AppTabs({ username, usuario }) {
 
 export default function AppNavigator() {
   const [login, setLogin] = useState(false);
-  const [username, setUsername] = useState("");
   const [usuario, setUsuario] = useState(null);
 
   return (
     <NavigationContainer>
       {login ? (
-        <AppTabs username={username} usuario={usuario} />
+        <AppTabs usuario={usuario} />
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login">
-            {(props) => (
-              <LoginScreen
-                {...props}
-                setLogin={setLogin}
-                setUsername={setUsername}
-                setUsuario={setUsuario}
-              />
-            )}
+            {(props) => <LoginScreen {...props} setLogin={setLogin} setUsuario={setUsuario} />}
           </Stack.Screen>
           <Stack.Screen name="Register">
-            {(props) => (
-              <RegisterScreen
-                {...props}
-                setLogin={setLogin}
-                setUsername={setUsername}
-                setUsuario={setUsuario}
-              />
-            )}
+            {(props) => <RegisterScreen {...props} setLogin={setLogin} setUsuario={setUsuario} />}
           </Stack.Screen>
         </Stack.Navigator>
       )}

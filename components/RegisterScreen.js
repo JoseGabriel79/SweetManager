@@ -22,7 +22,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   // Escolher imagem do perfil
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images, // correto
+      mediaTypes: ImagePicker.MediaType.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
@@ -34,6 +34,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     }
   };
 
+  // Cadastro no backend
   const handleRegister = async () => {
     if (!username || !email || !senha) {
       Alert.alert("Erro", "Preencha todos os campos!");
@@ -54,7 +55,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
           nome: username,
           email,
           senha,
-          imagemPerfil: imagemBase64, // ✅ envia imagemPerfil
+          imagemPerfil: imagemBase64,
         }
       );
 
@@ -63,7 +64,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
         setLogin(true);
-        setUsuario(response.data.usuario); // salva usuário logado
+        setUsuario(response.data.usuario); // salva usuário no AppNavigator
         navigation.navigate("Início", { screen: "Home", params: { username } });
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");

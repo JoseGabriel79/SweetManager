@@ -37,19 +37,43 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
 
 app.post("/usuarios", async (req, res) => {
   const { nome, email, senha, imagemPerfil } = req.body;
+
   try {
     const senhaHash = await bcrypt.hash(senha, 10);
-    let imagemFinal = imagemPerfil?.startsWith("data:image/") ? imagemPerfil : imagemPerfil ? `data:image/jpeg;base64,${imagemPerfil}` : null;
+
+    // Garante que a imagemPerfil tenha prefixo MIME correto
+    let imagemFinal = null;
+    if (imagemPerfil) {
+      imagemFinal = imagemPerfil.startsWith("data:image/")
+        ? imagemPerfil
+        : `data:image/jpeg;base64,${imagemPerfil}`;
+    }
 
     const result = await pool.query(
       "INSERT INTO usuarios (nome, email, senha, imagemPerfil) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, imagemPerfil",
-      [nome, email, senhaHash, imagemBase64]
+      [nome, email, senhaHash, imagemFinal]
     );
-    res.status(201).json({ success: true, usuario: result.rows[0] });
+
+    res.status(201).json({
+      success: true,
+      usuario: result.rows[0],
+      message: "Usuário cadastrado com sucesso!"
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+    res.status(201).json({
+      success: true,
+      usuario: result.rows[0],
+      message: "Usuário cadastrado com sucesso!"
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 
 app.post("/login", async (req, res) => {
   const { email, senha } = req.body;
