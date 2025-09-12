@@ -22,7 +22,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   // Escolher imagem do perfil
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Base64,
+      mediaTypes: ImagePicker.MediaType,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
