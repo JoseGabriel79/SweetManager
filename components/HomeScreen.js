@@ -1,17 +1,21 @@
-// HomeScreen.js
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import CardsHome from "./CardsHome";
 
-export default function HomeScreen({ usuario }) {
+export default function HomeScreen({ route }) {
+  const { usuario } = route.params || {}; // 🔹 pega usuário da navegação
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (usuario) {
       setDadosUsuario({ ...usuario });
-      console.log("usuario antes de passar os dados"+ usuario)
-      console.log("usuario depois de passar os dados"+ dadosUsuario)
     } else {
       setDadosUsuario({ nome: "Visitante", imagemPerfil: null });
     }
@@ -20,7 +24,12 @@ export default function HomeScreen({ usuario }) {
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <ActivityIndicator size="large" color="#196496" />
       </View>
     );
@@ -31,14 +40,14 @@ export default function HomeScreen({ usuario }) {
       <View style={styles.header}>
         <Text style={styles.title}>Sweet Manager</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          
-          {console.log("Imagem do perfil : ", dadosUsuario)}
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>{dadosUsuario.nome}</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+            {dadosUsuario?.nome}
+          </Text>
           <Image
             source={
-               { uri: dadosUsuario.imagemPerfil }
-              // dadosUsuario.imagemPerfil?
-                // : require("../imagens/ImagensPerfil/pinguim.png")
+              dadosUsuario?.imagemPerfil
+                ? { uri: dadosUsuario.imagemPerfil }
+                : require("../imagens/ImagensPerfil/pinguim.png")
             }
             style={styles.image}
           />
@@ -72,7 +81,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: { fontSize: 24, fontWeight: "bold" },
-  image: { width: 50, height: 50, borderRadius: 25, backgroundColor: "#ddd" },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#ddd",
+  },
   cards: {
     flex: 1,
     flexDirection: "row",
