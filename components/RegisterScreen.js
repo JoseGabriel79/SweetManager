@@ -1,3 +1,4 @@
+// RegisterScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -19,18 +20,39 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [imagemPerfil, setImagemPerfil] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Função para gerar base64 com tipo correto
+  const getImagemBase64 = (imagem) => {
+    if (!imagem) return null;
+
+    // Detecta a extensão do arquivo
+    const extensao = imagem.fileName?.split(".").pop()?.toLowerCase() || "jpeg";
+
+    // Define MIME type correto
+    let mimeType = "jpeg";
+    if (extensao === "png") mimeType = "png";
+    else if (extensao === "jpg" || extensao === "jpeg") mimeType = "jpeg";
+    else mimeType = "jpeg"; // fallback
+
+    return `data:image/${mimeType};base64,${imagem.base64}`;
+  };
+
   // Escolher imagem do perfil
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.5,
-      base64: true,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+        base64: true,
+      });
 
-    if (!result.canceled) {
-      setImagemPerfil(result.assets[0]);
+      if (!result.canceled) {
+        setImagemPerfil(result.assets[0]);
+      }
+    } catch (err) {
+      console.log(err);
+      Alert.alert("Erro", "Não foi possível selecionar a imagem.");
     }
   };
 
@@ -44,10 +66,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     try {
       setLoading(true);
 
-      let imagemBase64 = null;
-      if (imagemPerfil) {
-        imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
-      }
+      const imagemBase64 = getImagemBase64(imagemPerfil);
 
       const response = await axios.post(
         "https://nodejs-production-43c7.up.railway.app/usuarios",
@@ -64,7 +83,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
         setLogin(true);
-        setUsuario(response.data.usuario); // salva usuário no AppNavigator
+        setUsuario(response.data.usuario); // salva usuário no app
         navigation.navigate("Início", { screen: "Home", params: { username } });
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");

@@ -1,3 +1,4 @@
+// HomeScreen.js
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
 import CardsHome from "./CardsHome";
@@ -5,10 +6,20 @@ import CardsHome from "./CardsHome";
 export default function HomeScreen({ usuario }) {
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
-  console.log("🔹 imagemPerfil do usuário:", usuario.imagemPerfil);
+
   useEffect(() => {
     if (usuario) {
-      setDadosUsuario(usuario);
+      // Ajusta imagemPerfil para sempre ter prefixo MIME correto
+      let imagemCorrigida = null;
+      if (usuario.imagemPerfil) {
+        if (usuario.imagemPerfil.startsWith("data:image/")) {
+          imagemCorrigida = usuario.imagemPerfil;
+        } else {
+          imagemCorrigida = `data:image/jpeg;base64,${usuario.imagemPerfil}`;
+        }
+      }
+
+      setDadosUsuario({ ...usuario, imagemPerfil: imagemCorrigida });
     } else {
       setDadosUsuario({ nome: "Visitante", imagemPerfil: null });
     }
@@ -23,23 +34,16 @@ export default function HomeScreen({ usuario }) {
     );
   }
 
-  // Garante que imagemPerfil tenha prefixo MIME correto
-  const imagemPerfilCorrigida = dadosUsuario.imagemPerfil
-    ? dadosUsuario.imagemPerfil.startsWith("data:image/")
-      ? dadosUsuario.imagemPerfil
-      : `data:image/jpeg;base64,${dadosUsuario.imagemPerfil}`
-    : null;
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Sweet Manager</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <Text style={styles.nomeUsuario}>{dadosUsuario.nome}</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>{dadosUsuario.nome}</Text>
           <Image
             source={
-              imagemPerfilCorrigida
-                ? { uri: imagemPerfilCorrigida }
+              dadosUsuario.imagemPerfil
+                ? { uri: dadosUsuario.imagemPerfil }
                 : require("../imagens/ImagensPerfil/pinguim.png")
             }
             style={styles.image}
@@ -63,7 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 15,
     shadowColor: "#000",
@@ -74,7 +78,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: { fontSize: 24, fontWeight: "bold" },
-  nomeUsuario: { fontWeight: "bold", fontSize: 20 },
   image: { width: 50, height: 50, borderRadius: 25, backgroundColor: "#ddd" },
   cards: {
     flex: 1,
