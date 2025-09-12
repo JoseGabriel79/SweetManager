@@ -1,33 +1,22 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 
-export default function LoginScreen({ navigation, setLogin }) {
+export default function LoginScreen({ navigation, setLogin, setUsername }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
   const handleLogin = async () => {
-    if (!email || !senha) {
-      Alert.alert("Erro", "Preencha todos os campos!");
-      return;
-    }
-
     try {
       const response = await fetch("https://nodejs-production-43c7.up.railway.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha }),
       });
-
       const data = await response.json();
 
       if (data.success) {
-        // Navega para HomeScreen dentro da aba "Início" (Tab Navigator)
-        navigation.navigate("Início", {
-          screen: "Home",
-          params: { username: data.usuario.nome },
-        });
-
-        setLogin(true); // atualiza estado de login no AppNavigator
+        setUsername(data.usuario.nome); // salva nome do usuário
+        setLogin(true); // ativa a Tab Navigator
       } else {
         Alert.alert("Erro", data.error || "Credenciais inválidas");
       }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -11,20 +11,8 @@ import HomeStack from "./HomeStack";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function ReportsScreen() {
-  return <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <Text>Tela de Relatórios</Text>
-  </View>;
-}
-
-function ConfigScreen() {
-  return <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <Text>Tela de Configurações</Text>
-  </View>;
-}
-
 // Bottom Tabs após login
-function AppTabs() {
+function AppTabs({ username }) {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -37,41 +25,59 @@ function AppTabs() {
     >
       <Tab.Screen
         name="Início"
-        component={HomeStack}
-        options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
+        children={() => <HomeStack username={username} />}
+        options={{
+          tabBarIcon: () => <Feather name="home" size={25} color="#042136" />,
+        }}
       />
       <Tab.Screen
         name="Relatórios"
-        component={ReportsScreen}
-        options={{ tabBarIcon: () => <Feather name="activity" size={25} color="#042136" /> }}
+        component={() => <Text style={{flex:1, justifyContent:"center", alignItems:"center"}}>Relatórios</Text>}
+        options={{
+          tabBarIcon: () => <Feather name="activity" size={25} color="#042136" />,
+        }}
       />
       <Tab.Screen
         name="Configurações"
-        component={ConfigScreen}
-        options={{ tabBarIcon: () => <Feather name="settings" size={25} color="#042136" /> }}
+        component={() => <Text style={{flex:1, justifyContent:"center", alignItems:"center"}}>Configurações</Text>}
+        options={{
+          tabBarIcon: () => <Feather name="settings" size={25} color="#042136" />,
+        }}
       />
     </Tab.Navigator>
   );
 }
 
 export default function AppNavigator() {
-  const [login, setLogin] = React.useState(false);
+  const [login, setLogin] = useState(false);
+  const [username, setUsername] = useState("");
 
   return (
     <NavigationContainer>
       {login ? (
-        <AppTabs />
+        <AppTabs username={username} />
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login">
-            {(props) => <LoginScreen {...props} setLogin={setLogin} />}
+            {(props) => (
+              <LoginScreen
+                {...props}
+                setLogin={setLogin}
+                setUsername={setUsername}
+              />
+            )}
           </Stack.Screen>
           <Stack.Screen name="Register">
-            {(props) => <RegisterScreen {...props} setLogin={setLogin} />}
+            {(props) => (
+              <RegisterScreen
+                {...props}
+                setLogin={setLogin}
+                setUsername={setUsername}
+              />
+            )}
           </Stack.Screen>
         </Stack.Navigator>
       )}
     </NavigationContainer>
   );
 }
-// --- FIM DO COMPONENTE DE NAVEGAÇÃO ---
