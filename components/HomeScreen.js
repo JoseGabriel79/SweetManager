@@ -1,4 +1,3 @@
-// HomeScreen.js (versão final)
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
 import CardsHome from "./CardsHome";
@@ -8,7 +7,7 @@ export default function HomeScreen({ usuario }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("👤 Usuario recebido na HomeScreen:", usuario); // DEBUG
+    console.log("👤 Usuario recebido na HomeScreen:", usuario);
     if (usuario) {
       setDadosUsuario(usuario);
     } else {
@@ -25,6 +24,15 @@ export default function HomeScreen({ usuario }) {
     );
   }
 
+  // Corrige imagem base64 sem tipo definido
+  const imagemPerfilCorrigida = dadosUsuario.imagemPerfil
+    ? String(dadosUsuario.imagemPerfil).startsWith("data:image/")
+      ? dadosUsuario.imagemPerfil
+      : dadosUsuario.imagemPerfil.startsWith("data:image")
+        ? dadosUsuario.imagemPerfil.replace("data:image;base64,", "data:image/jpeg;base64,")
+        : `data:image/jpeg;base64,${dadosUsuario.imagemPerfil}`
+    : null;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -33,12 +41,8 @@ export default function HomeScreen({ usuario }) {
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>{dadosUsuario.nome}</Text>
           <Image
             source={
-              dadosUsuario.imagemPerfil
-                ? {
-                    uri: String(dadosUsuario.imagemPerfil).startsWith("data:")
-                      ? dadosUsuario.imagemPerfil
-                      : `data:image/png;base64,${dadosUsuario.imagemPerfil}`,
-                  }
+              imagemPerfilCorrigida
+                ? { uri: imagemPerfilCorrigida }
                 : require("../imagens/ImagensPerfil/pinguim.png")
             }
             style={styles.image}
