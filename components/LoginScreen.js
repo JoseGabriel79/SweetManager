@@ -27,14 +27,9 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
       if (data.success) {
         const usuario = data.usuario;
 
-        // Garante prefixo MIME para a imagem, se houver
-        if (usuario.imagemPerfil && !usuario.imagemPerfil.startsWith("data:image/")) {
-          usuario.imagemPerfil = `data:image/jpeg;base64,${usuario.imagemPerfil}`;
-        }
-
         setUsuario(usuario); // salva o usuário completo
         setLogin(true);
-        navigation.navigate("Início", { screen: "Home", params: { username: usuario.nome } });
+        navigation.navigate("Inicio", { screen: "Home", params: {usuario} });
       } else {
         Alert.alert("Erro", data.error || "Credenciais inválidas");
       }
