@@ -38,48 +38,51 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     }
   };
 
-  // Cadastro no backend
-  const handleRegister = async () => {
-    if (!username || !email || !senha) {
-      Alert.alert("Erro", "Preencha todos os campos!");
-      return;
+const handleRegister = async () => {
+  if (!username || !email || !senha) {
+    Alert.alert("Erro", "Preencha todos os campos!");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    let imagemBase64 = null;
+    if (imagemPerfil) {
+      imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
     }
 
-    try {
-      setLoading(true);
-
-      let imagemBase64 = null;
-      if (imagemPerfil) {
-        // Sempre adiciona prefixo MIME
-        imagemBase64 = `data:image/jpeg;base64,${imagemPerfil.base64}`;
+    const response = await axios.post(
+      "https://nodejs-production-43c7.up.railway.app/usuarios",
+      {
+        nome: username,
+        email,
+        senha,
+        imagemPerfil: imagemBase64,
       }
+    );
 
-      const response = await axios.post(
-        "https://nodejs-production-43c7.up.railway.app/usuarios",
-        {
-          nome: username,
-          email,
-          senha,
-          imagemPerfil: imagemBase64,
-        }
-      );
+    setLoading(false);
 
-      setLoading(false);
+    if (response.data.success) {
+      Alert.alert("Sucesso", "Cadastro realizado!");
+      setUsuario(response.data.usuario); // salva o usuário
+      setLogin(true);
 
-      if (response.data.success) {
-        Alert.alert("Sucesso", "Cadastro realizado!");
-        setLogin(true);
-        setUsuario(response.data.usuario); // salva usuário completo
-        navigation.navigate("Início", { screen: "Home", params: { username } });
-      } else {
-        Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
-      }
-    } catch (error) {
-      setLoading(false);
-      console.log(error.response?.data || error.message);
-      Alert.alert("Erro", "Falha ao conectar com o servidor.");
+      // ✅ Navegação corrigida: só precisa chamar a Tab
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Início" }],
+      });
+    } else {
+      Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
     }
-  };
+  } catch (error) {
+    setLoading(false);
+    console.log(error.response?.data || error.message);
+    Alert.alert("Erro", "Falha ao conectar com o servidor.");
+  }
+};
 
   return (
     <View style={styles.container}>
