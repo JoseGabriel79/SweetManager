@@ -1,40 +1,27 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 
-export default function RegisterScreen({ navigation, setLogin }) {
+export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [imagemPerfil, setImagemPerfil] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Escolher imagem do perfil
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images, // ✅ corrigido
+      mediaTypes: ImagePicker.MediaType.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
       base64: true,
     });
 
-    if (!result.canceled) {
-      setImagemPerfil(result.assets[0]);
-    }
+    if (!result.canceled) setImagemPerfil(result.assets[0]);
   };
 
-  // Cadastro no backend
   const handleRegister = async () => {
     if (!username || !email || !senha) {
       Alert.alert("Erro", "Preencha todos os campos!");
@@ -45,27 +32,21 @@ export default function RegisterScreen({ navigation, setLogin }) {
       setLoading(true);
 
       let imagemBase64 = null;
-      if (imagemPerfil) {
-        // Adiciona o tipo MIME correto
-        imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
-      }
+      if (imagemPerfil) imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
 
-      const response = await axios.post(
-        "https://nodejs-production-43c7.up.railway.app/usuarios",
-        {
-          nome: username,
-          email,
-          senha,
-          imagemPerfil: imagemBase64,
-        }
-      );
+      const response = await axios.post("https://nodejs-production-43c7.up.railway.app/usuarios", {
+        nome: username,
+        email,
+        senha,
+        imagemPerfil: imagemBase64,
+      });
 
       setLoading(false);
 
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setLogin(true); // loga automaticamente
-        navigation.navigate("Início", { screen: "Home", params: { username } });
+        setUsuario(response.data.usuario);
+        setLogin(true);
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }
@@ -88,27 +69,9 @@ export default function RegisterScreen({ navigation, setLogin }) {
         )}
       </TouchableOpacity>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Usuário"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
-      />
+      <TextInput style={styles.input} placeholder="Usuário" value={username} onChangeText={setUsername} />
+      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+      <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={senha} onChangeText={setSenha} />
 
       {loading ? (
         <ActivityIndicator size="large" color="#196496" style={{ marginVertical: 15 }} />
@@ -118,10 +81,7 @@ export default function RegisterScreen({ navigation, setLogin }) {
         </TouchableOpacity>
       )}
 
-      <TouchableOpacity
-        style={styles.buttonOutline}
-        onPress={() => navigation.goBack()}
-      >
+      <TouchableOpacity style={styles.buttonOutline} onPress={() => navigation.goBack()}>
         <Text style={styles.buttonOutlineText}>Voltar para Login</Text>
       </TouchableOpacity>
     </View>

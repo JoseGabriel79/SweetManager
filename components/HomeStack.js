@@ -1,5 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+
 import HomeScreen from "./HomeScreen";
 import EstoqueScreen from "./EstoqueScreen";
 import ClientesScreen from "./ClientesScreen";
@@ -19,15 +20,26 @@ export default function HomeStack({ usuario }) {
         headerTitleAlign: "center",
       }}
     >
-      {/* ✅ CORREÇÃO: usamos children como função */}
+      {/* Passamos usuario via children para evitar warning */}
       <Stack.Screen name="Home" options={{ headerShown: false }}>
         {() => <HomeScreen usuario={usuario} />}
       </Stack.Screen>
 
-      <Stack.Screen name="Clientes" component={ClientesScreen} options={{ title: "Clientes" }} />
-      <Stack.Screen name="Estoque" component={EstoqueScreen} options={{ title: "Estoque" }} />
-      <Stack.Screen name="Vitrine" component={VitrineScreen} options={{ title: "Painel de Controle" }} />
-      <Stack.Screen name="CadastrarProdutos" component={CadastrarProdutosScreen} options={{ title: "Cadastrar Produtos" }} />
+      <Stack.Screen name="Clientes" options={{ title: "Clientes" }}>
+        {() => <ClientesScreen usuario={usuario} />}
+      </Stack.Screen>
+
+      <Stack.Screen name="Estoque" options={{ title: "Estoque" }}>
+        {() => <EstoqueScreen usuario={usuario} />}
+      </Stack.Screen>
+
+      <Stack.Screen name="Vitrine" options={{ title: "Painel de Controle" }}>
+        {() => <VitrineScreen usuario={usuario} />}
+      </Stack.Screen>
+
+      <Stack.Screen name="CadastrarProdutos" options={{ title: "Cadastrar Produtos" }}>
+        {() => <CadastrarProdutosScreen usuario={usuario} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 
-export default function LoginScreen({ navigation, setLogin }) {
+export default function LoginScreen({ navigation, setLogin, setUsuario }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [loading, setLoading] = useState(false); // estado para loading
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !senha) {
@@ -13,7 +13,7 @@ export default function LoginScreen({ navigation, setLogin }) {
     }
 
     try {
-      setLoading(true); // inicia o loading
+      setLoading(true);
       const response = await fetch("https://nodejs-production-43c7.up.railway.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -21,17 +21,16 @@ export default function LoginScreen({ navigation, setLogin }) {
       });
 
       const data = await response.json();
-      setLoading(false); // para o loading
+      setLoading(false);
 
       if (data.success) {
-        // navega para Home passando usuário
-        navigation.navigate("Início", { screen: "Home", params: { username: data.usuario.nome } });
+        setUsuario(data.usuario); // salva usuário globalmente
         setLogin(true);
       } else {
         alert(data.error || "Credenciais inválidas");
       }
     } catch (err) {
-      setLoading(false); // garante que o loading pare mesmo se der erro
+      setLoading(false);
       console.log(err);
       alert("Erro ao conectar com o servidor");
     }
@@ -58,18 +57,10 @@ export default function LoginScreen({ navigation, setLogin }) {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Entrar</Text>
-        )}
+        {loading ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.buttonText}>Entrar</Text>}
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.buttonOutline}
-        onPress={() => navigation.navigate("Register")}
-        disabled={loading}
-      >
+      <TouchableOpacity style={styles.buttonOutline} onPress={() => navigation.navigate("Register")} disabled={loading}>
         <Text style={styles.buttonOutlineText}>Cadastrar</Text>
       </TouchableOpacity>
     </View>

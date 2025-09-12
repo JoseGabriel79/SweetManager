@@ -7,7 +7,6 @@ export default function HomeScreen({ usuario }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("👤 Usuario recebido na HomeScreen:", usuario);
     if (usuario) {
       setDadosUsuario(usuario);
     } else {
@@ -24,21 +23,19 @@ export default function HomeScreen({ usuario }) {
     );
   }
 
-  // Corrige imagem base64 sem tipo definido
+  // Garante que imagemPerfil tenha prefixo MIME correto
   const imagemPerfilCorrigida = dadosUsuario.imagemPerfil
-    ? String(dadosUsuario.imagemPerfil).startsWith("data:image/")
+    ? dadosUsuario.imagemPerfil.startsWith("data:image/")
       ? dadosUsuario.imagemPerfil
-      : dadosUsuario.imagemPerfil.startsWith("data:image")
-        ? dadosUsuario.imagemPerfil.replace("data:image;base64,", "data:image/jpeg;base64,")
-        : `data:image/jpeg;base64,${dadosUsuario.imagemPerfil}`
+      : `data:image/jpeg;base64,${dadosUsuario.imagemPerfil}`
     : null;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Sweet Manager</Text>
-        <View style={{ alignItems: "center", flexDirection: "row", gap: 10 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>{dadosUsuario.nome}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <Text style={styles.nomeUsuario}>{dadosUsuario.nome}</Text>
           <Image
             source={
               imagemPerfilCorrigida
@@ -76,6 +73,9 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginBottom: 20,
   },
+  title: { fontSize: 24, fontWeight: "bold" },
+  nomeUsuario: { fontWeight: "bold", fontSize: 20 },
+  image: { width: 50, height: 50, borderRadius: 25, backgroundColor: "#ddd" },
   cards: {
     flex: 1,
     flexDirection: "row",
@@ -85,6 +85,4 @@ const styles = StyleSheet.create({
     gap: 15,
     paddingVertical: 20,
   },
-  title: { fontSize: 24, fontWeight: "bold" },
-  image: { width: 50, height: 50, borderRadius: 25, backgroundColor: "#ddd" },
 });
