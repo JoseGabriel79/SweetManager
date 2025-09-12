@@ -32,7 +32,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       setLoading(true);
 
       let imagemBase64 = null;
-      if (imagemPerfil) imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
+      if (imagemPerfil) imagemBase64 = `data:image/jpeg;base64,${imagemPerfil.base64}`;
 
       const response = await axios.post("https://nodejs-production-43c7.up.railway.app/usuarios", {
         nome: username,
