@@ -1,41 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
+// HomeScreen.js (corrigido)
+import React from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 import CardsHome from "./CardsHome";
 
-export default function HomeScreen({ route }) {
-  const [usuario, setUsuario] = useState({ nome: "Visitante", imagemPerfil: null });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Recebe os params do LoginScreen
-    const params = route.params;
-    if (params && params.usuario) {
-      setUsuario({
-        nome: params.usuario.nome || "Visitante",
-        imagemPerfil: params.usuario.imagemPerfil || null,
-      });
-    }
-    setLoading(false);
-  }, [route.params]);
-
-  if (loading) {
-    return (
-      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
-        <ActivityIndicator size="large" color="#196496" />
-      </View>
-    );
-  }
+export default function HomeScreen({ usuario }) {
+  const dadosUsuario = usuario || { nome: "Visitante", imagemPerfil: null };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Sweet Manager</Text>
         <View style={{ alignItems: "center", flexDirection: "row", gap: 10 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>{usuario.nome}</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>{dadosUsuario.nome}</Text>
           <Image
             source={
-              usuario.imagemPerfil
-                ? { uri: usuario.imagemPerfil }
+              dadosUsuario.imagemPerfil
+                ? { uri: dadosUsuario.imagemPerfil }
                 : require("../imagens/ImagensPerfil/pinguim.png")
             }
             style={styles.image}

@@ -1,7 +1,8 @@
+// LoginScreen.js (corrigido)
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 
-export default function LoginScreen({ navigation, setLogin, setUsername }) {
+export default function LoginScreen({ navigation, setLogin, setUsername, setUsuario }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
@@ -15,8 +16,9 @@ export default function LoginScreen({ navigation, setLogin, setUsername }) {
       const data = await response.json();
 
       if (data.success) {
-        setUsername(data.usuario.nome); // salva nome do usuário
-        setLogin(true); // ativa a Tab Navigator
+        setUsername(data.usuario.nome);
+        setUsuario(data.usuario); // 🔥 salva o objeto inteiro do usuário
+        setLogin(true);
       } else {
         Alert.alert("Erro", data.error || "Credenciais inválidas");
       }

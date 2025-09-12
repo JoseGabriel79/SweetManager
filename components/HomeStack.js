@@ -1,3 +1,4 @@
+// HomeStack.js (corrigido)
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "./HomeScreen";
@@ -5,13 +6,10 @@ import EstoqueScreen from "./EstoqueScreen";
 import ClientesScreen from "./ClientesScreen";
 import CadastrarProdutosScreen from "./CadastrarProdutosScreen";
 import VitrineScreen from "./VitrineScreen";
-import LoginScreen from "./LoginScreen";
 
 const Stack = createStackNavigator();
 
-export default function HomeStack() {
-
-
+export default function HomeStack({ usuario }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -22,32 +20,13 @@ export default function HomeStack() {
         headerTitleAlign: "center",
       }}
     >
-
-      <Stack.Screen
-        options={{ headerShown: false }}
-        name="Home"
-        component={HomeScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Clientes" }}
-        name="Clientes"
-        component={ClientesScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Estoque" }}
-        name="Estoque"
-        component={EstoqueScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Painel de Controle" }}
-        name="Vitrine"
-        component={VitrineScreen}
-      />
-      <Stack.Screen
-        options={{ title: "Cadastrar Produtos" }}
-        name="CadastrarProdutos"
-        component={CadastrarProdutosScreen}
-      />
+      <Stack.Screen name="Home" options={{ headerShown: false }}>
+        {(props) => <HomeScreen {...props} usuario={usuario} />} {/* 🔥 passa o usuário como prop */}
+      </Stack.Screen>
+      <Stack.Screen name="Clientes" component={ClientesScreen} options={{ title: "Clientes" }} />
+      <Stack.Screen name="Estoque" component={EstoqueScreen} options={{ title: "Estoque" }} />
+      <Stack.Screen name="Vitrine" component={VitrineScreen} options={{ title: "Painel de Controle" }} />
+      <Stack.Screen name="CadastrarProdutos" component={CadastrarProdutosScreen} options={{ title: "Cadastrar Produtos" }} />
     </Stack.Navigator>
   );
 }
