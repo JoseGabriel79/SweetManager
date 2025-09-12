@@ -20,7 +20,7 @@ export default function HomeStack({ usuario }) {
       }}
     >
       {/* ✅ CORREÇÃO: usamos children como função */}
-      <Stack.Screen name="Inicio" options={{ headerShown: false }}>
+      <Stack.Screen name="Home" options={{ headerShown: false }}>
         {() => <HomeScreen usuario={usuario} />}
       </Stack.Screen>
 
