@@ -1,4 +1,3 @@
-// RegisterScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -20,39 +19,22 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [imagemPerfil, setImagemPerfil] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Função para gerar base64 com tipo correto
-  const getImagemBase64 = (imagem) => {
-    if (!imagem) return null;
-
-    // Detecta a extensão do arquivo
-    const extensao = imagem.fileName?.split(".").pop()?.toLowerCase() || "jpeg";
-
-    // Define MIME type correto
-    let mimeType = "jpeg";
-    if (extensao === "png") mimeType = "png";
-    else if (extensao === "jpg" || extensao === "jpeg") mimeType = "jpeg";
-    else mimeType = "jpeg"; // fallback
-
-    return `data:image/${mimeType};base64,${imagem.base64}`;
-  };
-
   // Escolher imagem do perfil
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType.Image,
+        mediaTypes: ImagePicker.MediaType.Images, // ✅ API nova
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.5,
         base64: true,
       });
 
-      if (!result.canceled) {
-        setImagemPerfil(result.assets[0]);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setImagemPerfil(result.assets[0]); // assets[0] tem uri, base64 e type
       }
     } catch (err) {
-      console.log(err);
-      Alert.alert("Erro", "Não foi possível selecionar a imagem.");
+      console.log("Erro ao escolher imagem:", err);
     }
   };
 
@@ -66,7 +48,11 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     try {
       setLoading(true);
 
-      const imagemBase64 = getImagemBase64(imagemPerfil);
+      let imagemBase64 = null;
+      if (imagemPerfil) {
+        // Sempre adiciona prefixo MIME
+        imagemBase64 = `data:image/jpeg;base64,${imagemPerfil.base64}`;
+      }
 
       const response = await axios.post(
         "https://nodejs-production-43c7.up.railway.app/usuarios",
@@ -83,7 +69,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
         setLogin(true);
-        setUsuario(response.data.usuario); // salva usuário no app
+        setUsuario(response.data.usuario); // salva usuário completo
         navigation.navigate("Início", { screen: "Home", params: { username } });
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
@@ -140,6 +126,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       <TouchableOpacity
         style={styles.buttonOutline}
         onPress={() => navigation.goBack()}
+        disabled={loading}
       >
         <Text style={styles.buttonOutlineText}>Voltar para Login</Text>
       </TouchableOpacity>
@@ -148,14 +135,71 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 20, backgroundColor: "#E9F1FE" },
-  title: { fontSize: 28, fontWeight: "bold", color: "#196496", marginBottom: 20 },
-  imagePicker: { width: 120, height: 120, borderRadius: 60, backgroundColor: "#ddd", marginBottom: 15, alignItems: "center", justifyContent: "center" },
-  imageText: { color: "#555", textAlign: "center", fontSize: 12 },
-  image: { width: 120, height: 120, borderRadius: 60 },
-  input: { width: "100%", padding: 12, borderRadius: 10, borderWidth: 1, borderColor: "#ccc", backgroundColor: "#fff", marginBottom: 15 },
-  button: { width: "100%", paddingVertical: 14, borderRadius: 12, backgroundColor: "#196496", alignItems: "center", marginBottom: 10 },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  buttonOutline: { width: "100%", paddingVertical: 14, borderRadius: 12, borderWidth: 2, borderColor: "#196496", alignItems: "center" },
-  buttonOutlineText: { color: "#196496", fontWeight: "bold", fontSize: 16 },
+  container: {
+    flex: 1, 
+    alignItems: "center", 
+    justifyContent: "center", 
+    padding: 20, 
+    backgroundColor: "#E9F1FE"
+  },
+  title: { 
+    fontSize: 28, 
+    fontWeight: "bold", 
+    color: "#196496", 
+    marginBottom: 20 
+  },
+  imagePicker: { 
+    width: 120, 
+    height: 120, 
+    borderRadius: 60, 
+    backgroundColor: "#ddd", 
+    marginBottom: 15, 
+    alignItems: "center", 
+    justifyContent: "center" 
+  },
+  imageText: { 
+    color: "#555", 
+    textAlign: "center", 
+    fontSize: 12 
+  },
+  image: { 
+    width: 120, 
+    height: 120, 
+    borderRadius: 60 
+  },
+  input: { 
+    width: "100%", 
+    padding: 12, 
+    borderRadius: 10, 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    backgroundColor: "#fff", 
+    marginBottom: 15 
+  },
+  button: { 
+    width: "100%", 
+    paddingVertical: 14, 
+    borderRadius: 12, 
+    backgroundColor: "#196496", 
+    alignItems: "center", 
+    marginBottom: 10 
+  },
+  buttonText: { 
+    color: "#fff", 
+    fontWeight: "bold", 
+    fontSize: 16 
+  },
+  buttonOutline: { 
+    width: "100%", 
+    paddingVertical: 14, 
+    borderRadius: 12, 
+    borderWidth: 2, 
+    borderColor: "#196496", 
+    alignItems: "center" 
+  },
+  buttonOutlineText: { 
+    color: "#196496", 
+    fontWeight: "bold", 
+    fontSize: 16 
+  },
 });

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Image } from "react-native";
 
 export default function LoginScreen({ navigation, setLogin, setUsuario }) {
   const [email, setEmail] = useState("");
@@ -8,12 +8,13 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
 
   const handleLogin = async () => {
     if (!email || !senha) {
-      alert("Preencha todos os campos!");
+      Alert.alert("Erro", "Preencha todos os campos!");
       return;
     }
 
     try {
       setLoading(true);
+
       const response = await fetch("https://nodejs-production-43c7.up.railway.app/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -24,15 +25,23 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
       setLoading(false);
 
       if (data.success) {
-        setUsuario(data.usuario); // salva usuário globalmente
+        const usuario = data.usuario;
+
+        // Garante prefixo MIME para a imagem, se houver
+        if (usuario.imagemPerfil && !usuario.imagemPerfil.startsWith("data:image/")) {
+          usuario.imagemPerfil = `data:image/jpeg;base64,${usuario.imagemPerfil}`;
+        }
+
+        setUsuario(usuario); // salva o usuário completo
         setLogin(true);
+        navigation.navigate("Início", { screen: "Home", params: { username: usuario.nome } });
       } else {
-        alert(data.error || "Credenciais inválidas");
+        Alert.alert("Erro", data.error || "Credenciais inválidas");
       }
     } catch (err) {
       setLoading(false);
       console.log(err);
-      alert("Erro ao conectar com o servidor");
+      Alert.alert("Erro", "Erro ao conectar com o servidor");
     }
   };
 
@@ -57,10 +66,18 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.buttonText}>Entrar</Text>}
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Entrar</Text>
+        )}
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonOutline} onPress={() => navigation.navigate("Register")} disabled={loading}>
+      <TouchableOpacity
+        style={styles.buttonOutline}
+        onPress={() => navigation.navigate("Register")}
+        disabled={loading}
+      >
         <Text style={styles.buttonOutlineText}>Cadastrar</Text>
       </TouchableOpacity>
     </View>
