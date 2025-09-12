@@ -29,7 +29,7 @@ export default function HomeScreen({ usuario }) {
       <View style={styles.header}>
         <Text style={styles.title}>Sweet Manager</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          {console.log(dadosUsuario.imagemPerfil)}
+          {console.log("Imagem do perfil : ", dadosUsuario)}
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>{dadosUsuario.nome}</Text>
           <Image
             source={

@@ -24,7 +24,7 @@ function AppTabs({ usuario }) {
       }}
     >
       <Tab.Screen
-        name="Início"
+        name="Inicio"
         children={() => <HomeStack usuario={usuario} />}
         options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
       />
