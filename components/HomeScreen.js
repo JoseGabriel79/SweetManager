@@ -1,10 +1,28 @@
-// HomeScreen.js (corrigido)
-import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+// HomeScreen.js (corrigido com loading)
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
 import CardsHome from "./CardsHome";
 
 export default function HomeScreen({ usuario }) {
-  const dadosUsuario = usuario || { nome: "Visitante", imagemPerfil: null };
+  const [dadosUsuario, setDadosUsuario] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (usuario) {
+      setDadosUsuario(usuario);
+    } else {
+      setDadosUsuario({ nome: "Visitante", imagemPerfil: null });
+    }
+    setLoading(false);
+  }, [usuario]);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color="#196496" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

@@ -1,15 +1,15 @@
+// RegisterScreen.js (corrigido)
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 
-export default function RegisterScreen({ navigation, setLogin, setUsername }) {
+export default function RegisterScreen({ navigation, setLogin, setUsername, setUsuario }) {
   const [username, setUser] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [imagemPerfil, setImagemPerfil] = useState(null);
 
-  // Escolher imagem do perfil
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -23,7 +23,6 @@ export default function RegisterScreen({ navigation, setLogin, setUsername }) {
     }
   };
 
-  // Cadastro no backend
   const handleRegister = async () => {
     if (!username || !email || !senha) {
       Alert.alert("Erro", "Preencha todos os campos!");
@@ -44,8 +43,9 @@ export default function RegisterScreen({ navigation, setLogin, setUsername }) {
       });
 
       if (response.data.success) {
-        setUsername(username); // salva nome do usuário
-        setLogin(true);        // ativa Tab Navigator
+        setUsername(username);
+        setUsuario(response.data.usuario); // 🔥 salva o usuário retornado
+        setLogin(true);
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }
@@ -67,27 +67,9 @@ export default function RegisterScreen({ navigation, setLogin, setUsername }) {
         )}
       </TouchableOpacity>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Usuário"
-        value={username}
-        onChangeText={setUser}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
-      />
+      <TextInput style={styles.input} placeholder="Usuário" value={username} onChangeText={setUser} />
+      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+      <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={senha} onChangeText={setSenha} />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Cadastrar</Text>
