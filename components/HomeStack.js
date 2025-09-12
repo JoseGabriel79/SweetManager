@@ -1,4 +1,3 @@
-// HomeStack.js (corrigido)
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "./HomeScreen";
@@ -20,9 +19,11 @@ export default function HomeStack({ usuario }) {
         headerTitleAlign: "center",
       }}
     >
+      {/* ✅ CORREÇÃO: usamos children como função */}
       <Stack.Screen name="Home" options={{ headerShown: false }}>
-        {(props) => <HomeScreen {...props} usuario={usuario} />} {/* 🔥 passa o usuário como prop */}
+        {() => <HomeScreen usuario={usuario} />}
       </Stack.Screen>
+
       <Stack.Screen name="Clientes" component={ClientesScreen} options={{ title: "Clientes" }} />
       <Stack.Screen name="Estoque" component={EstoqueScreen} options={{ title: "Estoque" }} />
       <Stack.Screen name="Vitrine" component={VitrineScreen} options={{ title: "Painel de Controle" }} />
