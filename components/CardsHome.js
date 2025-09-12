@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#51AFF9",
     borderRadius: 12,
     margin: 8,
-    width: "45%", // 2 cards por linha
+    width: isSmallScreen ? "90%" : "45%",
     alignItems: "center",
     justifyContent: "center",
     height: isSmallScreen ? "20%" : "25%",
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   title: {
-    fontSize: 20,
+    fontSize: isSmallScreen ? 25 : 28,
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
