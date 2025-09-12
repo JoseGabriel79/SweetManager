@@ -21,68 +21,76 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
   // Escolher imagem do perfil
   const pickImage = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType, // ✅ API nova
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.5,
-        base64: true,
-      });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+      base64: true,
+    });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setImagemPerfil(result.assets[0]); // assets[0] tem uri, base64 e type
+    if (!result.canceled) {
+      const asset = result.assets[0];
+      const fileExt = asset.uri.split(".").pop().toLowerCase();
+
+      const allowedTypes = ["jpg", "jpeg", "png", "gif"];
+      if (!allowedTypes.includes(fileExt)) {
+        Alert.alert(
+          "Formato inválido",
+          "Envie apenas imagens JPG, JPEG, PNG ou GIF."
+        );
+        return;
       }
-    } catch (err) {
-      console.log("Erro ao escolher imagem:", err);
+
+      setImagemPerfil(asset);
     }
   };
 
-const handleRegister = async () => {
-  if (!username || !email || !senha) {
-    Alert.alert("Erro", "Preencha todos os campos!");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    let imagemBase64 = null;
-    if (imagemPerfil) {
-      imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
+  // Cadastro no backend
+  const handleRegister = async () => {
+    if (!username || !email || !senha) {
+      Alert.alert("Erro", "Preencha todos os campos!");
+      return;
     }
 
-    const response = await axios.post(
-      "https://nodejs-production-43c7.up.railway.app/usuarios",
-      {
-        nome: username,
-        email,
-        senha,
-        imagemPerfil: imagemBase64,
+    try {
+      setLoading(true);
+
+      let imagemBase64 = null;
+      if (imagemPerfil) {
+        const mimeType = `image/${imagemPerfil.uri.split(".").pop().toLowerCase()}`;
+        imagemBase64 = `data:${mimeType};base64,${imagemPerfil.base64}`;
       }
-    );
 
-    setLoading(false);
+      const response = await axios.post(
+        "https://nodejs-production-43c7.up.railway.app/usuarios",
+        {
+          nome: username,
+          email,
+          senha,
+          imagemPerfil: imagemBase64,
+        }
+      );
 
-    if (response.data.success) {
-      Alert.alert("Sucesso", "Cadastro realizado!");
-      setUsuario(response.data.usuario); // salva o usuário
-      setLogin(true);
+      setLoading(false);
 
-      // ✅ Navegação corrigida: só precisa chamar a Tab
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Início" }],
-      });
-    } else {
-      Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
+      if (response.data.success) {
+        Alert.alert("Sucesso", "Cadastro realizado!");
+        setUsuario(response.data.usuario); // salva dados do usuário
+        setLogin(true); // loga automaticamente
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Início" }], // navegação para a Tab "Início"
+        });
+      } else {
+        Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error.response?.data || error.message);
+      Alert.alert("Erro", "Falha ao conectar com o servidor.");
     }
-  } catch (error) {
-    setLoading(false);
-    console.log(error.response?.data || error.message);
-    Alert.alert("Erro", "Falha ao conectar com o servidor.");
-  }
-};
+  };
 
   return (
     <View style={styles.container}>
@@ -139,70 +147,54 @@ const handleRegister = async () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    alignItems: "center", 
-    justifyContent: "center", 
-    padding: 20, 
-    backgroundColor: "#E9F1FE"
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "#E9F1FE",
   },
-  title: { 
-    fontSize: 28, 
-    fontWeight: "bold", 
-    color: "#196496", 
-    marginBottom: 20 
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#196496",
+    marginBottom: 20,
   },
-  imagePicker: { 
-    width: 120, 
-    height: 120, 
-    borderRadius: 60, 
-    backgroundColor: "#ddd", 
-    marginBottom: 15, 
-    alignItems: "center", 
-    justifyContent: "center" 
+  imagePicker: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "#ddd",
+    marginBottom: 15,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  imageText: { 
-    color: "#555", 
-    textAlign: "center", 
-    fontSize: 12 
+  imageText: { color: "#555", textAlign: "center", fontSize: 12 },
+  image: { width: 120, height: 120, borderRadius: 60 },
+  input: {
+    width: "100%",
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+    marginBottom: 15,
   },
-  image: { 
-    width: 120, 
-    height: 120, 
-    borderRadius: 60 
+  button: {
+    width: "100%",
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: "#196496",
+    alignItems: "center",
+    marginBottom: 10,
   },
-  input: { 
-    width: "100%", 
-    padding: 12, 
-    borderRadius: 10, 
-    borderWidth: 1, 
-    borderColor: "#ccc", 
-    backgroundColor: "#fff", 
-    marginBottom: 15 
+  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  buttonOutline: {
+    width: "100%",
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#196496",
+    alignItems: "center",
   },
-  button: { 
-    width: "100%", 
-    paddingVertical: 14, 
-    borderRadius: 12, 
-    backgroundColor: "#196496", 
-    alignItems: "center", 
-    marginBottom: 10 
-  },
-  buttonText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 16 
-  },
-  buttonOutline: { 
-    width: "100%", 
-    paddingVertical: 14, 
-    borderRadius: 12, 
-    borderWidth: 2, 
-    borderColor: "#196496", 
-    alignItems: "center" 
-  },
-  buttonOutlineText: { 
-    color: "#196496", 
-    fontWeight: "bold", 
-    fontSize: 16 
-  },
+  buttonOutlineText: { color: "#196496", fontWeight: "bold", fontSize: 16 },
 });
