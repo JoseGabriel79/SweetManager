@@ -31,14 +31,10 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
     if (!result.canceled) {
       const asset = result.assets[0];
-      const fileExt = asset.uri.split(".").pop().toLowerCase();
+      const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
 
-      const allowedTypes = ["jpg", "jpeg", "png", "gif"];
-      if (!allowedTypes.includes(fileExt)) {
-        Alert.alert(
-          "Formato inválido",
-          "Envie apenas imagens JPG, JPEG, PNG ou GIF."
-        );
+      if (!allowedTypes.includes(asset.type)) {
+        Alert.alert("Erro", "Escolha uma imagem JPEG ou PNG.");
         return;
       }
 
@@ -46,7 +42,6 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     }
   };
 
-  // Cadastro no backend
   const handleRegister = async () => {
     if (!username || !email || !senha) {
       Alert.alert("Erro", "Preencha todos os campos!");
@@ -58,8 +53,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
       let imagemBase64 = null;
       if (imagemPerfil) {
-        const mimeType = `image/${imagemPerfil.uri.split(".").pop().toLowerCase()}`;
-        imagemBase64 = `data:${mimeType};base64,${imagemPerfil.base64}`;
+        imagemBase64 = `data:${imagemPerfil.type};base64,${imagemPerfil.base64}`;
       }
 
       const response = await axios.post(
@@ -76,12 +70,9 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setUsuario(response.data.usuario); // salva dados do usuário
-        setLogin(true); // loga automaticamente
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Início" }], // navegação para a Tab "Início"
-        });
+        setLogin(true);
+        setUsuario(response.data.usuario);
+        navigation.navigate("Início", { screen: "Home" });
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }
@@ -137,7 +128,6 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       <TouchableOpacity
         style={styles.buttonOutline}
         onPress={() => navigation.goBack()}
-        disabled={loading}
       >
         <Text style={styles.buttonOutlineText}>Voltar para Login</Text>
       </TouchableOpacity>
@@ -146,55 +136,14 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#E9F1FE",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#196496",
-    marginBottom: 20,
-  },
-  imagePicker: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: "#ddd",
-    marginBottom: 15,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 20, backgroundColor: "#E9F1FE" },
+  title: { fontSize: 28, fontWeight: "bold", color: "#196496", marginBottom: 20 },
+  imagePicker: { width: 120, height: 120, borderRadius: 60, backgroundColor: "#ddd", marginBottom: 15, alignItems: "center", justifyContent: "center" },
   imageText: { color: "#555", textAlign: "center", fontSize: 12 },
   image: { width: 120, height: 120, borderRadius: 60 },
-  input: {
-    width: "100%",
-    padding: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#fff",
-    marginBottom: 15,
-  },
-  button: {
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: "#196496",
-    alignItems: "center",
-    marginBottom: 10,
-  },
+  input: { width: "100%", padding: 12, borderRadius: 10, borderWidth: 1, borderColor: "#ccc", backgroundColor: "#fff", marginBottom: 15 },
+  button: { width: "100%", paddingVertical: 14, borderRadius: 12, backgroundColor: "#196496", alignItems: "center", marginBottom: 10 },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  buttonOutline: {
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#196496",
-    alignItems: "center",
-  },
+  buttonOutline: { width: "100%", paddingVertical: 14, borderRadius: 12, borderWidth: 2, borderColor: "#196496", alignItems: "center" },
   buttonOutlineText: { color: "#196496", fontWeight: "bold", fontSize: 16 },
 });

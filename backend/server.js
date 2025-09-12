@@ -35,18 +35,17 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
   }
 });
 
+// Cadastro de usuário
 app.post("/usuarios", async (req, res) => {
   const { nome, email, senha, imagemPerfil } = req.body;
 
   try {
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    // Garante que a imagemPerfil tenha prefixo MIME correto
+    // Usa exatamente o que veio do cliente
     let imagemFinal = null;
     if (imagemPerfil) {
-      imagemFinal = imagemPerfil.startsWith("data:image/")
-        ? imagemPerfil
-        : `data:image/jpeg;base64,${imagemPerfil}`;
+      imagemFinal = imagemPerfil; // PNG ou JPEG com MIME correto
     }
 
     const result = await pool.query(
