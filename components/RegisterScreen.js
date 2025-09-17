@@ -32,7 +32,6 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType.Image,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.3, // compressão p/ evitar erro 413
@@ -40,11 +39,17 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       });
 
       if (!result.canceled) {
-        const asset = result.assets[0];
-        setImagemPerfil({
-          uri: asset.uri,
-          base64: `data:image/jpeg;base64,${asset.base64}`, // ✅ já pronto
-        });
+        const novaImagem = {
+          uriOriginal: result.assets[0].uri,   // só pra ter referência
+          base64: result.assets[0].base64,  // string Base64
+        }
+
+        setImagemPerfil((prev) => [...prev, novaImagem])
+        // const asset = result.assets[0]
+        // setImagemPerfil({
+        //   uri: asset.uri,
+        //   base64: `data:image/jpeg;base64,${asset.base64}`, // ✅ já pronto
+        // });
       }
     } catch (err) {
       console.log("Erro ao escolher imagem:", err);
