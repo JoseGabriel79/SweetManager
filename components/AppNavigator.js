@@ -30,7 +30,7 @@ function AppTabs({ usuario }) {
       />
       <Tab.Screen
         name="Relatórios"
-        options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
+        options={{ tabBarIcon: () => <Feather name="activity" size={25} color="#042136" /> }}
       >
         {() => (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -39,7 +39,7 @@ function AppTabs({ usuario }) {
         )}
       </Tab.Screen>
       <Tab.Screen name="Configurações"
-        options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
+        options={{ tabBarIcon: () => <Feather name="settings" size={25} color="#042136" /> }}
       >
         {() => (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
