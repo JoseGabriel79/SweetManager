@@ -44,7 +44,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
           base64: result.assets[0].base64,  // string Base64
         }
 
-        setImagemPerfil((prev) => [...prev, novaImagem])
+        setImagemPerfil( novaImagem)
         // const asset = result.assets[0]
         // setImagemPerfil({
         //   uri: asset.uri,
