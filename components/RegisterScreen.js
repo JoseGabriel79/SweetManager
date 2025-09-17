@@ -32,7 +32,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: [ImagePicker.MediaType.image], // ✅ corrigido
+        mediaTypes: ImagePicker.MediaType.Image,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.3, // compressão p/ evitar erro 413
