@@ -28,14 +28,19 @@ function AppTabs({ usuario }) {
         children={() => <HomeStack usuario={usuario} />}
         options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
       />
-      <Tab.Screen name="Relatórios">
+      <Tab.Screen
+        name="Relatórios"
+        options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
+      >
         {() => (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <Text>Relatórios</Text>
           </View>
         )}
       </Tab.Screen>
-      <Tab.Screen name="Configurações">
+      <Tab.Screen name="Configurações"
+        options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
+      >
         {() => (
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <Text>Configurações</Text>

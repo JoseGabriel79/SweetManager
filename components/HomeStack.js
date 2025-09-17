@@ -19,9 +19,7 @@ export default function HomeStack({ usuario }) {
         headerTitleAlign: "center",
       }}
     >
-      {
       
-      /* ✅ CORREÇÃO: usamos children como função */}
       <Stack.Screen name="Home" options={{ headerShown: false }}>
         {() => <HomeScreen usuario={usuario} />}
       </Stack.Screen>
