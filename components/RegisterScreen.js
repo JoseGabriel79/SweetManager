@@ -19,61 +19,36 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [imagemPerfil, setImagemPerfil] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ pede permissão
+  // ✅ pede permissão para acessar a galeria
   useEffect(() => {
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permissão negada", "Ative a permissão para escolher imagens.");
       }
-      const { status: camStatus } = await ImagePicker.requestCameraPermissionsAsync();
-      if (camStatus !== "granted") {
-        Alert.alert("Permissão negada", "Ative a permissão para usar a câmera.");
-      }
     })();
   }, []);
 
-  const pickFromGallery = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: [ImagePicker.MediaType.image],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.3,
-      base64: true,
-    });
-
-    if (!result.canceled) {
-      const asset = result.assets[0];
-      setImagemPerfil({
-        uri: asset.uri,
-        base64: `data:image/jpeg;base64,${asset.base64}`,
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: [ImagePicker.MediaType.image], // ✅ corrigido
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.3, // compressão p/ evitar erro 413
+        base64: true,
       });
+
+      if (!result.canceled) {
+        const asset = result.assets[0];
+        setImagemPerfil({
+          uri: asset.uri,
+          base64: `data:image/jpeg;base64,${asset.base64}`, // ✅ já pronto
+        });
+      }
+    } catch (err) {
+      console.log("Erro ao escolher imagem:", err);
     }
-  };
-
-  const pickFromCamera = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.3,
-      base64: true,
-    });
-
-    if (!result.canceled) {
-      const asset = result.assets[0];
-      setImagemPerfil({
-        uri: asset.uri,
-        base64: `data:image/jpeg;base64,${asset.base64}`,
-      });
-    }
-  };
-
-  const escolherImagem = () => {
-    Alert.alert("Selecionar Imagem", "Escolha uma opção", [
-      { text: "Galeria", onPress: pickFromGallery },
-      { text: "Câmera", onPress: pickFromCamera },
-      { text: "Cancelar", style: "cancel" },
-    ]);
   };
 
   const handleRegister = async () => {
@@ -115,7 +90,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     <View style={styles.container}>
       <Text style={styles.title}>Cadastro</Text>
 
-      <TouchableOpacity onPress={escolherImagem} style={styles.imagePicker}>
+      <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
         {imagemPerfil ? (
           <Image source={{ uri: imagemPerfil.uri }} style={styles.image} />
         ) : (
