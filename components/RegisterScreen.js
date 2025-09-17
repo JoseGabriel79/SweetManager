@@ -12,14 +12,20 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, // ✅ corrigido
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
       base64: true,
     });
 
-    if (!result.canceled) setImagemPerfil(result.assets[0]);
+    if (!result.canceled) {
+      const asset = result.assets[0];
+      setImagemPerfil({
+        uri: asset.uri,
+        base64: `data:image/jpeg;base64,${asset.base64}`, // ✅ já monta a string completa
+      });
+    }
   };
 
   const handleRegister = async () => {
@@ -31,22 +37,19 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     try {
       setLoading(true);
 
-      let imagemBase64 = null;
-      if (imagemPerfil) imagemBase64 = `data:image/jpeg;base64,${imagemPerfil.base64}`;
-
       const response = await axios.post("https://nodejs-production-43c7.up.railway.app/usuarios", {
         nome: username,
         email,
         senha,
-        imagemPerfil: imagemBase64,
+        imagemPerfil: imagemPerfil ? imagemPerfil.base64 : null, // ✅ envia já formatado
       });
 
       setLoading(false);
 
       if (response.data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setUsuario(response.data.usuario);
-        setLogin(true);
+        setUsuario(response.data.usuario); // salva usuário logado
+        setLogin(true); // autentica
       } else {
         Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
       }

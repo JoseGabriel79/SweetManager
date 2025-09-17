@@ -28,7 +28,10 @@ export default function HomeScreen({ usuario }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Sweet Manager</Text>
+        <View>
+          <Text style={styles.title}>Sweet Manager</Text>
+        </View>
+
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <Text style={{ fontWeight: "bold", fontSize: 20 }}>
             {dadosUsuario.nome}
@@ -42,6 +45,7 @@ export default function HomeScreen({ usuario }) {
             style={styles.image}
           />
         </View>
+
       </View>
 
       <View style={styles.cards}>
