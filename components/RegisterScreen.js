@@ -12,10 +12,10 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // ✅ corrigido
+      mediaTypes: [ImagePicker.MediaType.Image],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.5,
+      quality: 0.3,
       base64: true,
     });
 
