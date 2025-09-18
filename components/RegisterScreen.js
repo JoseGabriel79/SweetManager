@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
 
 export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [username, setUsername] = useState("");
@@ -22,9 +21,13 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   // ✅ pede permissão para acessar a galeria
   useEffect(() => {
     (async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permissão negada", "Ative a permissão para escolher imagens.");
+        Alert.alert(
+          "Permissão negada",
+          "Ative a permissão para escolher imagens."
+        );
       }
     })();
   }, []);
@@ -32,24 +35,14 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaType.Images, // ✅ corrigido (sem deprecated)
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.3, // compressão p/ evitar erro 413
-        base64: true,
+        quality: 0.7,
       });
 
       if (!result.canceled) {
-        const novaImagem = {
-          uriOriginal: result.assets[0].uri,   // só pra ter referência
-          base64: result.assets[0].base64,  // string Base64
-        }
-
-        setImagemPerfil( novaImagem)
-        // const asset = result.assets[0]
-        // setImagemPerfil({
-        //   uri: asset.uri,
-        //   base64: `data:image/jpeg;base64,${asset.base64}`, // ✅ já pronto
-        // });
+        setImagemPerfil(result.assets[0].uri); // salva URI para upload
       }
     } catch (err) {
       console.log("Erro ao escolher imagem:", err);
@@ -65,28 +58,43 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     try {
       setLoading(true);
 
-      const response = await axios.post(
+      const formData = new FormData();
+      formData.append("nome", username);
+      formData.append("email", email);
+      formData.append("senha", senha);
+
+      if (imagemPerfil) {
+        formData.append("imagemPerfil", {
+          uri: imagemPerfil,
+          type: "image/jpeg",
+          name: "perfil.jpg",
+        });
+      }
+
+      const response = await fetch(
         "https://nodejs-production-43c7.up.railway.app/usuarios",
         {
-          nome: username,
-          email,
-          senha,
-          imagemPerfil: imagemPerfil ? imagemPerfil.base64 : null,
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
+      const data = await response.json();
       setLoading(false);
 
-      if (response.data.success) {
+      if (data.success) {
         Alert.alert("Sucesso", "Cadastro realizado!");
-        setUsuario(response.data.usuario);
+        setUsuario(data.usuario);
         setLogin(true);
       } else {
-        Alert.alert("Erro", response.data.error || "Não foi possível cadastrar.");
+        Alert.alert("Erro", data.error || "Não foi possível cadastrar.");
       }
     } catch (error) {
       setLoading(false);
-      console.log(error.response?.data || error.message);
+      console.log(error.message);
       Alert.alert("Erro", "Falha ao conectar com o servidor.");
     }
   };
@@ -97,7 +105,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
       <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
         {imagemPerfil ? (
-          <Image source={{ uri: imagemPerfil.uri }} style={styles.image} />
+          <Image source={{ uri: imagemPerfil }} style={styles.image} />
         ) : (
           <Text style={styles.imageText}>Escolher foto de perfil</Text>
         )}
@@ -126,14 +134,21 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       />
 
       {loading ? (
-        <ActivityIndicator size="large" color="#196496" style={{ marginVertical: 15 }} />
+        <ActivityIndicator
+          size="large"
+          color="#196496"
+          style={{ marginVertical: 15 }}
+        />
       ) : (
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
       )}
 
-      <TouchableOpacity style={styles.buttonOutline} onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        style={styles.buttonOutline}
+        onPress={() => navigation.goBack()}
+      >
         <Text style={styles.buttonOutlineText}>Voltar para Login</Text>
       </TouchableOpacity>
     </View>
