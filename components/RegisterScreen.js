@@ -15,7 +15,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [imagemPerfil, setImagemPerfil] = useState(null);
+  const [imagemperfil, setImagemPerfil] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
@@ -49,9 +49,9 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       formData.append("email", email);
       formData.append("senha", senha);
 
-      if (imagemPerfil) {
+      if (imagemperfil) {
         formData.append("imagemperfil", {
-          uri: imagemPerfil,
+          uri: imagemperfil,
           type: "image/jpeg",
           name: "perfil.jpg",
         });
@@ -90,8 +90,8 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       <Text style={styles.title}>Cadastro</Text>
 
       <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-        {imagemPerfil ? (
-          <Image source={{ uri: imagemPerfil }} style={styles.image} />
+        {imagemperfil ? (
+          <Image source={{ uri: imagemperfil }} style={styles.image} />
         ) : (
           <Text style={styles.imageText}>Escolher foto de perfil</Text>
         )}
