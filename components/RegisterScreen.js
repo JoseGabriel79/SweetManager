@@ -18,20 +18,6 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [imagemPerfil, setImagemPerfil] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ pede permissão para acessar a galeria
-  useEffect(() => {
-    (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permissão negada",
-          "Ative a permissão para escolher imagens."
-        );
-      }
-    })();
-  }, []);
-
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({

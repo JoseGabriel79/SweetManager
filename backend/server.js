@@ -1,21 +1,30 @@
- const express = require("express");
+const express = require("express");
 const cors = require("cors");
-const pool = require("./db"); // sua conexão Postgres
+const pool = require("./db"); // conexão Postgres
 const bcrypt = require("bcrypt");
+const multer = require("multer");
+const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
 const app = express();
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }))
 
-const corsOptions = {
+// Configuração do Supabase
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+// Configuração do multer (buffer em memória, não salva em disco)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Middlewares
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+app.use(cors({
   origin: ["http://localhost:8081", "https://duzeapp-production.up.railway.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
   credentials: true,
-};
-app.use(cors(corsOptions));
-app.use(express.json());
+}));
 
 /* =========================
    USUÁRIOS
@@ -37,49 +46,62 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
   }
 });
 
-// Cadastro de usuário
-app.post("/usuarios", async (req, res) => {
-  const { nome, email, senha, imagemPerfil } = req.body;
+// Cadastro de usuário (com upload da foto para Supabase)
+app.post("/usuarios", upload.single("imagemPerfil"), async (req, res) => {
+  const { nome, email, senha } = req.body;
 
   try {
-    const senhaHash = await bcrypt.hash(senha, 10);
+    let imagemURL = null;
 
-    // Usa exatamente o que veio do cliente
-    let imagemFinal = null;
-    if (imagemPerfil) {
-      imagemFinal = imagemPerfil; // PNG ou JPEG com MIME correto
+    // Se veio arquivo, manda para Supabase Storage
+    if (req.file) {
+      const filename = `perfil-${Date.now()}.jpg`;
+
+      const { error } = await supabase.storage
+        .from("usuarios") // bucket que você criou no Supabase
+        .upload(filename, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: true,
+        });
+
+      if (error) throw error;
+
+      // gera URL pública
+      const { data: publicData } = supabase.storage
+        .from("usuarios")
+        .getPublicUrl(filename);
+
+      imagemURL = publicData.publicUrl;
     }
 
+    const senhaHash = await bcrypt.hash(senha, 10);
+
     const result = await pool.query(
-      "INSERT INTO usuarios (nome, email, senha, imagemPerfil) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, imagemPerfil",
-      [nome, email, senhaHash, imagemFinal]
+      "INSERT INTO usuarios (nome,email,senha,imagemPerfil) VALUES ($1,$2,$3,$4) RETURNING id,nome,email,imagemPerfil",
+      [nome, email, senhaHash, imagemURL]
     );
 
-    res.status(201).json({
-      success: true,
-      usuario: result.rows[0],
-      message: "Usuário cadastrado com sucesso!"
-    });
+    res.status(201).json({ success: true, usuario: result.rows[0] });
   } catch (err) {
+    console.error("Erro no cadastro:", err.message);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-
+// Login
 app.post("/login", async (req, res) => {
   const { email, senha } = req.body;
   try {
     const result = await pool.query("SELECT * FROM usuarios WHERE email=$1", [email]);
-    if (!result.rowCount) return res.status(400).json({ success: false, error: "Usuário não encontrado" });
+    if (!result.rowCount)
+      return res.status(400).json({ success: false, error: "Usuário não encontrado" });
 
     const usuario = result.rows[0];
-    if (!(await bcrypt.compare(senha, usuario.senha))) return res.status(401).json({ success: false, error: "Senha incorreta" });
+    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+    if (!senhaCorreta)
+      return res.status(401).json({ success: false, error: "Senha incorreta" });
 
     delete usuario.senha;
-    if (usuario.imagemPerfil && !usuario.imagemPerfil.startsWith("data:image/")) {
-      usuario.imagemPerfil = `data:image/jpeg;base64,${usuario.imagemPerfil}`;
-    }
-
     res.json({ success: true, usuario });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
