@@ -21,7 +21,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType.images, // ✅ corrigido (sem deprecated)
+        mediaTypes: ImagePicker.MediaType, // ✅ corrigido (sem deprecated)
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
