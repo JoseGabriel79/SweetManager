@@ -50,7 +50,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       formData.append("senha", senha);
 
       if (imagemPerfil) {
-        formData.append("imagemPerfil", {
+        formData.append("imagemperfil", {
           uri: imagemPerfil,
           type: "image/jpeg",
           name: "perfil.jpg",

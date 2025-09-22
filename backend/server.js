@@ -37,7 +37,7 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
         nome TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         senha TEXT NOT NULL,
-        imagemPerfil TEXT
+        imagemperfil TEXT
       );
     `);
     res.json({ success: true, message: "Tabela usuarios criada/verificada" });
@@ -47,7 +47,7 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
 });
 
 // Cadastro de usuário (com upload da foto para Supabase)
-app.post("/usuarios", upload.single("imagemPerfil"), async (req, res) => {
+app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
   const { nome, email, senha } = req.body;
 
   try {
@@ -77,7 +77,7 @@ app.post("/usuarios", upload.single("imagemPerfil"), async (req, res) => {
     const senhaHash = await bcrypt.hash(senha, 10);
 
     const result = await pool.query(
-      "INSERT INTO usuarios (nome,email,senha,imagemPerfil) VALUES ($1,$2,$3,$4) RETURNING id,nome,email,imagemPerfil",
+      "INSERT INTO usuarios (nome,email,senha,imagemperfil) VALUES ($1,$2,$3,$4) RETURNING id,nome,email,imagemperfil",
       [nome, email, senhaHash, imagemURL]
     );
 
