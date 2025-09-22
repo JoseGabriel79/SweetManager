@@ -58,13 +58,17 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
       const filename = `perfil-${Date.now()}.jpg`;
 
       const { error } = await supabase.storage
-        .from("usuarios") // bucket que você criou no Supabase
+        .from("usuarios")
         .upload(filename, req.file.buffer, {
           contentType: req.file.mimetype,
           upsert: true,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erro ao enviar para Supabase:", error);
+        return res.status(500).json({ success: false, error: error.message });
+      }
+
 
       // gera URL pública
       const { data: publicData } = supabase.storage
