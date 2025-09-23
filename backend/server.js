@@ -181,6 +181,8 @@ require("dotenv").config();
 const app = express();
 
 // Configuração do Supabase
+console.log("Inicializando Supabase com URL:", process.env.SUPABASE_URL);
+console.log("Chave do Supabase (primeiros 10 caracteres):", process.env.SUPABASE_KEY.substring(0, 10) + "...");
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // Configuração do multer (buffer em memória, não salva em disco)
@@ -229,42 +231,66 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
 
     if (req.file) {
       // Gera um nome único para o arquivo
-      const filename = `perfil-${Date.now()}.jpg`;
+      const timestamp = Date.now();
+      const filename = `perfil-${timestamp}.jpg`;
       console.log("Tentando fazer upload do arquivo:", filename);
+      console.log("Tipo MIME:", req.file.mimetype);
+      console.log("Tamanho do buffer:", req.file.buffer.length);
 
-      // Verifica se o bucket existe, se não, cria
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const bucketExists = buckets.some(bucket => bucket.name === 'usuarios');
-      
-      if (!bucketExists) {
-        console.log("Criando bucket 'usuarios'");
-        await supabase.storage.createBucket('usuarios', {
-          public: true
-        });
+      try {
+        // Verifica se o bucket existe, se não, cria
+        const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+        
+        if (bucketsError) {
+          console.error("Erro ao listar buckets:", bucketsError);
+          // Continua mesmo com erro, tentando criar o bucket
+        }
+        
+        const bucketExists = buckets && buckets.some(bucket => bucket.name === 'usuarios');
+        
+        if (!bucketExists) {
+          console.log("Criando bucket 'usuarios'");
+          const { error: createBucketError } = await supabase.storage.createBucket('usuarios', {
+            public: true
+          });
+          
+          if (createBucketError) {
+            console.error("Erro ao criar bucket:", createBucketError);
+            // Continua mesmo com erro, tentando fazer upload
+          }
+        }
+
+        // Faz o upload do arquivo
+        const { data, error } = await supabase.storage
+          .from("usuarios")
+          .upload(filename, req.file.buffer, {
+            contentType: req.file.mimetype || 'image/jpeg',
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (error) {
+          console.error("Erro ao enviar para Supabase:", error);
+          // Continua mesmo com erro, para salvar o usuário sem imagem
+        } else {
+          console.log("Upload bem-sucedido:", data);
+
+          // Gera URL pública
+          const { data: publicData } = supabase.storage
+            .from("usuarios")
+            .getPublicUrl(filename);
+
+          if (publicData && publicData.publicUrl) {
+            imagemURL = publicData.publicUrl;
+            console.log("Imagem salva no Supabase:", imagemURL);
+          } else {
+            console.error("Falha ao obter URL pública");
+          }
+        }
+      } catch (uploadError) {
+        console.error("Erro durante processo de upload:", uploadError);
+        // Continua mesmo com erro, para salvar o usuário sem imagem
       }
-
-      // Faz o upload do arquivo
-      const { data, error } = await supabase.storage
-        .from("usuarios")
-        .upload(filename, req.file.buffer, {
-          contentType: req.file.mimetype,
-          upsert: true,
-        });
-
-      if (error) {
-        console.error("Erro ao enviar para Supabase:", error);
-        return res.status(500).json({ success: false, error: error.message });
-      }
-
-      console.log("Upload bem-sucedido:", data);
-
-      // Gera URL pública
-      const { data: publicData } = supabase.storage
-        .from("usuarios")
-        .getPublicUrl(filename);
-
-      imagemURL = publicData.publicUrl;
-      console.log("Imagem salva no Supabase:", imagemURL);
     }
 
     const senhaHash = await bcrypt.hash(senha, 10);

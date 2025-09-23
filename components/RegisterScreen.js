@@ -221,14 +221,16 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType, // ✅ corrigido (sem deprecated)
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
+        aspect: [1, 1],
         quality: 0.5,
       });
 
       if (!result.canceled) {
-        setImagemPerfil(result.assets[0].uri); // salva URI para upload
-        console.log("Imagem escolhida imagem:", imagemperfil);
+        const selectedImage = result.assets[0].uri;
+        setImagemPerfil(selectedImage);
+        console.log("Imagem escolhida:", selectedImage);
       }
     } catch (err) {
       console.log("Erro ao escolher imagem:", err);
@@ -258,19 +260,21 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
         fileType = "image/jpeg";
       }
 
-      // Extrair o nome do arquivo da URI
-      const fileName = imagemperfil.split('/').pop();
+      // Extrair o nome do arquivo da URI ou gerar um nome único
+      const timestamp = Date.now();
+      const fileName = `perfil-${timestamp}.jpg`;
       
       console.log("Enviando imagem:", {
         uri: imagemperfil,
         type: fileType,
-        name: fileName || `perfil-${Date.now()}.jpg`,
+        name: fileName,
       });
 
+      // Adicionar a imagem ao FormData com o nome correto
       formData.append("imagemperfil", {
         uri: imagemperfil,
         type: fileType,
-        name: fileName || `perfil-${Date.now()}.jpg`,
+        name: fileName,
       });
     }
 
