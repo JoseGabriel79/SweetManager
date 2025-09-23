@@ -28,7 +28,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
 
       if (!result.canceled) {
         setImagemPerfil(result.assets[0].uri); // salva URI para upload
-        console.log("Imagem escolhida imagem:", err);
+        console.log("Imagem escolhida imagem:", imagemperfil);
       }
     } catch (err) {
       console.log("Erro ao escolher imagem:", err);
