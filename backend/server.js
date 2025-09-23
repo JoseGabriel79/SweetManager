@@ -16,8 +16,8 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Middlewares
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ limit: "20mb", extended: true }));
 
 app.use(cors({
   origin: ["http://localhost:8081", "https://duzeapp-production.up.railway.app"],
