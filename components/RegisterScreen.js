@@ -23,12 +23,12 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaType, // ✅ corrigido (sem deprecated)
         allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.7,
+        quality: 0.5,
       });
 
       if (!result.canceled) {
         setImagemPerfil(result.assets[0].uri); // salva URI para upload
+        console.log("Imagem escolhida imagem:", err);
       }
     } catch (err) {
       console.log("Erro ao escolher imagem:", err);
