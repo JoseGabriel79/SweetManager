@@ -65,7 +65,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
         body: formData,
         headers: {
           Accept: "application/json",
-          "Content-Type": "multipart/form-data",
+          // "Content-Type": "multipart/form-data",
         },
       }
     );
