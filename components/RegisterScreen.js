@@ -62,9 +62,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
         {
           method: "POST",
           body: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          // ❌ NÃO coloque Content-Type aqui, o fetch já cuida disso
         }
       );
 
@@ -84,6 +82,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       Alert.alert("Erro", "Falha ao conectar com o servidor.");
     }
   };
+
 
   return (
     <View style={styles.container}>

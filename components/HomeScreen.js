@@ -10,7 +10,7 @@ export default function HomeScreen({ usuario }) {
     if (usuario) {
       setDadosUsuario(usuario);
     } else {
-      setDadosUsuario({ nome: "Visitante", imagemPerfil: null });
+      setDadosUsuario({ nome: "Visitante", imagemperfil: null });
     }
     setLoading(false);
   }, [usuario]);
@@ -38,14 +38,13 @@ export default function HomeScreen({ usuario }) {
           </Text>
           <Image
             source={
-              dadosUsuario.imagemPerfil
-                ? { uri: dadosUsuario.imagemPerfil }
+              dadosUsuario.imagemperfil
+                ? { uri: dadosUsuario.imagemperfil }
                 : require("../imagens/ImagensPerfil/pinguim.png")
             }
             style={styles.image}
           />
         </View>
-
       </View>
 
       <View style={styles.cards}>

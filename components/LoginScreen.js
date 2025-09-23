@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
-  Image,
 } from "react-native";
 import axios from "axios";
 
@@ -35,14 +34,18 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
       if (response.data.success) {
         const usuario = response.data.usuario;
 
-        // garante que a imagem é uma URL válida (vinda do Supabase Storage)
-        if (usuario.imagemperfil && !usuario.imagemperfil.startsWith("http")) {
-          usuario.imagemperfil = null; // evita erro se não houver imagem
+        // garante que a imagem é uma URL válida
+        if (usuario?.imagemperfil && !usuario.imagemperfil.startsWith("http")) {
+          usuario.imagemperfil = null;
         }
 
         setUsuario(usuario);
         setLogin(true);
-        navigation.navigate("Inicio", { screen: "Home", params: { usuario } });
+
+        navigation.navigate("Inicio", {
+          screen: "Home",
+          params: { usuario },
+        });
       } else {
         Alert.alert("Erro", response.data.error || "Falha no login.");
       }
