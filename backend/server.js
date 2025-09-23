@@ -48,13 +48,13 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
 
 // Cadastro de usuário (com upload da foto para Supabase)
 app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
-  console.log("Arquivo recebido:" + req.file);
-  console.log("Body recebido:" + req.body);
+  console.log("req.file:", req.file);
+  console.log("req.body:", req.body);
+
   const { nome, email, senha } = req.body;
   try {
     let imagemURL = null;
 
-    // Se veio arquivo, manda para Supabase Storage
     if (req.file) {
       const filename = `perfil-${Date.now()}.jpg`;
 
@@ -70,13 +70,13 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
         return res.status(500).json({ success: false, error: error.message });
       }
 
-
-      // gera URL pública
+      // Gera URL pública
       const { data: publicData } = supabase.storage
         .from("usuarios")
         .getPublicUrl(filename);
 
       imagemURL = publicData.publicUrl;
+      console.log("Imagem salva no Supabase:", imagemURL);
     }
 
     const senhaHash = await bcrypt.hash(senha, 10);
@@ -92,6 +92,7 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+;
 
 // Login
 app.post("/login", async (req, res) => {

@@ -35,53 +35,58 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     }
   };
 
-  const handleRegister = async () => {
-    if (!username || !email || !senha) {
-      Alert.alert("Erro", "Preencha todos os campos!");
-      return;
+ const handleRegister = async () => {
+  if (!username || !email || !senha) {
+    Alert.alert("Erro", "Preencha todos os campos!");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("nome", username);
+    formData.append("email", email);
+    formData.append("senha", senha);
+
+    if (imagemperfil) {
+      const fileExt = imagemperfil.split(".").pop();
+      formData.append("imagemperfil", {
+        uri: imagemperfil,
+        type: "image/jpeg", // ou "image/png" dependendo do caso
+        name: `perfil.${fileExt || "jpg"}`,
+      });
     }
 
-    try {
-      setLoading(true);
-
-      const formData = new FormData();
-      formData.append("nome", username);
-      formData.append("email", email);
-      formData.append("senha", senha);
-
-      if (imagemperfil) {
-        formData.append("imagemperfil", {
-          uri: imagemperfil,
-          type: "image/jpeg",
-          name: "perfil.jpg",
-        });
+    const response = await fetch(
+      "https://nodejs-production-43c7.up.railway.app/usuarios",
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
       }
+    );
 
-      const response = await fetch(
-        "https://nodejs-production-43c7.up.railway.app/usuarios",
-        {
-          method: "POST",
-          body: formData,
-          // ❌ NÃO coloque Content-Type aqui, o fetch já cuida disso
-        }
-      );
+    const data = await response.json();
+    setLoading(false);
 
-      const data = await response.json();
-      setLoading(false);
-
-      if (data.success) {
-        Alert.alert("Sucesso", "Cadastro realizado!");
-        setUsuario(data.usuario);
-        setLogin(true);
-      } else {
-        Alert.alert("Erro", data.error || "Não foi possível cadastrar.");
-      }
-    } catch (error) {
-      setLoading(false);
-      console.log(error.message);
-      Alert.alert("Erro", "Falha ao conectar com o servidor.");
+    if (data.success) {
+      Alert.alert("Sucesso", "Cadastro realizado!");
+      setUsuario(data.usuario);
+      setLogin(true);
+    } else {
+      Alert.alert("Erro", data.error || "Não foi possível cadastrar.");
     }
-  };
+  } catch (error) {
+    setLoading(false);
+    console.log("Erro registro:", error.message);
+    Alert.alert("Erro", "Falha ao conectar com o servidor.");
+  }
+};
+
 
 
   return (
