@@ -48,9 +48,9 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
 
 // Cadastro de usuário (com upload da foto para Supabase)
 app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
-  const { nome, email, senha } = req.body;
   console.log("Arquivo recebido:", req.file);
   console.log("Body recebido:", req.body);
+  const { nome, email, senha } = req.body;
   try {
     let imagemURL = null;
 
