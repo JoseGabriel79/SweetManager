@@ -58,6 +58,14 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
     let imagemURL = null;
 
     if (req.file) {
+      // Verifica se o arquivo é válido
+      if (!req.file.buffer || req.file.buffer.length === 0) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Arquivo de imagem inválido ou vazio" 
+        });
+      }
+
       // Gera um nome único para o arquivo
       const timestamp = Date.now();
       const filename = `perfil-${timestamp}.jpg`;
@@ -71,7 +79,10 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
         
         if (bucketsError) {
           console.error("Erro ao listar buckets:", bucketsError);
-          // Continua mesmo com erro, tentando criar o bucket
+          return res.status(500).json({ 
+            success: false, 
+            error: "Erro ao verificar buckets no Supabase" 
+          });
         }
         
         const bucketExists = buckets && buckets.some(bucket => bucket.name === 'usuarios');
@@ -84,7 +95,10 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
           
           if (createBucketError) {
             console.error("Erro ao criar bucket:", createBucketError);
-            // Continua mesmo com erro, tentando fazer upload
+            return res.status(500).json({ 
+              success: false, 
+              error: "Erro ao criar bucket no Supabase" 
+            });
           }
         }
 
@@ -102,7 +116,10 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
 
         if (error) {
           console.error("Erro ao enviar para Supabase:", error);
-          // Continua mesmo com erro, para salvar o usuário sem imagem
+          return res.status(500).json({ 
+            success: false, 
+            error: "Erro ao fazer upload da imagem para o Supabase" 
+          });
         } else {
           console.log("Upload bem-sucedido:", data);
 
@@ -114,13 +131,20 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
           // Verifica se a URL foi gerada corretamente
           if (!imagemURL) {
             console.error("Falha ao gerar URL pública da imagem");
+            return res.status(500).json({ 
+              success: false, 
+              error: "Falha ao gerar URL pública da imagem" 
+            });
           } else {
             console.log("URL pública gerada com sucesso:", imagemURL);
           }
         }
       } catch (uploadError) {
         console.error("Erro durante processo de upload:", uploadError);
-        // Continua mesmo com erro, para salvar o usuário sem imagem
+        return res.status(500).json({ 
+          success: false, 
+          error: "Erro durante o processo de upload da imagem" 
+        });
       }
     }
 

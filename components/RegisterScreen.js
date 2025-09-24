@@ -21,10 +21,10 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.MediaType,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.5,
+        quality: 0.9,
       });
 
       if (!result.canceled) {
@@ -37,77 +37,111 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
     }
   };
 
- const handleRegister = async () => {
-  if (!username || !email || !senha) {
-    Alert.alert("Erro", "Preencha todos os campos!");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("nome", username);
-    formData.append("email", email);
-    formData.append("senha", senha);
-
-    if (imagemperfil) {
-      // Obter informações do tipo de arquivo a partir da URI
-      let fileType = "image/jpeg";
-      if (imagemperfil.endsWith('.png')) {
-        fileType = "image/png";
-      } else if (imagemperfil.endsWith('.jpg') || imagemperfil.endsWith('.jpeg')) {
-        fileType = "image/jpeg";
-      }
-
-      // Extrair o nome do arquivo da URI ou gerar um nome único
-      const timestamp = Date.now();
-      const fileName = `perfil-${timestamp}.jpg`;
-      
-      // Criar objeto de arquivo para o FormData
-      const fileObj = {
-        uri: imagemperfil,
-        type: fileType,
-        name: fileName,
-      };
-      
-      console.log("Enviando imagem:", fileObj);
-
-      // Adicionar a imagem ao FormData com o nome correto
-      formData.append("imagemperfil", fileObj);
+  const handleRegister = async () => {
+    // Validações básicas
+    if (!username || !email || !senha) {
+      Alert.alert("Erro", "Preencha todos os campos!");
+      return;
+    }
+    
+    // Validação de formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Erro", "Por favor, informe um email válido");
+      return;
+    }
+    
+    if (senha.length < 6) {
+      Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres");
+      return;
     }
 
-    console.log("FormData preparado:", formData);
+    try {
+      setLoading(true);
 
-    const response = await fetch(
-      "https://nodejs-production-43c7.up.railway.app/usuarios",
-      {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Accept': 'application/json',
-          // Não definir Content-Type aqui, o FormData define automaticamente com o boundary correto
+      const formData = new FormData();
+      formData.append("nome", username);
+      formData.append("email", email);
+      formData.append("senha", senha);
+
+      if (imagemperfil) {
+        // Verificar se a URI da imagem é válida
+        if (!imagemperfil.startsWith('file://') && !imagemperfil.startsWith('content://') && !imagemperfil.startsWith('data:') && !imagemperfil.startsWith('ph://')) {
+          console.error("URI de imagem inválida:", imagemperfil);
+          Alert.alert("Erro", "Formato de imagem inválido. Por favor, selecione outra imagem.");
+          setLoading(false);
+          return;
         }
+
+        // Obter informações do tipo de arquivo a partir da URI
+        let fileType = "image/jpeg";
+        if (imagemperfil.endsWith('.png')) {
+          fileType = "image/png";
+        } else if (imagemperfil.endsWith('.jpg') || imagemperfil.endsWith('.jpeg')) {
+          fileType = "image/jpeg";
+        }
+
+        // Extrair o nome do arquivo da URI ou gerar um nome único
+        const timestamp = Date.now();
+        const fileName = `perfil-${timestamp}.jpg`;
+        
+        // Criar objeto de arquivo para o FormData
+        const fileObj = {
+          uri: imagemperfil,
+          type: fileType,
+          name: fileName,
+        };
+        
+        console.log("Enviando imagem:", fileObj);
+
+        // Adicionar a imagem ao FormData com o nome correto
+        formData.append("imagemperfil", fileObj);
+      } else {
+        console.log("Nenhuma imagem selecionada, usuário será cadastrado sem foto de perfil");
       }
-    );
 
-    const data = await response.json();
-    console.log("Resposta do servidor:", data);
-    setLoading(false);
+      console.log("FormData preparado:", formData);
+      
+      // Envia os dados para a API com timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
 
-    if (data.success) {
-      Alert.alert("Sucesso", "Cadastro realizado!");
-      setUsuario(data.usuario);
-      setLogin(true);
-    } else {
-      Alert.alert("Erro", data.error || "Não foi possível cadastrar.");
+      const response = await fetch(
+        "https://nodejs-production-43c7.up.railway.app/usuarios",
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            'Accept': 'application/json',
+            // Não definir Content-Type aqui, o FormData define automaticamente com o boundary correto
+          },
+          signal: controller.signal
+        }
+      );
+      
+      clearTimeout(timeoutId);
+
+      const data = await response.json();
+      console.log("Resposta do servidor:", data);
+      setLoading(false);
+
+      if (data.success) {
+        Alert.alert("Sucesso", "Cadastro realizado!");
+        setUsuario(data.usuario);
+        setLogin(true);
+      } else {
+        Alert.alert("Erro", data.error || "Não foi possível cadastrar.");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log("Erro registro:", error.message);
+      if (error.name === 'AbortError') {
+        Alert.alert("Erro", "A operação demorou muito tempo. Verifique sua conexão e tente novamente.");
+      } else {
+        Alert.alert("Erro", "Falha ao conectar com o servidor.");
+      }
     }
-  } catch (error) {
-    setLoading(false);
-    console.log("Erro registro:", error.message);
-    Alert.alert("Erro", "Falha ao conectar com o servidor.");
-  }
-};
+  };
 
 
 
