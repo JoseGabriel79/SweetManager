@@ -21,16 +21,16 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.9,
+        quality: 0.5,
       });
 
       if (!result.canceled) {
         const selectedImage = result.assets[0].uri;
         setImagemPerfil(selectedImage);
-        // console.log("Imagem escolhida:", selectedImag);
+        console.log("Imagem escolhida:", selectedImage);
       }
     } catch (err) {
       console.log("Erro ao escolher imagem:", err);
@@ -85,7 +85,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
         const timestamp = Date.now();
         const fileName = `perfil-${timestamp}.jpg`;
         
-        // Criar objeto de arquivo para o FormData
+        // Criar objeto de arquivo para o FormData - FORMATO CORRETO PARA REACT NATIVE
         const fileObj = {
           uri: imagemperfil,
           type: fileType,
@@ -95,6 +95,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
         console.log("Enviando imagem:", fileObj);
 
         // Adicionar a imagem ao FormData com o nome correto
+        // No React Native, o FormData precisa receber o objeto diretamente
         formData.append("imagemperfil", fileObj);
       } else {
         console.log("Nenhuma imagem selecionada, usuário será cadastrado sem foto de perfil");
