@@ -116,7 +116,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
           };
           
           console.log("Usando método alternativo com objeto:", fileObj);
-          formData.append("imagemperfil", fileObj as any);
+          formData.append("imagemperfil", fileObj);
         }
       } else {
         console.log("Nenhuma imagem selecionada, usuário será cadastrado sem foto de perfil");
