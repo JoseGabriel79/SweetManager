@@ -51,14 +51,18 @@ app.get("/criar-tabela-usuarios", async (req, res) => {
 
 // Cadastro de usuário (com upload da foto para Supabase)
 app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
+  console.log("=== INÍCIO DO PROCESSO DE CADASTRO ===");
   console.log("req.file:", req.file);
   console.log("req.body:", req.body);
+  console.log("Arquivo recebido:", req.file ? "SIM" : "NÃO");
 
   const { nome, email, senha } = req.body;
   try {
     let imagemURL = null;
+    console.log("Inicializando imagemURL como:", imagemURL);
 
     if (req.file) {
+      console.log("=== PROCESSANDO UPLOAD DE IMAGEM ===");
       // Verifica se o arquivo é válido
       if (!req.file.buffer || req.file.buffer.length === 0) {
         return res.status(400).json({ 
@@ -160,21 +164,24 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
           });
         } else {
           console.log("Upload bem-sucedido:", data);
+          console.log("=== GERANDO URL PÚBLICA ===");
 
           // Gera URL pública - Construção direta da URL
           const publicURL = `${process.env.SUPABASE_URL}/storage/v1/object/public/usuarios/${filename}`;
           imagemURL = publicURL;
+          console.log("URL construída:", publicURL);
+          console.log("imagemURL definida como:", imagemURL);
           console.log("Imagem salva no Supabase:", imagemURL);
           
           // Verifica se a URL foi gerada corretamente
           if (!imagemURL) {
-            console.error("Falha ao gerar URL pública da imagem");
+            console.error("ERRO: Falha ao gerar URL pública da imagem");
             return res.status(500).json({ 
               success: false, 
               error: "Falha ao gerar URL pública da imagem" 
             });
           } else {
-            console.log("URL pública gerada com sucesso:", imagemURL);
+            console.log("✅ URL pública gerada com sucesso:", imagemURL);
           }
         }
       } catch (uploadError) {
@@ -184,22 +191,34 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
           error: "Erro durante o processo de upload da imagem" 
         });
       }
+    } else {
+      console.log("=== NENHUMA IMAGEM ENVIADA ===");
+      console.log("imagemURL permanece como:", imagemURL);
     }
 
+    console.log("=== PREPARANDO DADOS PARA O BANCO ===");
     const senhaHash = await bcrypt.hash(senha, 10);
 
     console.log("Dados que serão inseridos no banco:");
     console.log("- Nome:", nome);
     console.log("- Email:", email);
-    console.log("- URL da imagem:", imagemURL);
+    console.log("- URL da imagem ANTES da inserção:", imagemURL);
+    console.log("- imagemURL é null?", imagemURL === null);
+    console.log("- imagemURL é undefined?", imagemURL === undefined);
+    console.log("- Tipo de imagemURL:", typeof imagemURL);
 
     const result = await pool.query(
       "INSERT INTO usuarios (nome,email,senha,imagemperfil) VALUES ($1,$2,$3,$4) RETURNING id,nome,email,imagemperfil",
       [nome, email, senhaHash, imagemURL]
     );
 
+    console.log("=== RESULTADO DA INSERÇÃO NO BANCO ===");
     console.log("Usuário inserido no banco:", result.rows[0]);
     console.log("URL da imagem salva no banco:", result.rows[0].imagemperfil);
+    console.log("imagemperfil é null no banco?", result.rows[0].imagemperfil === null);
+    console.log("imagemperfil é undefined no banco?", result.rows[0].imagemperfil === undefined);
+    console.log("Tipo de imagemperfil no banco:", typeof result.rows[0].imagemperfil);
+    console.log("=== FIM DO PROCESSO DE CADASTRO ===");
 
     res.status(201).json({ success: true, usuario: result.rows[0] });
   } catch (err) {
