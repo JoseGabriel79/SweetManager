@@ -102,10 +102,22 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
           }
         }
 
-        // Converte o buffer para base64 se necessário
-        let fileData = req.file.buffer;
+        // Verifica o tamanho do arquivo antes do upload
+        const fileSizeInMB = req.file.buffer.length / (1024 * 1024);
+        console.log(`Tamanho do arquivo: ${fileSizeInMB.toFixed(2)} MB`);
         
-        // Faz o upload do arquivo
+        // Limita o tamanho do arquivo a 5MB
+        if (fileSizeInMB > 5) {
+          return res.status(400).json({ 
+            success: false, 
+            error: "Arquivo muito grande. O tamanho máximo permitido é 5MB." 
+          });
+        }
+
+        // Usa o buffer diretamente (sem conversão para base64)
+        const fileData = req.file.buffer;
+        
+        // Faz o upload do arquivo diretamente com o buffer
         const { data, error } = await supabase.storage
           .from("usuarios")
           .upload(filename, fileData, {
@@ -150,10 +162,18 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
 
     const senhaHash = await bcrypt.hash(senha, 10);
 
+    console.log("Dados que serão inseridos no banco:");
+    console.log("- Nome:", nome);
+    console.log("- Email:", email);
+    console.log("- URL da imagem:", imagemURL);
+
     const result = await pool.query(
       "INSERT INTO usuarios (nome,email,senha,imagemperfil) VALUES ($1,$2,$3,$4) RETURNING id,nome,email,imagemperfil",
       [nome, email, senhaHash, imagemURL]
     );
+
+    console.log("Usuário inserido no banco:", result.rows[0]);
+    console.log("URL da imagem salva no banco:", result.rows[0].imagemperfil);
 
     res.status(201).json({ success: true, usuario: result.rows[0] });
   } catch (err) {
