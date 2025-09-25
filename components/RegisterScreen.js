@@ -85,18 +85,39 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
         const timestamp = Date.now();
         const fileName = `perfil-${timestamp}.jpg`;
         
-        // Criar objeto de arquivo para o FormData - FORMATO CORRETO PARA REACT NATIVE
-        const fileObj = {
+        console.log("Preparando upload da imagem:", {
           uri: imagemperfil,
           type: fileType,
-          name: fileName,
-        };
-        
-        console.log("Enviando imagem:", fileObj);
+          name: fileName
+        });
 
-        // Adicionar a imagem ao FormData com o nome correto
-        // No React Native, o FormData precisa receber o objeto diretamente
-        formData.append("imagemperfil", fileObj);
+        // Para React Native, precisamos usar uma abordagem diferente
+        // Primeiro, vamos tentar obter o blob da imagem
+        try {
+          const response = await fetch(imagemperfil);
+          const blob = await response.blob();
+          
+          console.log("Blob criado com sucesso:", {
+            size: blob.size,
+            type: blob.type
+          });
+          
+          // Adicionar o blob diretamente ao FormData
+          formData.append("imagemperfil", blob, fileName);
+          
+        } catch (blobError) {
+          console.log("Erro ao criar blob, usando método alternativo:", blobError);
+          
+          // Método alternativo: usar o objeto com cast explícito
+          const fileObj = {
+            uri: imagemperfil,
+            type: fileType,
+            name: fileName,
+          };
+          
+          console.log("Usando método alternativo com objeto:", fileObj);
+          formData.append("imagemperfil", fileObj as any);
+        }
       } else {
         console.log("Nenhuma imagem selecionada, usuário será cadastrado sem foto de perfil");
       }
