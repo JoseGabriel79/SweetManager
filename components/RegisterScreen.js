@@ -30,7 +30,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       if (!result.canceled) {
         const selectedImage = result.assets[0].uri;
         setImagemPerfil(selectedImage);
-        console.log("Imagem escolhida:", selectedImage);
+        // console.log("Imagem escolhida:", selectedImag);
       }
     } catch (err) {
       console.log("Erro ao escolher imagem:", err);

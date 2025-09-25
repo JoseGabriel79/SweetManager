@@ -3,6 +3,7 @@ const cors = require("cors");
 const pool = require("./db"); // conexão Postgres
 const bcrypt = require("bcrypt");
 const multer = require("multer");
+const sharp = require("sharp"); // Para compressão de imagens
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 
@@ -104,24 +105,49 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
 
         // Verifica o tamanho do arquivo antes do upload
         const fileSizeInMB = req.file.buffer.length / (1024 * 1024);
-        console.log(`Tamanho do arquivo: ${fileSizeInMB.toFixed(2)} MB`);
+        console.log(`Tamanho original do arquivo: ${fileSizeInMB.toFixed(2)} MB`);
         
-        // Limita o tamanho do arquivo a 5MB
-        if (fileSizeInMB > 5) {
+        // Comprime a imagem usando Sharp
+        let compressedBuffer;
+        try {
+          compressedBuffer = await sharp(req.file.buffer)
+            .resize(800, 800, { 
+              fit: 'inside', 
+              withoutEnlargement: true 
+            })
+            .jpeg({ 
+              quality: 80,
+              progressive: true 
+            })
+            .toBuffer();
+          
+          const compressedSizeInMB = compressedBuffer.length / (1024 * 1024);
+          console.log(`Tamanho após compressão: ${compressedSizeInMB.toFixed(2)} MB`);
+          console.log(`Redução de tamanho: ${((fileSizeInMB - compressedSizeInMB) / fileSizeInMB * 100).toFixed(1)}%`);
+          
+        } catch (compressionError) {
+          console.error("Erro na compressão da imagem:", compressionError);
+          // Se falhar na compressão, usa o buffer original
+          compressedBuffer = req.file.buffer;
+        }
+        
+        // Verifica se ainda está muito grande após compressão
+        const finalSizeInMB = compressedBuffer.length / (1024 * 1024);
+        if (finalSizeInMB > 5) {
           return res.status(400).json({ 
             success: false, 
-            error: "Arquivo muito grande. O tamanho máximo permitido é 5MB." 
+            error: "Arquivo muito grande mesmo após compressão. Tente uma imagem menor." 
           });
         }
 
-        // Usa o buffer diretamente (sem conversão para base64)
-        const fileData = req.file.buffer;
+        // Usa o buffer comprimido para upload
+        const fileData = compressedBuffer;
         
-        // Faz o upload do arquivo diretamente com o buffer
+        // Faz o upload do arquivo diretamente com o buffer comprimido
         const { data, error } = await supabase.storage
           .from("usuarios")
           .upload(filename, fileData, {
-            contentType: req.file.mimetype || 'image/jpeg',
+            contentType: 'image/jpeg', // Sempre JPEG após compressão
             cacheControl: '3600',
             upsert: true
           });
