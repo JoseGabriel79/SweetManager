@@ -26,64 +26,6 @@ export default function VitrineScreen() {
     const [selectedItemUpdate, setSelectedItemUpdate] = useState(null);
     const [selectedItemDelete, setSelectedItemDelete] = useState(null);
 
-    // const produto = [{
-    //     id: 1,
-    //     nome: "Bolo de Chocolate",
-    //     descricao: "Delicioso bolo de chocolate com cobertura de brigadeiro",
-    //     preco: 50.00,
-    //     imagem: "boloPadrao.png",
-    //     estoque: 7
-    // }, {
-    //     id: 2,
-    //     nome: "Bolo de Morango",
-    //     descricao: "Bolo de morango com cobertura de chantilly",
-    //     preco: 60.00,
-    //     imagem: "boloPadrao.png",
-    //     estoque: 15
-    // }, {
-    //     id: 2,
-    //     nome: "Bolo de Morango",
-    //     descricao: "Bolo de morango com cobertura de chantilly",
-    //     preco: 60.00,
-    //     imagem: "boloPadrao.png",
-    //     estoque: 7
-    // }, {
-    //     id: 2,
-    //     nome: "Bolo de Morango",
-    //     descricao: "Bolo de morango com cobertura de chantilly",
-    //     preco: 60.00,
-    //     imagem: "boloPadrao.png",
-    //     estoque: 7
-    // }, {
-    //     id: 2,
-    //     nome: "Bolo de Morango",
-    //     descricao: "Bolo de morango com cobertura de chantilly",
-    //     preco: 60.00,
-    //     imagem: "boloPadrao.png",
-    //     estoque: 7
-    // }, {
-    //     id: 2,
-    //     nome: "Bolo de Morango",
-    //     descricao: "Bolo de morango com cobertura de chantilly",
-    //     preco: 60.00,
-    //     imagem: "boloPadrao.png",
-    //     estoque: 7
-    // }, {
-    //     id: 2,
-    //     nome: "Bolo de Morango",
-    //     descricao: "Bolo de morango com cobertura de chantilly",
-    //     preco: 60.00,
-    //     imagem: "boloPadrao.png",
-    //     estoque: 7
-    // }
-    // ]
-
-    // useEffect(() => {
-    //     setProdutos(produto);
-    //     setStatus("Conectado com sucesso!");
-
-    // }, []);
-
     function ModalProduto({ item, onClose }) {
         return (
             <Modal
@@ -120,101 +62,98 @@ export default function VitrineScreen() {
     }
 
     function ModalUpdateProduto({ item, onClose, onUpdateSuccess }) {
-    const [nome, setNome] = useState(item.nome);
-    const [preco, setPreco] = useState(item.preco.toString());
-    const [estoque, setEstoque] = useState(item.estoque.toString());
-    const [descricao, setDescricao] = useState(item.descricao);
+        const [nome, setNome] = useState(item.nome);
+        const [preco, setPreco] = useState(item.preco.toString());
+        const [estoque, setEstoque] = useState(item.estoque.toString());
+        const [descricao, setDescricao] = useState(item.descricao);
 
-    const handleUpdate = async () => {
-        try {
-            const response = await fetch(`https://nodejs-production-43c7.up.railway.app/produto/${item.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    nome,
-                    preco: Number(preco),
-                    estoque: Number(estoque),
-                    descricao,
-                    imagem: item.imagem,
-                }),
-            });
+        const handleUpdate = async () => {
+            try {
+                const response = await fetch(`https://nodejs-production-43c7.up.railway.app/produto/${item.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nome,
+                        preco: Number(preco),
+                        estoque: Number(estoque),
+                        descricao,
+                        imagem: item.imagem,
+                    }),
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (data.success) {
-                Alert.alert("Sucesso", data.message || "Produto atualizado!");
-                onUpdateSuccess(data.produto);
-                onClose();
-            } else {
-                Alert.alert("Erro", data.error || "Não foi possível atualizar");
+                if (data.success) {
+                    Alert.alert("Sucesso", data.message || "Produto atualizado!");
+                    onUpdateSuccess(data.produto);
+                    onClose();
+                } else {
+                    Alert.alert("Erro", data.error || "Não foi possível atualizar");
+                }
+            } catch (error) {
+                Alert.alert("Erro", error.message);
             }
-        } catch (error) {
-            Alert.alert("Erro", error.message);
-        }
-    };
+        };
 
-    return (
-        <Modal
-            transparent={true}
-            animationType="fade"
-            visible={true}
-            onRequestClose={onClose}
-        >
-            <View style={updateStyles.modalOverlay}>
-                <View style={updateStyles.modalContainer}>
-                    <Text style={updateStyles.modalTitle}>Editar {item.nome}</Text>
+        return (
+            <Modal
+                transparent={true}
+                animationType="fade"
+                visible={true}
+                onRequestClose={onClose}
+            >
+                <View style={updateStyles.modalOverlay}>
+                    <View style={updateStyles.modalContainer}>
+                        <Text style={updateStyles.modalTitle}>Editar {item.nome}</Text>
 
-                    <TextInput
-                        style={updateStyles.input}
-                        placeholder="Nome do Produto"
-                        value={nome}
-                        onChangeText={setNome}
-                    />
-                    <TextInput
-                        style={updateStyles.input}
-                        placeholder="Preço"
-                        keyboardType="numeric"
-                        value={preco}
-                        onChangeText={setPreco}
-                    />
-                    <TextInput
-                        style={updateStyles.input}
-                        placeholder="Estoque"
-                        keyboardType="numeric"
-                        value={estoque}
-                        onChangeText={setEstoque}
-                    />
-                    <TextInput
-                        style={[updateStyles.input, { height: 80 }]}
-                        placeholder="Descrição"
-                        multiline
-                        value={descricao}
-                        onChangeText={setDescricao}
-                    />
+                        <TextInput
+                            style={updateStyles.input}
+                            placeholder="Nome do Produto"
+                            value={nome}
+                            onChangeText={setNome}
+                        />
+                        <TextInput
+                            style={updateStyles.input}
+                            placeholder="Preço"
+                            keyboardType="numeric"
+                            value={preco}
+                            onChangeText={setPreco}
+                        />
+                        <TextInput
+                            style={updateStyles.input}
+                            placeholder="Estoque"
+                            keyboardType="numeric"
+                            value={estoque}
+                            onChangeText={setEstoque}
+                        />
+                        <TextInput
+                            style={[updateStyles.input, { height: 80 }]}
+                            placeholder="Descrição"
+                            multiline
+                            value={descricao}
+                            onChangeText={setDescricao}
+                        />
 
-                    <View style={updateStyles.buttonRow}>
-                        <TouchableOpacity
-                            style={[updateStyles.button, updateStyles.cancelButton]}
-                            onPress={onClose}
-                        >
-                            <Text style={updateStyles.buttonText}>Cancelar</Text>
-                        </TouchableOpacity>
+                        <View style={updateStyles.buttonRow}>
+                            <TouchableOpacity
+                                style={[updateStyles.button, updateStyles.cancelButton]}
+                                onPress={onClose}
+                            >
+                                <Text style={updateStyles.buttonText}>Cancelar</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={[updateStyles.button, updateStyles.saveButton]}
-                            onPress={handleUpdate}
-                        >
-                            <Text style={updateStyles.buttonText}>Salvar</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[updateStyles.button, updateStyles.saveButton]}
+                                onPress={handleUpdate}
+                            >
+                                <Text style={updateStyles.buttonText}>Salvar</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>
-        </Modal>
-    );
-}
-
-
-
+            </Modal>
+        );
+    }
 
     function ModalDeleteProduto({ item, onClose, onDeleteSuccess }) {
         const handleDelete = async () => {
@@ -272,8 +211,6 @@ export default function VitrineScreen() {
         );
     }
 
-
-
     useEffect(() => {
         const fetchProdutos = async () => {
             try {
@@ -303,10 +240,6 @@ export default function VitrineScreen() {
 
     return (
         <View style={styles.container}>
-
-
-
-
             <FlatList
                 numColumns={2} // 2 colunas
                 data={produtos}
@@ -317,7 +250,6 @@ export default function VitrineScreen() {
                         style={styles.cardVitrine}
                         activeOpacity={0.6}
                         onLongPress={() => setSelectedItem(item)}>
-
 
                         <Image
                             source={imagensBolos[item.imagem] || imagensBolos.boloPadrao}
@@ -347,9 +279,7 @@ export default function VitrineScreen() {
                             </TouchableOpacity>
                         </View>
                     </TouchableOpacity>
-
                 )
-
                 }
             />
 

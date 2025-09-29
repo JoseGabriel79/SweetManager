@@ -1,10 +1,78 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
 import CardsHome from "./CardsHome";
+
+// Componente do Modal
+function UserDataModal({ dadosUsuario, onClose }) {
+  return (
+    <Modal
+      transparent={true}
+      animationType="slide"
+      visible={!!dadosUsuario} // só abre se houver dados
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalFundo}>
+        <View style={styles.modalBox}>
+          <Text style={styles.tituloModal}>Perfil</Text>
+
+          <Image
+            source={
+              dadosUsuario?.imagemperfil
+                ? { uri: dadosUsuario.imagemperfil }
+                : require("../imagens/ImagensPerfil/pinguim.png")
+            }
+            style={styles.imageModal}
+          />
+
+          <Text style={styles.nome}>{dadosUsuario?.nome}</Text>
+          <Text style={styles.email}>{dadosUsuario?.email}</Text>
+
+          <TouchableOpacity
+            style={styles.botaoFechar}
+            onPress={onClose}
+            activeOpacity={0.5}
+          >
+            <Text style={styles.textoFechar}>Fechar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+
+// Componente de Imagem do Perfil
+function ProfileImage({ dadosUsuario }) {
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  return (
+    <>
+      <TouchableOpacity onPress={() => setSelectedUser(dadosUsuario)}>
+        <Image
+          source={
+            dadosUsuario?.imagemperfil
+              ? { uri: dadosUsuario.imagemperfil }
+              : require("../imagens/ImagensPerfil/pinguim.png")
+          }
+          style={styles.image}
+        />
+      </TouchableOpacity>
+
+      {/* Renderiza o modal se tiver usuário selecionado */}
+      {selectedUser && (
+        <UserDataModal
+          dadosUsuario={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
+      )}
+    </>
+  );
+}
 
 export default function HomeScreen({ usuario }) {
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     if (usuario) {
@@ -33,17 +101,11 @@ export default function HomeScreen({ usuario }) {
         </View>
 
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+          {/* <Text style={{ fontWeight: "bold", fontSize: 20 }}>
             {dadosUsuario.nome}
-          </Text>
-          <Image
-            source={
-              dadosUsuario.imagemperfil
-                ? { uri: dadosUsuario.imagemperfil }
-                : require("../imagens/ImagensPerfil/pinguim.png")
-            }
-            style={styles.image}
-          />
+          </Text> */}
+          <ProfileImage dadosUsuario={dadosUsuario} />
+
         </View>
       </View>
 
@@ -54,6 +116,7 @@ export default function HomeScreen({ usuario }) {
         <CardsHome titulo="Estoque" routeName="Estoque" />
       </View>
     </View>
+
   );
 }
 
@@ -74,7 +137,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: { fontSize: 24, fontWeight: "bold" },
-  image: { width: 50, height: 50, borderRadius: 25, backgroundColor: "#ddd" },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#ddd"
+  },
+  imageModal:{
+    width: 200,
+    height: 200,
+    borderRadius:100
+  },
   cards: {
     flex: 1,
     flexDirection: "row",
@@ -83,5 +156,39 @@ const styles = StyleSheet.create({
     alignContent: "center",
     gap: 15,
     paddingVertical: 20,
+  }, modalFundo: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalBox: {
+    backgroundColor: "#e1eefb",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+
+  },
+  tituloModal: {
+    fontSize: 25,
+    fontWeight: "bold",
+  },
+  botaoFechar: {
+    marginTop: 15,
+    backgroundColor: "#b5b9b7ff",
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 10
+  },
+  textoFechar: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  }, textButton: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
