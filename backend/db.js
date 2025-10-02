@@ -19,6 +19,7 @@
 
 // db.js
 const { Pool } = require("pg");
+
 require("dotenv").config();
 
 // Configuração do pool para Railway

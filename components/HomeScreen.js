@@ -13,19 +13,24 @@ function UserDataModal({ dadosUsuario, onClose }) {
     >
       <View style={styles.modalFundo}>
         <View style={styles.modalBox}>
+
           <Text style={styles.tituloModal}>Perfil</Text>
-
-          <Image
-            source={
-              dadosUsuario?.imagemperfil
-                ? { uri: dadosUsuario.imagemperfil }
-                : require("../imagens/ImagensPerfil/pinguim.png")
-            }
-            style={styles.imageModal}
-          />
-
-          <Text style={styles.nome}>{dadosUsuario?.nome}</Text>
-          <Text style={styles.email}>{dadosUsuario?.email}</Text>
+          <view style ={styles.infoPerfil}>
+            <view>
+              <Image
+                source={
+                  dadosUsuario?.imagemperfil
+                    ? { uri: dadosUsuario.imagemperfil }
+                    : require("../imagens/ImagensPerfil/pinguim.png")
+                }
+                style={styles.imageModal}
+              />
+            </view>
+            <view>
+              <Text style={styles.nome}>{dadosUsuario?.nome}</Text>
+              <Text style={styles.email}>{dadosUsuario?.email}</Text>
+            </view>
+          </view>
 
           <TouchableOpacity
             style={styles.botaoFechar}
@@ -143,10 +148,10 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: "#ddd"
   },
-  imageModal:{
+  imageModal: {
     width: 200,
     height: 200,
-    borderRadius:100
+    borderRadius: 100
   },
   cards: {
     flex: 1,
@@ -163,11 +168,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalBox: {
-    backgroundColor: "#e1eefb",
+    backgroundColor: "#e1eefbf1",
     padding: 20,
-    borderRadius: 10,
-    width: "80%",
-    justifyContent: "center",
+    width: "100%",
+    height: "100%",
     alignItems: "center",
 
   },
