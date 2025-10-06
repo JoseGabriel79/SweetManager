@@ -35,17 +35,13 @@ function UserDataModal({ dadosUsuario, onClose, onLogout }) {
           </View>
 
           <View style={styles.modalList}>
-            <TouchableOpacity style={styles.modalItem} onPress={() => { onClose(); navigation.navigate('Configurações'); }}>
-              <Feather name="image" size={20} color="#042136" />
-              <Text style={styles.modalItemText}>Editar foto de perfil</Text>
-            </TouchableOpacity>
 
             <TouchableOpacity style={styles.modalItem} onPress={() => { onClose(); navigation.navigate('Configurações'); }}>
               <Feather name="settings" size={20} color="#042136" />
               <Text style={styles.modalItemText}>Configurações</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.modalItem} onPress={() => { onLogout(); onClose(); navigation.navigate('Login'); }}>
+            <TouchableOpacity style={styles.modalItem} onPress={() => { onLogout(); onClose(); }}>
               <Feather name="log-out" size={20} color="#f64545" />
               <Text style={[styles.modalItemText, { color: '#f64545' }]}>Sair</Text>
             </TouchableOpacity>

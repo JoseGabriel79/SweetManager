@@ -32,9 +32,16 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
       if (response.data.success) {
         const usuario = response.data.usuario;
 
-        // garante que a imagem é uma URL válida
-        if (usuario?.imagemperfil && !usuario.imagemperfil.startsWith("http")) {
-          usuario.imagemperfil = null;
+        // sanitiza URL de imagem (remove aspas/backticks) e valida
+        if (usuario?.imagemperfil) {
+          const cleaned = usuario.imagemperfil
+            .trim()
+            .replace(/^["'`]+|["'`]+$/g, "");
+          if (cleaned.startsWith("http")) {
+            usuario.imagemperfil = cleaned;
+          } else {
+            usuario.imagemperfil = null;
+          }
         }
 
         setUsuario(usuario);
