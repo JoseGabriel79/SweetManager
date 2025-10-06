@@ -62,9 +62,9 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       {login ? (
-        <AppTabs usuario={usuario} setUsuario={setUsuario} onLogout={onLogout} />
+        <AppTabs key="tabs" usuario={usuario} setUsuario={setUsuario} onLogout={onLogout} />
       ) : (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator key="auth" screenOptions={{ headerShown: false }} initialRouteName="Login">
           <Stack.Screen name="Login">
             {(props) => <LoginScreen {...props} setLogin={setLogin} setUsuario={setUsuario} />}
           </Stack.Screen>
