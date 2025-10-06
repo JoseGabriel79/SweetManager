@@ -39,11 +39,6 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
 
         setUsuario(usuario);
         setLogin(true);
-
-        navigation.navigate("Inicio", {
-          screen: "Home",
-          params: { usuario },
-        });
       } else {
         Alert.alert("Erro", response.data.error || "Falha no login.");
       }
