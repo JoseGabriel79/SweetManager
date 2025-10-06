@@ -373,20 +373,106 @@ app.post("/login", async (req, res) => {
 /* =========================
    PRODUTOS
 ========================= */
+// Criar/alterar tabela de produtos para vincular ao usuário e suportar imagem
+app.get("/criar-tabela-produtos", async (req, res) => {
+  try {
+    // Cria a tabela se não existir já com usuario_id
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS produtos (
+        id SERIAL PRIMARY KEY,
+        nome TEXT NOT NULL,
+        preco DECIMAL(10,2) NOT NULL,
+        estoque INTEGER NOT NULL,
+        descricao TEXT,
+        imagem TEXT,
+        usuario_id INTEGER REFERENCES usuarios(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Garante coluna usuario_id caso a tabela exista antiga
+    await pool.query(`
+      ALTER TABLE produtos ADD COLUMN IF NOT EXISTS usuario_id INTEGER REFERENCES usuarios(id);
+    `);
+
+    // Ajusta tipo da coluna imagem para TEXT (links longos)
+    await pool.query(`
+      ALTER TABLE produtos ALTER COLUMN imagem TYPE TEXT USING imagem::text;
+    `);
+
+    res.json({ success: true, message: "Tabela produtos criada/atualizada" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.get("/produtos", async (req, res) => {
   try {
-    const result = await pool.query("SELECT id,nome,preco,estoque,imagem,descricao FROM produtos ORDER BY id");
+    const usuarioId = parseInt(req.query.usuario_id, 10);
+    if (!usuarioId) {
+      return res.status(400).json({ success: false, error: "usuario_id obrigatório" });
+    }
+    const result = await pool.query(
+      "SELECT id,nome,preco,estoque,imagem,descricao,usuario_id FROM produtos WHERE usuario_id=$1 ORDER BY id",
+      [usuarioId]
+    );
     res.json({ success: true, produtos: result.rows });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.post("/produto", async (req, res) => {
-  const { nome, preco, estoque, descricao, imagem } = req.body;
+// Cadastro de produto com upload opcional de imagem para Supabase (bucket 'produtos')
+app.post("/produto", upload.single("imagemproduto"), async (req, res) => {
+  const { nome, preco, estoque, descricao, usuario_id } = req.body;
   try {
-    const result = await pool.query("INSERT INTO produtos (nome,preco,estoque,descricao,imagem) VALUES ($1,$2,$3,$4,$5) RETURNING id", [nome, preco, estoque, descricao, imagem]);
-    res.status(201).json({ success: true, id: result.rows[0].id });
+    const usuarioId = parseInt(usuario_id, 10);
+    if (!usuarioId) {
+      return res.status(400).json({ success: false, error: "usuario_id obrigatório" });
+    }
+
+    let imagemURL = null;
+    if (req.file) {
+      // Verifica/Cria bucket 'produtos'
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+      if (bucketsError) {
+        return res.status(500).json({ success: false, error: "Erro ao verificar buckets no Supabase" });
+      }
+      const bucketExists = buckets && buckets.some((b) => b.name === "produtos");
+      if (!bucketExists) {
+        const { error: createBucketError } = await supabase.storage.createBucket("produtos", { public: true });
+        if (createBucketError) {
+          return res.status(500).json({ success: false, error: "Erro ao criar bucket 'produtos' no Supabase" });
+        }
+      }
+
+      // Comprime imagem
+      let finalBuffer;
+      try {
+        finalBuffer = await sharp(req.file.buffer)
+          .resize(800, 800, { fit: "inside", withoutEnlargement: true })
+          .jpeg({ quality: 80, progressive: true })
+          .toBuffer();
+      } catch (e) {
+        finalBuffer = req.file.buffer;
+      }
+
+      const timestamp = Date.now();
+      const filename = `produto-${usuarioId}-${timestamp}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from("produtos")
+        .upload(filename, finalBuffer, { contentType: "image/jpeg", cacheControl: "3600", upsert: true });
+      if (uploadError) {
+        return res.status(500).json({ success: false, error: "Erro ao fazer upload da imagem do produto" });
+      }
+      imagemURL = `${process.env.SUPABASE_URL}/storage/v1/object/public/produtos/${filename}`;
+    }
+
+    const result = await pool.query(
+      "INSERT INTO produtos (nome,preco,estoque,descricao,imagem,usuario_id) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id",
+      [nome, preco, estoque, descricao || null, imagemURL, usuarioId]
+    );
+    res.status(201).json({ success: true, id: result.rows[0].id, imagem: imagemURL });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -396,7 +482,14 @@ app.put("/produto/:id", async (req, res) => {
   const { id } = req.params;
   const { nome, preco, estoque, descricao, imagem } = req.body;
   try {
-    const result = await pool.query("UPDATE produtos SET nome=$1,preco=$2,estoque=$3,descricao=$4,imagem=$5 WHERE id=$6 RETURNING *", [nome, preco, estoque, descricao, imagem, id]);
+    const usuarioId = parseInt(req.query.usuario_id, 10);
+    if (!usuarioId) {
+      return res.status(400).json({ success: false, error: "usuario_id obrigatório" });
+    }
+    const result = await pool.query(
+      "UPDATE produtos SET nome=$1,preco=$2,estoque=$3,descricao=$4,imagem=$5 WHERE id=$6 AND usuario_id=$7 RETURNING *",
+      [nome, preco, estoque, descricao, imagem, id, usuarioId]
+    );
     if (!result.rowCount) return res.status(404).json({ success: false, error: "Produto não encontrado" });
     res.json({ success: true, produto: result.rows[0] });
   } catch (err) {
@@ -407,7 +500,11 @@ app.put("/produto/:id", async (req, res) => {
 app.delete("/produto/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query("DELETE FROM produtos WHERE id=$1 RETURNING id", [id]);
+    const usuarioId = parseInt(req.query.usuario_id, 10);
+    if (!usuarioId) {
+      return res.status(400).json({ success: false, error: "usuario_id obrigatório" });
+    }
+    const result = await pool.query("DELETE FROM produtos WHERE id=$1 AND usuario_id=$2 RETURNING id", [id, usuarioId]);
     if (!result.rowCount) return res.status(404).json({ success: false, message: "Produto não encontrado" });
     res.json({ success: true, message: `Produto ${id} deletado` });
   } catch (err) {

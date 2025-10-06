@@ -21,7 +21,7 @@ const imagensBolos = {
 const { width } = Dimensions.get("window")
 const isSmallScreen = width < 620;
 
-export default function VitrineScreen() {
+export default function VitrineScreen({ usuario }) {
     const [produtos, setProdutos] = useState([]);
     const [status, setStatus] = useState("Carregando...");
     const [selectedItem, setSelectedItem] = useState(null);
@@ -40,7 +40,11 @@ export default function VitrineScreen() {
                     <View style={styles.modalBox}>
                         <Text style={styles.tituloModal}>{item.nome}</Text>
                         <Image
-                            source={imagensBolos[item.imagemModal] || imagensBolos.boloPadrao}
+                            source={
+                                item.imagem && typeof item.imagem === 'string' && item.imagem.startsWith('http')
+                                    ? { uri: item.imagem }
+                                    : (imagensBolos[item.imagem] || imagensBolos[item.imagemModal] || imagensBolos.boloPadrao)
+                            }
                             style={styles.image}
                             resizeMode="contain"
                         />
@@ -71,7 +75,7 @@ export default function VitrineScreen() {
 
         const handleUpdate = async () => {
             try {
-                const response = await fetch(url(`/produto/${item.id}`), {
+                const response = await fetch(url(`/produto/${item.id}?usuario_id=${usuario?.id}`), {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -160,7 +164,7 @@ export default function VitrineScreen() {
     function ModalDeleteProduto({ item, onClose, onDeleteSuccess }) {
         const handleDelete = async () => {
             try {
-                const response = await fetch(url(`/produto/${item.id}`), {
+                const response = await fetch(url(`/produto/${item.id}?usuario_id=${usuario?.id}`), {
                     method: "DELETE",
                 });
 
@@ -215,7 +219,11 @@ export default function VitrineScreen() {
     useEffect(() => {
         const fetchProdutos = async () => {
             try {
-                const response = await fetch(url("/produtos"));
+                if (!usuario?.id) {
+                    setStatus("Usuário não identificado");
+                    return;
+                }
+                const response = await fetch(url(`/produtos?usuario_id=${usuario.id}`));
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -235,7 +243,7 @@ export default function VitrineScreen() {
         };
 
         fetchProdutos();
-    }, []);
+    }, [usuario?.id]);
 
     return (
         <View style={styles.container}>
@@ -251,7 +259,11 @@ export default function VitrineScreen() {
                         onLongPress={() => setSelectedItem(item)}>
 
                         <Image
-                            source={imagensBolos[item.imagem] || imagensBolos.boloPadrao}
+                            source={
+                                item.imagem && typeof item.imagem === 'string' && item.imagem.startsWith('http')
+                                    ? { uri: item.imagem }
+                                    : (imagensBolos[item.imagem] || imagensBolos.boloPadrao)
+                            }
                             style={styles.image}
                             resizeMode="contain"
                         />

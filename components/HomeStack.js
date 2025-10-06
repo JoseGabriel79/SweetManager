@@ -26,8 +26,12 @@ export default function HomeStack({ usuario, onLogout }) {
 
       <Stack.Screen name="Clientes" component={ClientesScreen} options={{ title: "Clientes" }} />
       <Stack.Screen name="Estoque" component={EstoqueScreen} options={{ title: "Estoque" }} />
-      <Stack.Screen name="Vitrine" component={VitrineScreen} options={{ title: "Painel de Controle" }} />
-      <Stack.Screen name="CadastrarProdutos" component={CadastrarProdutosScreen} options={{ title: "Cadastrar Produtos" }} />
+      <Stack.Screen name="Vitrine" options={{ title: "Painel de Controle" }}>
+        {() => <VitrineScreen usuario={usuario} />}
+      </Stack.Screen>
+      <Stack.Screen name="CadastrarProdutos" options={{ title: "Cadastrar Produtos" }}>
+        {() => <CadastrarProdutosScreen usuario={usuario} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

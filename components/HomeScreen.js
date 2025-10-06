@@ -26,7 +26,7 @@ function UserDataModal({ dadosUsuario, onClose, onLogout }) {
               source={
                 dadosUsuario?.imagemperfil
                   ? { uri: dadosUsuario.imagemperfil }
-                  : require("../imagens/ImagensPerfil/pinguim.png")
+                  : require("../imagens/ImagensPerfil/PerfilSweet.png")
               }
               style={styles.imageModal}
             />
@@ -70,7 +70,7 @@ function ProfileImage({ dadosUsuario, onLogout }) {
           source={
             dadosUsuario?.imagemperfil
               ? { uri: dadosUsuario.imagemperfil }
-              : require("../imagens/ImagensPerfil/pinguim.png")
+              : require("../imagens/ImagensPerfil/PerfilSweet.png")
           }
           style={styles.image}
         />

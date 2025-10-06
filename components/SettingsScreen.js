@@ -103,7 +103,7 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
           source={
             usuario?.imagemperfil
               ? { uri: usuario.imagemperfil }
-              : require("../imagens/ImagensPerfil/pinguim.png")
+              : require("../imagens/ImagensPerfil/PerfilSweet.png")
           }
           style={styles.avatar}
         />
