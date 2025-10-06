@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { url } from "../utils/api.js";
 
 export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [username, setUsername] = useState("");
@@ -128,18 +129,15 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
 
-      const response = await fetch(
-        "http://localhost:3000/usuarios",
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            'Accept': 'application/json',
-            // Não definir Content-Type aqui, o FormData define automaticamente com o boundary correto
-          },
-          signal: controller.signal
-        }
-      );
+      const response = await fetch(url("/usuarios"), {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          // Não definir Content-Type aqui, o FormData define automaticamente com o boundary correto
+        },
+        signal: controller.signal,
+      });
       
       clearTimeout(timeoutId);
 

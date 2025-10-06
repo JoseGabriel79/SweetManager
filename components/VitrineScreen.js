@@ -12,6 +12,7 @@ import {
     TextInput,
     Platform
 } from "react-native";
+import { url } from "../utils/api.js";
 
 const imagensBolos = {
     boloPadrao: require('../imagens/ImagensBolos/boloPadrao.png'),
@@ -70,7 +71,7 @@ export default function VitrineScreen() {
 
         const handleUpdate = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/produto/${item.id}`, {
+                const response = await fetch(url(`/produto/${item.id}`), {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -159,7 +160,7 @@ export default function VitrineScreen() {
     function ModalDeleteProduto({ item, onClose, onDeleteSuccess }) {
         const handleDelete = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/produto/${item.id}`, {
+                const response = await fetch(url(`/produto/${item.id}`), {
                     method: "DELETE",
                 });
 
@@ -215,9 +216,7 @@ export default function VitrineScreen() {
     useEffect(() => {
         const fetchProdutos = async () => {
             try {
-                const response = await fetch(
-                    "http://localhost:3000/produtos"
-                );
+                const response = await fetch(url("/produtos"));
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

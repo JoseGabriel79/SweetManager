@@ -8,6 +8,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
+import { url } from "../utils/api.js";
 
 export default function CadastroProdutoScreen() {
   const [nome, setNome] = useState("");
@@ -22,7 +23,7 @@ export default function CadastroProdutoScreen() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/produto", {
+      const response = await fetch(url("/produto"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
