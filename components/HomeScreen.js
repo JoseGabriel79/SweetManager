@@ -124,25 +124,6 @@ export default function HomeScreen({ usuario, onLogout }) {
         </View>
 
         <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.headerAction}
-            onPress={() => navigation.navigate("Configurações")}
-            activeOpacity={0.7}
-          >
-            <Feather name="settings" size={20} color="#042136" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.headerAction, { backgroundColor: "#fce7e7" }]}
-            onPress={() =>
-              confirm("Sair", "Deseja sair da sua conta?", () => onLogout(), {
-                confirmText: "Sair",
-                confirmStyle: "destructive",
-              })
-            }
-            activeOpacity={0.7}
-          >
-            <Feather name="log-out" size={20} color="#f64545" />
-          </TouchableOpacity>
           <ProfileImage dadosUsuario={dadosUsuario} onLogout={onLogout} />
         </View>
       </View>
