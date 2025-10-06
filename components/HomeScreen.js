@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
 import CardsHome from "./CardsHome";
+import LoginScreen from "./LoginScreen";
+import { useNavigation } from '@react-navigation/native';
 
 // Componente do Modal
+
 function UserDataModal({ dadosUsuario, onClose }) {
+  const navigation = useNavigation();
+
+  const handleLogout = () => {
+    navigation.navigate('LoginScreen');
+  };
   return (
     <Modal
       transparent={true}
@@ -15,8 +23,8 @@ function UserDataModal({ dadosUsuario, onClose }) {
         <View style={styles.modalBox}>
 
           <Text style={styles.tituloModal}>Perfil</Text>
-          <view style ={styles.infoPerfil}>
-            <view>
+          <View style={styles.infoPerfil}>
+            <View>
               <Image
                 source={
                   dadosUsuario?.imagemperfil
@@ -25,20 +33,30 @@ function UserDataModal({ dadosUsuario, onClose }) {
                 }
                 style={styles.imageModal}
               />
-            </view>
-            <view>
+            </View>
+            <View>
               <Text style={styles.nome}>{dadosUsuario?.nome}</Text>
               <Text style={styles.email}>{dadosUsuario?.email}</Text>
-            </view>
-          </view>
+            </View>
+          </View>
 
-          <TouchableOpacity
-            style={styles.botaoFechar}
-            onPress={onClose}
-            activeOpacity={0.5}
-          >
-            <Text style={styles.textoFechar}>Fechar</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.botaoSair}
+              onPress={() => { handleLogout(); onClose(); }}
+              activeOpacity={0.5}
+            >
+              <Text style={styles.textButton}>Sair</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.botaoFechar}
+              onPress={onClose}
+              activeOpacity={0.5}
+            >
+              <Text style={styles.textoFechar}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>
