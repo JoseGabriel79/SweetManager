@@ -96,6 +96,36 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
     );
   };
 
+  const deleteAccount = async () => {
+    if (!usuario?.id) {
+      showAlert("Erro", "Usuário não identificado.");
+      return;
+    }
+
+    confirm(
+      "Excluir conta",
+      "Esta ação é permanente e excluirá todos os seus dados (produtos e perfil). Deseja continuar?",
+      async () => {
+        try {
+          setLoading(true);
+          const resp = await fetch(url(`/usuarios/${usuario.id}`), { method: "DELETE" });
+          const data = await resp.json();
+          if (!resp.ok || !data.success) {
+            throw new Error(data.error || `Falha HTTP ${resp.status}`);
+          }
+          showAlert("Conta excluída", "Sua conta e dados foram removidos.");
+          onLogout();
+        } catch (err) {
+          console.log("Erro ao excluir conta:", err.message);
+          showAlert("Erro", "Não foi possível excluir sua conta.");
+        } finally {
+          setLoading(false);
+        }
+      },
+      { confirmText: "Excluir", confirmStyle: "destructive" }
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -132,6 +162,19 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
             <Text style={styles.itemSubtitle}>Nome, email e segurança</Text>
           </View>
           <Feather name="chevron-right" size={22} color="#888" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.item, { borderColor: "#fce1e1", borderWidth: 1 }]}
+          activeOpacity={0.8}
+          onPress={deleteAccount}
+        >
+          <Feather name="trash-2" size={22} color="#f64545" />
+          <View style={styles.itemTextContainer}>
+            <Text style={[styles.itemTitle, { color: "#f64545" }]}>Excluir conta</Text>
+            <Text style={[styles.itemSubtitle, { color: "#c33" }]}>Remove todos os seus dados</Text>
+          </View>
+          <Feather name="chevron-right" size={22} color="#f64545" />
         </TouchableOpacity>
 
         <Text style={styles.sectionTitle}>Preferências</Text>

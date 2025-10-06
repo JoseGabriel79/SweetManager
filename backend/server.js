@@ -595,6 +595,75 @@ app.delete("/produto/:id", async (req, res) => {
   }
 });
 
+// Exclusão completa de conta do usuário e seus dados relacionados
+app.delete("/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+  const usuarioId = parseInt(id, 10);
+  if (!usuarioId) {
+    return res.status(400).json({ success: false, error: "ID de usuário inválido" });
+  }
+  try {
+    // Verifica existência do usuário
+    const userRes = await pool.query("SELECT id, imagemperfil FROM usuarios WHERE id=$1", [usuarioId]);
+    if (!userRes.rowCount) {
+      return res.status(404).json({ success: false, error: "Usuário não encontrado" });
+    }
+
+    // Busca todos os produtos do usuário para remover imagens no Supabase
+    const prodRes = await pool.query(
+      "SELECT id, imagem FROM produtos WHERE usuario_id=$1",
+      [usuarioId]
+    );
+    const produtos = prodRes.rows || [];
+
+    // Remove imagens de produtos no Supabase em batch
+    const productKeys = produtos
+      .map(p => (typeof p.imagem === 'string' && p.imagem.includes('/produtos/') ? p.imagem.split('/produtos/')[1] : null))
+      .filter(Boolean);
+
+    if (productKeys.length) {
+      try {
+        const { error: removeProductsErr } = await supabase.storage.from('produtos').remove(productKeys);
+        if (removeProductsErr) {
+          console.error('Erro ao remover imagens de produtos do Supabase:', removeProductsErr);
+        }
+      } catch (e) {
+        console.error('Exceção ao remover imagens de produtos do Supabase:', e);
+      }
+    }
+
+    // Remove imagem de perfil do usuário no Supabase, se existir
+    const perfilUrl = userRes.rows[0].imagemperfil;
+    if (perfilUrl && typeof perfilUrl === 'string' && perfilUrl.includes('/usuarios/')) {
+      const key = perfilUrl.split('/usuarios/')[1];
+      if (key) {
+        try {
+          const { error: removePerfilErr } = await supabase.storage.from('usuarios').remove([key]);
+          if (removePerfilErr) {
+            console.error('Erro ao remover imagem de perfil no Supabase:', removePerfilErr);
+          }
+        } catch (e) {
+          console.error('Exceção ao remover imagem de perfil no Supabase:', e);
+        }
+      }
+    }
+
+    // Exclui registros relacionados antes de excluir o usuário
+    await pool.query("DELETE FROM produtos WHERE usuario_id=$1", [usuarioId]);
+
+    // Exclui o usuário
+    const delUser = await pool.query("DELETE FROM usuarios WHERE id=$1 RETURNING id", [usuarioId]);
+    if (!delUser.rowCount) {
+      return res.status(404).json({ success: false, error: "Usuário não encontrado" });
+    }
+
+    res.json({ success: true, message: `Usuário ${usuarioId} e dados relacionados excluídos` });
+  } catch (err) {
+    console.error('Erro ao excluir conta:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 /* =========================
    INICIAR SERVIDOR
 ========================= */
