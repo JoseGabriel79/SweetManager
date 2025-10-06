@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpaci
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import CardsHome from "./CardsHome";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { confirm } from "../utils/alerts";
 
 // Componente do Modal
 
@@ -90,6 +92,7 @@ export default function HomeScreen({ usuario, onLogout }) {
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (usuario) {
@@ -111,19 +114,42 @@ export default function HomeScreen({ usuario, onLogout }) {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Sweet Manager</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.appTitle}>Sweet Manager</Text>
+          <Text style={styles.welcomeText}>
+            Olá, {dadosUsuario?.nome || "Visitante"}
+          </Text>
         </View>
 
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          {/* <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-            {dadosUsuario.nome}
-          </Text> */}
+        <View style={styles.headerRight}>
+          <TouchableOpacity
+            style={styles.headerAction}
+            onPress={() => navigation.navigate("Configurações")}
+            activeOpacity={0.7}
+          >
+            <Feather name="settings" size={20} color="#042136" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.headerAction, { backgroundColor: "#fce7e7" }]}
+            onPress={() =>
+              confirm("Sair", "Deseja sair da sua conta?", () => onLogout(), {
+                confirmText: "Sair",
+                confirmStyle: "destructive",
+              })
+            }
+            activeOpacity={0.7}
+          >
+            <Feather name="log-out" size={20} color="#f64545" />
+          </TouchableOpacity>
           <ProfileImage dadosUsuario={dadosUsuario} onLogout={onLogout} />
-
         </View>
+      </View>
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Ações rápidas</Text>
+        <Text style={styles.sectionSubtitle}>Escolha uma área para começar</Text>
       </View>
 
       <View style={styles.cards}>
@@ -132,8 +158,7 @@ export default function HomeScreen({ usuario, onLogout }) {
         <CardsHome titulo="Clientes" routeName="Clientes" />
         <CardsHome titulo="Estoque" routeName="Estoque" />
       </View>
-    </View>
-
+    </SafeAreaView>
   );
 }
 
@@ -160,23 +185,30 @@ const shadowMedium = Platform.select({
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#E9F1FE", padding: 20 },
+  container: { flex: 1, backgroundColor: "#E9F1FE", padding: 16 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 15,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: Platform.OS === "web" ? 1 : 0,
+    borderColor: "#e5eef7",
     ...shadowSmall,
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  title: { fontSize: 24, fontWeight: "bold" },
+  headerLeft: { flexDirection: "column" },
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 10 },
+  appTitle: { fontSize: 22, fontWeight: "700", color: "#042136" },
+  welcomeText: { fontSize: 14, color: "#4c5b68", marginTop: 4 },
   image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#ddd"
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#ddd",
+    borderWidth: 1,
+    borderColor: "#e5eef7",
   },
   imageModal: {
     width: 96,
@@ -185,14 +217,26 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#E9F1FE",
   },
+  headerAction: {
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: "#eef6ff",
+    ...shadowSmall,
+  },
+  sectionHeader: {
+    paddingHorizontal: 4,
+    marginBottom: 8,
+  },
+  sectionTitle: { fontSize: 18, fontWeight: "600", color: "#042136" },
+  sectionSubtitle: { fontSize: 13, color: "#6b7b88", marginTop: 2 },
   cards: {
     flex: 1,
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
     alignContent: "center",
-    gap: 15,
-    paddingVertical: 20,
+    gap: 16,
+    paddingVertical: 16,
   }, modalFundo: {
     flex: 1,
     justifyContent: "center",
@@ -201,33 +245,33 @@ const styles = StyleSheet.create({
   },
   modalBox: {
     backgroundColor: "#fff",
-    padding: 24,
-    width: "90%",
+    padding: 20,
+    width: "92%",
     borderRadius: 16,
     alignItems: "center",
     ...shadowMedium,
   },
   tituloModal: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
     color: "#042136",
     marginBottom: 12,
   },
   infoPerfil: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
-    marginBottom: 20,
+    gap: 14,
+    marginBottom: 16,
   },
   modalList: {
     alignSelf: 'stretch',
-    marginTop: 8,
-    marginBottom: 12,
+    marginTop: 6,
+    marginBottom: 10,
   },
   modalItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     paddingVertical: 10,
     paddingHorizontal: 12,
     backgroundColor: '#F8FAFD',
@@ -235,24 +279,24 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   modalItemText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#042136',
     fontWeight: '500',
   },
   nome: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "600",
     color: "#042136",
   },
   email: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#555",
     marginTop: 4,
   },
   botaoFechar: {
     backgroundColor: "#b5b9b7ff",
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 10,
   },
   textoFechar: {
