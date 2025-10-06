@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ActivityIndicator, Modal, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, Modal, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { url } from "../utils/api.js";
+import { showAlert, confirm } from "../utils/alerts";
 
 export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
       const selectedUri = result.assets[0].uri;
 
       if (!usuario?.id) {
-        Alert.alert("Erro", "Usuário não identificado para atualizar a foto.");
+        showAlert("Erro", "Usuário não identificado para atualizar a foto.");
         return;
       }
 
@@ -53,10 +54,10 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
         }
 
         setUsuario(data.usuario);
-        Alert.alert("Sucesso", "Foto de perfil atualizada!");
+        showAlert("Sucesso", "Foto de perfil atualizada!");
       } catch (err) {
         console.log("Erro ao atualizar foto:", err.message);
-        Alert.alert("Erro", "Não foi possível atualizar a foto.");
+        showAlert("Erro", "Não foi possível atualizar a foto.");
       } finally {
         setLoading(false);
       }
@@ -67,37 +68,31 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
 
   const deleteImage = async () => {
     if (!usuario?.id) {
-      Alert.alert("Erro", "Usuário não identificado para excluir a foto.");
+      showAlert("Erro", "Usuário não identificado para excluir a foto.");
       return;
     }
 
-    Alert.alert(
+    confirm(
       "Excluir foto",
       "Tem certeza que deseja excluir sua foto de perfil?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              setLoading(true);
-              const resp = await fetch(url(`/usuarios/${usuario.id}/imagem`), { method: "DELETE" });
-              const data = await resp.json();
-              if (!resp.ok || !data.success) {
-                throw new Error(data.error || `Falha HTTP ${resp.status}`);
-              }
-              setUsuario(data.usuario); // imagemperfil=null para cair na foto padrão
-              Alert.alert("Sucesso", "Foto de perfil removida!");
-            } catch (err) {
-              console.log("Erro ao excluir foto:", err.message);
-              Alert.alert("Erro", "Não foi possível excluir a foto.");
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          setLoading(true);
+          const resp = await fetch(url(`/usuarios/${usuario.id}/imagem`), { method: "DELETE" });
+          const data = await resp.json();
+          if (!resp.ok || !data.success) {
+            throw new Error(data.error || `Falha HTTP ${resp.status}`);
+          }
+          setUsuario(data.usuario); // imagemperfil=null para cair na foto padrão
+          showAlert("Sucesso", "Foto de perfil removida!");
+        } catch (err) {
+          console.log("Erro ao excluir foto:", err.message);
+          showAlert("Erro", "Não foi possível excluir a foto.");
+        } finally {
+          setLoading(false);
+        }
+      },
+      { confirmText: "Excluir", confirmStyle: "destructive" }
     );
   };
 
@@ -171,12 +166,12 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
 
         <TouchableOpacity
           style={[styles.item, { marginTop: 20 }]}
-          onPress={() => {
-            Alert.alert("Sair", "Deseja sair da sua conta?", [
-              { text: "Cancelar", style: "cancel" },
-              { text: "Sair", style: "destructive", onPress: () => { onLogout; onLogout(); } },
-            ]);
-          }}
+          onPress={() =>
+            confirm("Sair", "Deseja sair da sua conta?", () => onLogout(), {
+              confirmText: "Sair",
+              confirmStyle: "destructive",
+            })
+          }
         >
           <Feather name="log-out" size={22} color="#f64545" />
           <View style={styles.itemTextContainer}>

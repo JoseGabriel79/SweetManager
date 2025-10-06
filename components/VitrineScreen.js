@@ -8,11 +8,11 @@ import {
     Dimensions,
     TouchableOpacity,
     Modal,
-    Alert,
     TextInput,
     Platform
 } from "react-native";
 import { url } from "../utils/api.js";
+import { showAlert } from "../utils/alerts";
 
 const imagensBolos = {
     boloPadrao: require('../imagens/ImagensBolos/boloPadrao.png'),
@@ -86,14 +86,14 @@ export default function VitrineScreen() {
                 const data = await response.json();
 
                 if (data.success) {
-                    Alert.alert("Sucesso", data.message || "Produto atualizado!");
+                    showAlert("Sucesso", data.message || "Produto atualizado!");
                     onUpdateSuccess(data.produto);
                     onClose();
                 } else {
-                    Alert.alert("Erro", data.error || "Não foi possível atualizar");
+                    showAlert("Erro", data.error || "Não foi possível atualizar");
                 }
             } catch (error) {
-                Alert.alert("Erro", error.message);
+                showAlert("Erro", error.message);
             }
         };
 
@@ -167,15 +167,14 @@ export default function VitrineScreen() {
                 const data = await response.json();
 
                 if (data.success) {
-                    Alert.alert("Sucesso", data.message || "Produto excluído com sucesso!");
-                    alert("Sucesso", data.message || "Produto excluído com sucesso!");
+                    showAlert("Sucesso", data.message || "Produto excluído com sucesso!");
                     onDeleteSuccess(item.id); // Atualiza lista no componente pai
                     onClose(); // Fecha o modal
                 } else {
-                    Alert.alert("Erro", data.error || "Não foi possível deletar");
+                    showAlert("Erro", data.error || "Não foi possível deletar");
                 }
             } catch (error) {
-                Alert.alert("Erro", error.message);
+                showAlert("Erro", error.message);
             }
         };
 

@@ -5,10 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
 } from "react-native";
 import { url } from "../utils/api.js";
+import { showAlert } from "../utils/alerts";
 
 export default function CadastroProdutoScreen() {
   const [nome, setNome] = useState("");
@@ -18,7 +18,7 @@ export default function CadastroProdutoScreen() {
 
   const handleCadastro = async () => {
     if (!nome || !preco || !estoque) {
-      Alert.alert("Erro", "Preencha todos os campos obrigatórios!");
+      showAlert("Erro", "Preencha todos os campos obrigatórios!");
       return;
     }
 
@@ -38,16 +38,16 @@ export default function CadastroProdutoScreen() {
       const data = await response.json();
 
       if (data.success) {
-        Alert.alert("Sucesso", `Produto cadastrado com ID ${data.id}`);
+        showAlert("Sucesso", `Produto cadastrado com ID ${data.id}`);
         setNome("");
         setPreco("");
         setEstoque("");
         setDescricao("");
       } else {
-        Alert.alert("Erro", data.error || "Falha ao cadastrar produto");
+        showAlert("Erro", data.error || "Falha ao cadastrar produto");
       }
     } catch (error) {
-      Alert.alert("Erro", error.message);
+      showAlert("Erro", error.message);
     }
   };
 

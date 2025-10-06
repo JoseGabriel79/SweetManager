@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { url } from "../utils/api.js";
+import { showAlert } from "../utils/alerts";
 
 export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const [username, setUsername] = useState("");
@@ -41,19 +41,19 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
   const handleRegister = async () => {
     // Validações básicas
     if (!username || !email || !senha) {
-      Alert.alert("Erro", "Preencha todos os campos!");
+      showAlert("Erro", "Preencha todos os campos!");
       return;
     }
     
     // Validação de formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert("Erro", "Por favor, informe um email válido");
+      showAlert("Erro", "Por favor, informe um email válido");
       return;
     }
     
     if (senha.length < 6) {
-      Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres");
+      showAlert("Erro", "A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
@@ -69,7 +69,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
         // Verificar se a URI da imagem é válida
         if (!imagemperfil.startsWith('file://') && !imagemperfil.startsWith('content://') && !imagemperfil.startsWith('data:') && !imagemperfil.startsWith('ph://')) {
           console.error("URI de imagem inválida:", imagemperfil);
-          Alert.alert("Erro", "Formato de imagem inválido. Por favor, selecione outra imagem.");
+          showAlert("Erro", "Formato de imagem inválido. Por favor, selecione outra imagem.");
           setLoading(false);
           return;
         }
@@ -146,19 +146,19 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       setLoading(false);
 
       if (data.success) {
-        Alert.alert("Sucesso", "Cadastro realizado!");
+        showAlert("Sucesso", "Cadastro realizado!");
         setUsuario(data.usuario);
         setLogin(true);
       } else {
-        Alert.alert("Erro", data.error || "Não foi possível cadastrar.");
+        showAlert("Erro", data.error || "Não foi possível cadastrar.");
       }
     } catch (error) {
       setLoading(false);
       console.log("Erro registro:", error.message);
       if (error.name === 'AbortError') {
-        Alert.alert("Erro", "A operação demorou muito tempo. Verifique sua conexão e tente novamente.");
+        showAlert("Erro", "A operação demorou muito tempo. Verifique sua conexão e tente novamente.");
       } else {
-        Alert.alert("Erro", "Falha ao conectar com o servidor.");
+        showAlert("Erro", "Falha ao conectar com o servidor.");
       }
     }
   };

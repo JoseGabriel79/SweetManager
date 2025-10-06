@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import axios from "axios";
 import { url } from "../utils/api.js";
+import { showAlert } from "../utils/alerts";
 
 export default function LoginScreen({ navigation, setLogin, setUsuario }) {
   const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
 
   const handleLogin = async () => {
     if (!email || !senha) {
-      Alert.alert("Erro", "Preencha todos os campos!");
+      showAlert("Erro", "Preencha todos os campos!");
       return;
     }
 
@@ -47,12 +47,12 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
         setUsuario(usuario);
         setLogin(true);
       } else {
-        Alert.alert("Erro", response.data.error || "Falha no login.");
+        showAlert("Erro", response.data.error || "Falha no login.");
       }
     } catch (error) {
       setLoading(false);
       console.log("Erro login:", error.response?.data || error.message);
-      Alert.alert("Erro", "Falha ao conectar com o servidor.");
+      showAlert("Erro", "Falha ao conectar com o servidor.");
     }
   };
 
