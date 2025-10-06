@@ -5,7 +5,8 @@
  * e CRUD de produtos, integrando com PostgreSQL (via Pool) e Supabase Storage
  * para upload/remoção de imagens.
  *
- * Fluxo principal:
+ * Fluxo pr
+ * incipal:
  * - Inicialização: ensureTables() cria/atualiza tabelas 'usuarios' e 'produtos' de forma idempotente
  * - Produtos: endpoints GET/POST/PUT/DELETE são todos escopados por 'usuario_id'
  * - Imagens: uploads vão para o bucket 'produtos'; remoções acontecem ao excluir produto ou conta
