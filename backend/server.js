@@ -45,7 +45,7 @@ const corsOptions = {
     "http://localhost:8081",
     "http://localhost:8082",
     "http://localhost:8083",
-    "https://duzeapp-production.up.railway.app",
+    "https://sweetmanager.up.railway.app/",
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
