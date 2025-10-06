@@ -129,7 +129,7 @@ export default function RegisterScreen({ navigation, setLogin, setUsuario }) {
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
 
       const response = await fetch(
-        "https://nodejs-production-43c7.up.railway.app/usuarios",
+        "http://localhost:3000/usuarios",
         {
           method: "POST",
           body: formData,

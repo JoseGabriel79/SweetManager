@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
 import CardsHome from "./CardsHome";
-import LoginScreen from "./LoginScreen";
-import { useNavigation } from '@react-navigation/native';
 
 // Componente do Modal
 
-function UserDataModal({ dadosUsuario, onClose }) {
-  const navigation = useNavigation();
-
-  const handleLogout = () => {
-    navigation.navigate('LoginScreen');
-  };
+function UserDataModal({ dadosUsuario, onClose, onLogout }) {
   return (
     <Modal
       transparent={true}
@@ -43,7 +36,7 @@ function UserDataModal({ dadosUsuario, onClose }) {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.botaoSair}
-              onPress={() => { handleLogout(); onClose(); }}
+              onPress={() => { onLogout(); onClose(); }}
               activeOpacity={0.5}
             >
               <Text style={styles.textButton}>Sair</Text>
@@ -65,7 +58,7 @@ function UserDataModal({ dadosUsuario, onClose }) {
 
 
 // Componente de Imagem do Perfil
-function ProfileImage({ dadosUsuario }) {
+function ProfileImage({ dadosUsuario, onLogout }) {
   const [selectedUser, setSelectedUser] = useState(null);
 
   return (
@@ -86,13 +79,14 @@ function ProfileImage({ dadosUsuario }) {
         <UserDataModal
           dadosUsuario={selectedUser}
           onClose={() => setSelectedUser(null)}
+          onLogout={onLogout}
         />
       )}
     </>
   );
 }
 
-export default function HomeScreen({ usuario }) {
+export default function HomeScreen({ usuario, onLogout }) {
   const [dadosUsuario, setDadosUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -127,7 +121,7 @@ export default function HomeScreen({ usuario }) {
           {/* <Text style={{ fontWeight: "bold", fontSize: 20 }}>
             {dadosUsuario.nome}
           </Text> */}
-          <ProfileImage dadosUsuario={dadosUsuario} />
+          <ProfileImage dadosUsuario={dadosUsuario} onLogout={onLogout} />
 
         </View>
       </View>
@@ -167,9 +161,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#ddd"
   },
   imageModal: {
-    width: 200,
-    height: 200,
-    borderRadius: 100
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    borderWidth: 2,
+    borderColor: "#E9F1FE",
   },
   cards: {
     flex: 1,
@@ -186,23 +182,44 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalBox: {
-    backgroundColor: "#e1eefbf1",
-    padding: 20,
-    width: "100%",
-    height: "100%",
+    backgroundColor: "#fff",
+    padding: 24,
+    width: "90%",
+    borderRadius: 16,
     alignItems: "center",
-
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 12,
+    elevation: 6,
   },
   tituloModal: {
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: "bold",
+    color: "#042136",
+    marginBottom: 12,
+  },
+  infoPerfil: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    marginBottom: 20,
+  },
+  nome: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#042136",
+  },
+  email: {
+    fontSize: 14,
+    color: "#555",
+    marginTop: 4,
   },
   botaoFechar: {
-    marginTop: 15,
     backgroundColor: "#b5b9b7ff",
-    padding: 10,
-    borderRadius: 8,
-    marginRight: 10
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 10,
   },
   textoFechar: {
     color: "#fff",
@@ -212,5 +229,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 8,
+  },
+  botaoSair: {
+    backgroundColor: "#f64545ff",
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 10,
   },
 });

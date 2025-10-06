@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
       setLoading(true);
 
       const response = await axios.post(
-        "https://nodejs-production-43c7.up.railway.app/login",
+        "http://localhost:3000/login",
         { email, senha }
       );
 

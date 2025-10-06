@@ -5,13 +5,10 @@ import EstoqueScreen from "./EstoqueScreen";
 import ClientesScreen from "./ClientesScreen";
 import CadastrarProdutosScreen from "./CadastrarProdutosScreen";
 import VitrineScreen from "./VitrineScreen";
-import LoginScreen from "./LoginScreen";
-import { useState } from "react/cjs/react.development";
+// Login é controlado no AppNavigator; não deve existir estado duplicado aqui.
 const Stack = createStackNavigator();
 
-export default function HomeStack({ usuario }) {
-  const [login, setLogin] = useState(false);
-    const [usuario, setUsuario] = useState(null);
+export default function HomeStack({ usuario, onLogout }) {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -24,14 +21,13 @@ export default function HomeStack({ usuario }) {
     >
       
       <Stack.Screen name="Home" options={{ headerShown: false }}>
-        {() => <HomeScreen usuario={usuario} />}
+        {() => <HomeScreen usuario={usuario} onLogout={onLogout} />}
       </Stack.Screen>
 
       <Stack.Screen name="Clientes" component={ClientesScreen} options={{ title: "Clientes" }} />
       <Stack.Screen name="Estoque" component={EstoqueScreen} options={{ title: "Estoque" }} />
       <Stack.Screen name="Vitrine" component={VitrineScreen} options={{ title: "Painel de Controle" }} />
       <Stack.Screen name="CadastrarProdutos" component={CadastrarProdutosScreen} options={{ title: "Cadastrar Produtos" }} />
-      <Stack.Screen name="LoginScreen" component={(props) => <LoginScreen {...props} setLogin={setLogin} setUsuario={setUsuario} />} options={{ title: "Login" }} />
     </Stack.Navigator>
   );
 }

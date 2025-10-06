@@ -12,7 +12,7 @@ import HomeStack from "./HomeStack";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function AppTabs({ usuario }) {
+function AppTabs({ usuario, onLogout }) {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -25,7 +25,7 @@ function AppTabs({ usuario }) {
     >
       <Tab.Screen
         name="Inicio"
-        children={() => <HomeStack usuario={usuario} />}
+        children={() => <HomeStack usuario={usuario} onLogout={onLogout} />}
         options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
       />
       <Tab.Screen
@@ -55,10 +55,15 @@ export default function AppNavigator() {
   const [login, setLogin] = useState(false);
   const [usuario, setUsuario] = useState(null);
 
+  const onLogout = () => {
+    setUsuario(null);
+    setLogin(false);
+  };
+
   return (
     <NavigationContainer>
       {login ? (
-        <AppTabs usuario={usuario} />
+        <AppTabs usuario={usuario} onLogout={onLogout} />
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login">

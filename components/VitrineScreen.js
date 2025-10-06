@@ -69,7 +69,7 @@ export default function VitrineScreen() {
 
         const handleUpdate = async () => {
             try {
-                const response = await fetch(`https://nodejs-production-43c7.up.railway.app/produto/${item.id}`, {
+                const response = await fetch(`http://localhost:3000/produto/${item.id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -158,7 +158,7 @@ export default function VitrineScreen() {
     function ModalDeleteProduto({ item, onClose, onDeleteSuccess }) {
         const handleDelete = async () => {
             try {
-                const response = await fetch(`https://nodejs-production-43c7.up.railway.app/produto/${item.id}`, {
+                const response = await fetch(`http://localhost:3000/produto/${item.id}`, {
                     method: "DELETE",
                 });
 
@@ -215,7 +215,7 @@ export default function VitrineScreen() {
         const fetchProdutos = async () => {
             try {
                 const response = await fetch(
-                    "https://nodejs-production-43c7.up.railway.app/produtos"
+                    "http://localhost:3000/produtos"
                 );
 
                 if (!response.ok) {
