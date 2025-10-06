@@ -39,6 +39,51 @@ app.use(cors(corsOptions));
 // Trata preflight explicitamente para todas as rotas (Express 5)
 app.options(/.*/, cors(corsOptions));
 
+// Inicializa tabelas no banco ao subir o servidor
+async function ensureTables() {
+  try {
+    // Tabela de usuários
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY,
+        nome TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        senha TEXT NOT NULL,
+        imagemperfil TEXT
+      );
+    `);
+
+    // Tabela de produtos com vínculo ao usuário
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS produtos (
+        id SERIAL PRIMARY KEY,
+        nome TEXT NOT NULL,
+        preco DECIMAL(10,2) NOT NULL,
+        estoque INTEGER NOT NULL,
+        descricao TEXT,
+        imagem TEXT,
+        usuario_id INTEGER REFERENCES usuarios(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Correções/migrações idempotentes
+    await pool.query(`
+      ALTER TABLE produtos ADD COLUMN IF NOT EXISTS usuario_id INTEGER REFERENCES usuarios(id);
+    `);
+    await pool.query(`
+      ALTER TABLE produtos ALTER COLUMN imagem TYPE TEXT USING imagem::text;
+    `);
+
+    console.log("✅ Tabelas 'usuarios' e 'produtos' verificadas/atualizadas.");
+  } catch (err) {
+    console.error("❌ Erro ao inicializar tabelas:", err);
+  }
+}
+
+// dispara criação/verificação das tabelas
+ensureTables();
+
 /* =========================
    USUÁRIOS
 ========================= */
