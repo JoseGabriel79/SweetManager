@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpacity, Platform } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import CardsHome from "./CardsHome";
 
 // Componente do Modal
 
 function UserDataModal({ dadosUsuario, onClose, onLogout }) {
+  const navigation = useNavigation();
   return (
     <Modal
       transparent={true}
@@ -14,42 +17,43 @@ function UserDataModal({ dadosUsuario, onClose, onLogout }) {
     >
       <View style={styles.modalFundo}>
         <View style={styles.modalBox}>
-
           <Text style={styles.tituloModal}>Perfil</Text>
+
           <View style={styles.infoPerfil}>
-            <View>
-              <Image
-                source={
-                  dadosUsuario?.imagemperfil
-                    ? { uri: dadosUsuario.imagemperfil }
-                    : require("../imagens/ImagensPerfil/pinguim.png")
-                }
-                style={styles.imageModal}
-              />
-            </View>
+            <Image
+              source={
+                dadosUsuario?.imagemperfil
+                  ? { uri: dadosUsuario.imagemperfil }
+                  : require("../imagens/ImagensPerfil/pinguim.png")
+              }
+              style={styles.imageModal}
+            />
             <View>
               <Text style={styles.nome}>{dadosUsuario?.nome}</Text>
               <Text style={styles.email}>{dadosUsuario?.email}</Text>
             </View>
           </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.botaoSair}
-              onPress={() => { onLogout(); onClose(); }}
-              activeOpacity={0.5}
-            >
-              <Text style={styles.textButton}>Sair</Text>
+          <View style={styles.modalList}>
+            <TouchableOpacity style={styles.modalItem} onPress={() => { onClose(); navigation.navigate('Configurações'); }}>
+              <Feather name="image" size={20} color="#042136" />
+              <Text style={styles.modalItemText}>Editar foto de perfil</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.botaoFechar}
-              onPress={onClose}
-              activeOpacity={0.5}
-            >
-              <Text style={styles.textoFechar}>Fechar</Text>
+            <TouchableOpacity style={styles.modalItem} onPress={() => { onClose(); navigation.navigate('Configurações'); }}>
+              <Feather name="settings" size={20} color="#042136" />
+              <Text style={styles.modalItemText}>Configurações</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalItem} onPress={() => { onLogout(); onClose(); navigation.navigate('Login'); }}>
+              <Feather name="log-out" size={20} color="#f64545" />
+              <Text style={[styles.modalItemText, { color: '#f64545' }]}>Sair</Text>
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity style={styles.botaoFechar} onPress={onClose} activeOpacity={0.5}>
+            <Text style={styles.textoFechar}>Fechar</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -219,6 +223,26 @@ const styles = StyleSheet.create({
     gap: 16,
     marginBottom: 20,
   },
+  modalList: {
+    alignSelf: 'stretch',
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  modalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#F8FAFD',
+    borderRadius: 10,
+    marginBottom: 8,
+  },
+  modalItemText: {
+    fontSize: 16,
+    color: '#042136',
+    fontWeight: '500',
+  },
   nome: {
     fontSize: 18,
     fontWeight: "600",
@@ -245,14 +269,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonContainer: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 8,
-  },
-  botaoSair: {
-    backgroundColor: "#f64545ff",
-    paddingVertical: 12,
-    paddingHorizontal: 18,
-    borderRadius: 10,
+    display: 'none',
   },
 });

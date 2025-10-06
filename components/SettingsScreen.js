@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ActivityIndicator, Modal, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { url } from "../utils/api.js";
 
 export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const navigation = useNavigation();
 
   const pickImageAndUpload = async () => {
     try {
@@ -174,7 +176,7 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
           onPress={() => {
             Alert.alert("Sair", "Deseja sair da sua conta?", [
               { text: "Cancelar", style: "cancel" },
-              { text: "Sair", style: "destructive", onPress: () => onLogout && onLogout() },
+              { text: "Sair", style: "destructive", onPress: () => { onLogout && onLogout(); navigation.navigate('Login'); } },
             ]);
           }}
         >
