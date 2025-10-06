@@ -9,6 +9,7 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
+import { url } from "../utils/api.js";
 
 export default function LoginScreen({ navigation, setLogin, setUsuario }) {
   const [email, setEmail] = useState("");
@@ -24,10 +25,7 @@ export default function LoginScreen({ navigation, setLogin, setUsuario }) {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "http://localhost:3000/login",
-        { email, senha }
-      );
+      const response = await axios.post(url("/login"), { email, senha });
 
       setLoading(false);
 
