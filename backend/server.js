@@ -1,3 +1,20 @@
+/**
+ * Visão geral do backend
+ *
+ * Este servidor Express expõe uma API REST para autenticação básica de usuário
+ * e CRUD de produtos, integrando com PostgreSQL (via Pool) e Supabase Storage
+ * para upload/remoção de imagens.
+ *
+ * Fluxo principal:
+ * - Inicialização: ensureTables() cria/atualiza tabelas 'usuarios' e 'produtos' de forma idempotente
+ * - Produtos: endpoints GET/POST/PUT/DELETE são todos escopados por 'usuario_id'
+ * - Imagens: uploads vão para o bucket 'produtos'; remoções acontecem ao excluir produto ou conta
+ * - Conta: DELETE /usuarios/:id remove usuário, produtos e respectivas imagens nos buckets
+ *
+ * Convenções:
+ * - 'imagem' nos produtos armazena URL pública; ao deletar, tentamos remover arquivo no Supabase quando for URL do próprio Supabase
+ * - As operações de remoção de imagens não bloqueiam a deleção de registros em caso de falha (podemos tornar mais estrito se necessário)
+ */
 const express = require("express");
 const cors = require("cors");
 const pool = require("./db"); // conexão Postgres

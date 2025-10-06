@@ -1,3 +1,9 @@
+// Navegação principal do app
+// - Stack de autenticação (Login/Register) quando não logado
+// - Tabs (Home, Relatórios, Configurações) quando logado
+// Fluxo de props:
+// - 'usuario' é guardado aqui ao logar e repassado para HomeStack/Settings
+// - 'onLogout' limpa estado e volta para fluxo de Login
 import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -14,6 +20,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function AppTabs({ usuario, setUsuario, onLogout }) {
+  // Tab Navigator: define as abas e passa props às telas internas
   return (
     <Tab.Navigator
       screenOptions={{
@@ -26,6 +33,7 @@ function AppTabs({ usuario, setUsuario, onLogout }) {
     >
       <Tab.Screen
         name="Inicio"
+        // HomeStack recebe 'usuario' (dados do usuário logado) e 'onLogout'
         children={() => <HomeStack usuario={usuario} onLogout={onLogout} />}
         options={{ tabBarIcon: () => <Feather name="home" size={25} color="#042136" /> }}
       />
@@ -43,6 +51,7 @@ function AppTabs({ usuario, setUsuario, onLogout }) {
         options={{ tabBarIcon: () => <Feather name="settings" size={25} color="#042136" /> }}
       >
         {() => (
+          // SettingsScreen mostra dados do usuário, permite editar foto e excluir conta
           <SettingsScreen usuario={usuario} setUsuario={setUsuario} onLogout={onLogout} />
         )}
       </Tab.Screen>
@@ -62,13 +71,17 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       {login ? (
+        // Quando autenticado: mostra as tabs com Home/Relatórios/Configurações
         <AppTabs key="tabs" usuario={usuario} setUsuario={setUsuario} onLogout={onLogout} />
       ) : (
+        // Fluxo de autenticação: Login e Register
         <Stack.Navigator key="auth" screenOptions={{ headerShown: false }} initialRouteName="Login">
           <Stack.Screen name="Login">
+            {/* Login recebe setters para atualizar estado de 'login' e 'usuario' */}
             {(props) => <LoginScreen {...props} setLogin={setLogin} setUsuario={setUsuario} />}
           </Stack.Screen>
           <Stack.Screen name="Register">
+            {/* Register também atualiza 'login' e 'usuario' após cadastro */}
             {(props) => <RegisterScreen {...props} setLogin={setLogin} setUsuario={setUsuario} />}
           </Stack.Screen>
         </Stack.Navigator>

@@ -1,3 +1,10 @@
+// Painel de Controle (Vitrine)
+// - Lista produtos do usuário (filtrados por usuario.id)
+// - Abre modais para visualizar, editar e excluir
+// - Edita via PUT /produto/:id?usuario_id=...; exclui via DELETE /produto/:id?usuario_id=...
+// - Imagens:
+//   - Se 'imagem' é URL http, usa remota (Supabase)
+//   - Caso contrário, usa imagem local padrão dos assets
 import React, { useEffect, useState } from "react";
 import {
     View,
@@ -258,6 +265,7 @@ export default function VitrineScreen({ usuario }) {
                         activeOpacity={0.6}
                         onLongPress={() => setSelectedItem(item)}>
 
+                        {/* Renderização da imagem: remota (URL) ou local (asset) */}
                         <Image
                             source={
                                 item.imagem && typeof item.imagem === 'string' && item.imagem.startsWith('http')

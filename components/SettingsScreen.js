@@ -1,9 +1,17 @@
+// Configurações da conta
+// - Mostra dados do usuário e foto de perfil
+// - Permite alterar/excluir foto de perfil (upload via Supabase)
+// - Oferece logout e exclusão definitiva da conta (DELETE /usuarios/:id)
+// - A exclusão remove usuário, produtos e imagens associadas nos buckets
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, Modal, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { url } from "../utils/api.js";
 import { showAlert, confirm } from "../utils/alerts";
+
+// Observação: 'deleteAccount' chama o backend para remover todos os dados do usuário.
+// Após excluir, fazemos logout localmente para encerrar a sessão.
 
 export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
   const [loading, setLoading] = useState(false);

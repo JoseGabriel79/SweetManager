@@ -1,3 +1,8 @@
+// Tela de cadastro de produtos
+// - Formulário com nome, preço, estoque, descrição
+// - Seleção de imagem via Expo ImagePicker
+// - Envio ao backend usando FormData, incluindo 'usuario_id' do usuário logado
+// - Backend armazena imagem no Supabase (bucket 'produtos') e salva URL pública
 import React, { useState } from "react";
 import {
   View,

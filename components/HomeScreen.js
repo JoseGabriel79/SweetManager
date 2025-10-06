@@ -1,3 +1,6 @@
+// Dashboard inicial pós-login
+// Mostra cabeçalho com dados do usuário, ações rápidas e cards de navegação
+// Inclui um Modal de perfil com opções de Configurações e Logout
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpacity, Platform } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -7,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { confirm } from "../utils/alerts";
 
 // Componente do Modal
+// Recebe dados do usuário, permite ir para Configurações ou sair (logout)
 
 function UserDataModal({ dadosUsuario, onClose, onLogout }) {
   const navigation = useNavigation();
