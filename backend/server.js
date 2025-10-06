@@ -302,7 +302,10 @@ app.put("/usuarios/:id/imagem", upload.single("imagemperfil"), async (req, res) 
       const parts = oldUrl.split('/usuarios/');
       if (parts.length === 2) {
         const oldKey = parts[1];
-        await supabase.storage.from('usuarios').remove([oldKey]);
+        const { data: removeData, error: removeError } = await supabase.storage.from('usuarios').remove([oldKey]);
+        if (removeError) {
+          console.error('Erro ao remover imagem antiga do Supabase:', removeError);
+        }
       }
     }
 
@@ -327,7 +330,10 @@ app.delete("/usuarios/:id/imagem", async (req, res) => {
       const parts = oldUrl.split('/usuarios/');
       if (parts.length === 2) {
         const oldKey = parts[1];
-        await supabase.storage.from('usuarios').remove([oldKey]);
+        const { data: removeData, error: removeError } = await supabase.storage.from('usuarios').remove([oldKey]);
+        if (removeError) {
+          console.error('Erro ao remover imagem do Supabase:', removeError);
+        }
       }
     }
 
