@@ -549,9 +549,47 @@ app.delete("/produto/:id", async (req, res) => {
     if (!usuarioId) {
       return res.status(400).json({ success: false, error: "usuario_id obrigatório" });
     }
-    const result = await pool.query("DELETE FROM produtos WHERE id=$1 AND usuario_id=$2 RETURNING id", [id, usuarioId]);
-    if (!result.rowCount) return res.status(404).json({ success: false, message: "Produto não encontrado" });
-    res.json({ success: true, message: `Produto ${id} deletado` });
+    // Busca produto para obter URL da imagem antes de deletar
+    const current = await pool.query(
+      "SELECT id, imagem FROM produtos WHERE id=$1 AND usuario_id=$2",
+      [id, usuarioId]
+    );
+
+    if (!current.rowCount) {
+      return res.status(404).json({ success: false, message: "Produto não encontrado" });
+    }
+
+    const imagemUrl = current.rows[0].imagem;
+    let imagemRemovida = false;
+
+    // Remove imagem do Supabase se for uma URL pública do bucket 'produtos'
+    if (imagemUrl && typeof imagemUrl === "string" && imagemUrl.includes("/produtos/")) {
+      const parts = imagemUrl.split("/produtos/");
+      if (parts.length === 2) {
+        const key = parts[1];
+        try {
+          const { error: removeError } = await supabase.storage.from("produtos").remove([key]);
+          if (!removeError) {
+            imagemRemovida = true;
+          } else {
+            console.error("Erro ao remover imagem do Supabase:", removeError);
+          }
+        } catch (e) {
+          console.error("Exceção ao remover imagem do Supabase:", e);
+        }
+      }
+    }
+
+    // Deleta o produto do banco
+    const result = await pool.query(
+      "DELETE FROM produtos WHERE id=$1 AND usuario_id=$2 RETURNING id",
+      [id, usuarioId]
+    );
+    if (!result.rowCount) {
+      return res.status(404).json({ success: false, message: "Produto não encontrado" });
+    }
+
+    res.json({ success: true, message: `Produto ${id} deletado`, imagemRemovida });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
