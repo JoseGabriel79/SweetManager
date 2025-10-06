@@ -43,7 +43,7 @@ function AppTabs({ usuario, setUsuario, onLogout }) {
         options={{ tabBarIcon: () => <Feather name="settings" size={25} color="#042136" /> }}
       >
         {() => (
-          <SettingsScreen usuario={usuario} setUsuario={setUsuario} />
+          <SettingsScreen usuario={usuario} setUsuario={setUsuario} onLogout={onLogout} />
         )}
       </Tab.Screen>
     </Tab.Navigator>
