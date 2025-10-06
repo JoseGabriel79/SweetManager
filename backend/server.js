@@ -22,7 +22,7 @@ const upload = multer({ storage });
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ limit: "20mb", extended: true }));
 
-app.use(cors({
+const corsOptions = {
   origin: [
     "http://localhost:8081",
     "http://localhost:8082",
@@ -32,7 +32,12 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
   credentials: true,
-}));
+  optionsSuccessStatus: 204, // garante resposta OK ao preflight
+};
+
+app.use(cors(corsOptions));
+// Trata preflight explicitamente para todas as rotas (Express 5)
+app.options(/.*/, cors(corsOptions));
 
 /* =========================
    USUÁRIOS

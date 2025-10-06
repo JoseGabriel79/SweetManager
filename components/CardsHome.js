@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, Dimensions} from "react-native";
+import { TouchableOpacity, Text, StyleSheet, Dimensions, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window")
@@ -19,6 +19,17 @@ export default function CardsHome({ titulo, routeName }) {
   );
 }
 
+const shadowSmall = Platform.select({
+  web: { boxShadow: "0 3px 8px rgba(0,0,0,0.12)" },
+  default: {
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 4,
+  },
+});
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#51AFF9",
@@ -28,13 +39,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: isSmallScreen ? "20%" : "25%",
-     // sombra iOS
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 4,
-    // sombra Android
-    elevation: 4,
+    ...shadowSmall,
   },
   title: {
     fontSize: isSmallScreen ? 25 : 28,

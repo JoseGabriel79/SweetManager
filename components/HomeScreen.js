@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, ActivityIndicator, Modal, TouchableOpacity, Platform } from "react-native";
 import CardsHome from "./CardsHome";
 
 // Componente do Modal
@@ -137,6 +137,28 @@ export default function HomeScreen({ usuario, onLogout }) {
   );
 }
 
+const shadowSmall = Platform.select({
+  web: { boxShadow: "0 3px 8px rgba(0,0,0,0.12)" },
+  default: {
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+});
+
+const shadowMedium = Platform.select({
+  web: { boxShadow: "0 6px 12px rgba(0,0,0,0.15)" },
+  default: {
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 12,
+    elevation: 6,
+  },
+});
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#E9F1FE", padding: 20 },
   header: {
@@ -146,11 +168,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 15,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 4,
-    elevation: 3,
+    ...shadowSmall,
     marginBottom: 20,
   },
   title: { fontSize: 24, fontWeight: "bold" },
@@ -187,11 +205,7 @@ const styles = StyleSheet.create({
     width: "90%",
     borderRadius: 16,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 12,
-    elevation: 6,
+    ...shadowMedium,
   },
   tituloModal: {
     fontSize: 22,

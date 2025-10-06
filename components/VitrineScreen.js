@@ -9,7 +9,8 @@ import {
     TouchableOpacity,
     Modal,
     Alert,
-    TextInput
+    TextInput,
+    Platform
 } from "react-native";
 
 const imagensBolos = {
@@ -316,6 +317,28 @@ export default function VitrineScreen() {
     );
 }
 
+const shadowSmall = Platform.select({
+    web: { boxShadow: "0 3px 8px rgba(0,0,0,0.12)" },
+    default: {
+        shadowOffset: { width: 0, height: 2 },
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 3,
+    }
+});
+
+const shadowMedium = Platform.select({
+    web: { boxShadow: "0 6px 12px rgba(0,0,0,0.15)" },
+    default: {
+        shadowOffset: { width: 0, height: 6 },
+        shadowColor: "#000",
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        elevation: 6,
+    }
+});
+
 const styles = StyleSheet.create({
     buttons: {
         flexDirection: "row",
@@ -374,12 +397,7 @@ const styles = StyleSheet.create({
         margin: 8,
         alignItems: "center",
         justifyContent: "center",
-        // Estilização de sombra
-        shadowOffset: { width: 0, height: 2 },
-        shadowColor: "#000",
-        shadowOpacity: 0.1, // Opacidade da sombra
-        shadowRadius: 6,
-        elevation: 3, // sombra para Android
+        ...shadowSmall,
         // 🔹 Bordas arredondadas
         borderRadius: 12,
         // 🔹 Define largura do card (2 por linha)
@@ -431,6 +449,7 @@ const styles = StyleSheet.create({
         width: "80%",
         justifyContent: "center",
         alignItems: "center",
+        ...shadowMedium,
 
     },
     tituloModal: {
@@ -454,6 +473,17 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
 });
+const updateShadow = Platform.select({
+    web: { boxShadow: "0 8px 16px rgba(0,0,0,0.18)" },
+    default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 10,
+    },
+});
+
 const updateStyles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
@@ -466,11 +496,7 @@ const updateStyles = StyleSheet.create({
         backgroundColor: "#ffffff",
         borderRadius: 15,
         padding: 20,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 5 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 10,
+        ...updateShadow,
     },
     modalTitle: {
         fontSize: 22,
