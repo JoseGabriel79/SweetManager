@@ -11,7 +11,7 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
   const pickImageAndUpload = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: [ImagePicker.MediaType.Image],
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.6,
@@ -174,7 +174,7 @@ export default function SettingsScreen({ usuario, setUsuario, onLogout }) {
           onPress={() => {
             Alert.alert("Sair", "Deseja sair da sua conta?", [
               { text: "Cancelar", style: "cancel" },
-              { text: "Sair", style: "destructive", onPress: () => { onLogout && onLogout(); } },
+              { text: "Sair", style: "destructive", onPress: () => { onLogout; onLogout(); } },
             ]);
           }}
         >
