@@ -247,6 +247,103 @@ app.post("/usuarios", upload.single("imagemperfil"), async (req, res) => {
 });
 ;
 
+// Atualizar foto de perfil do usuário
+app.put("/usuarios/:id/imagem", upload.single("imagemperfil"), async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Busca usuário atual para obter a imagem antiga
+    const current = await pool.query("SELECT id, nome, email, imagemperfil FROM usuarios WHERE id=$1", [id]);
+    if (!current.rowCount) {
+      return res.status(404).json({ success: false, error: "Usuário não encontrado" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: "Nenhuma imagem enviada" });
+    }
+
+    // Verifica e comprime imagem
+    let finalBuffer;
+    try {
+      const compressed = await sharp(req.file.buffer)
+        .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 80, progressive: true })
+        .toBuffer();
+      finalBuffer = compressed;
+    } catch (err) {
+      finalBuffer = req.file.buffer;
+    }
+
+    // Gera nome único e faz upload
+    const timestamp = Date.now();
+    const filename = `perfil-${id}-${timestamp}.jpg`;
+    const { data, error } = await supabase.storage
+      .from("usuarios")
+      .upload(filename, finalBuffer, {
+        contentType: 'image/jpeg',
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (error) {
+      return res.status(500).json({ success: false, error: "Erro ao fazer upload da imagem para o Supabase" });
+    }
+
+    const publicURL = `${process.env.SUPABASE_URL}/storage/v1/object/public/usuarios/${filename}`;
+
+    // Atualiza link no Postgres
+    const updated = await pool.query(
+      "UPDATE usuarios SET imagemperfil=$1 WHERE id=$2 RETURNING id, nome, email, imagemperfil",
+      [publicURL, id]
+    );
+
+    // Remove imagem anterior do Supabase (se existir)
+    const oldUrl = current.rows[0].imagemperfil;
+    if (oldUrl && typeof oldUrl === 'string') {
+      const parts = oldUrl.split('/usuarios/');
+      if (parts.length === 2) {
+        const oldKey = parts[1];
+        await supabase.storage.from('usuarios').remove([oldKey]);
+      }
+    }
+
+    res.json({ success: true, usuario: updated.rows[0] });
+  } catch (err) {
+    console.error("Erro ao atualizar imagem:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Remover foto de perfil do usuário (apaga do Supabase e limpa link no Postgres)
+app.delete("/usuarios/:id/imagem", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const current = await pool.query("SELECT id, nome, email, imagemperfil FROM usuarios WHERE id=$1", [id]);
+    if (!current.rowCount) {
+      return res.status(404).json({ success: false, error: "Usuário não encontrado" });
+    }
+
+    const oldUrl = current.rows[0].imagemperfil;
+    if (oldUrl && typeof oldUrl === 'string') {
+      const parts = oldUrl.split('/usuarios/');
+      if (parts.length === 2) {
+        const oldKey = parts[1];
+        await supabase.storage.from('usuarios').remove([oldKey]);
+      }
+    }
+
+    // Limpa o link no Postgres para que o app use a foto padrão local
+    const updated = await pool.query(
+      "UPDATE usuarios SET imagemperfil=NULL WHERE id=$1 RETURNING id, nome, email, imagemperfil",
+      [id]
+    );
+
+    res.json({ success: true, usuario: updated.rows[0] });
+  } catch (err) {
+    console.error("Erro ao remover imagem:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Login
 app.post("/login", async (req, res) => {
   const { email, senha } = req.body;

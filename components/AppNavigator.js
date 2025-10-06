@@ -8,11 +8,12 @@ import { Text, View } from "react-native";
 import LoginScreen from "./LoginScreen";
 import RegisterScreen from "./RegisterScreen";
 import HomeStack from "./HomeStack";
+import SettingsScreen from "./SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function AppTabs({ usuario, onLogout }) {
+function AppTabs({ usuario, setUsuario, onLogout }) {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -42,9 +43,7 @@ function AppTabs({ usuario, onLogout }) {
         options={{ tabBarIcon: () => <Feather name="settings" size={25} color="#042136" /> }}
       >
         {() => (
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <Text>Configurações</Text>
-          </View>
+          <SettingsScreen usuario={usuario} setUsuario={setUsuario} />
         )}
       </Tab.Screen>
     </Tab.Navigator>
@@ -63,7 +62,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       {login ? (
-        <AppTabs usuario={usuario} onLogout={onLogout} />
+        <AppTabs usuario={usuario} setUsuario={setUsuario} onLogout={onLogout} />
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login">
